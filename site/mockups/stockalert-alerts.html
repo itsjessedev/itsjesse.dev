@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockAlert - Alerts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-amber-600 to-orange-700 text-white">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold">StockAlert</h1>
+                <p class="text-amber-100 text-sm mt-1">Inventory Monitor</p>
+            </div>
+            <nav class="mt-6">
+                <a href="stockalert-dashboard.html" class="flex items-center px-6 py-3 hover:bg-amber-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="stockalert-inventory.html" class="flex items-center px-6 py-3 hover:bg-amber-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    Inventory
+                </a>
+                <a href="stockalert-locations.html" class="flex items-center px-6 py-3 hover:bg-amber-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Locations
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 bg-amber-700 border-l-4 border-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    Alerts
+                </a>
+                <a href="stockalert-reorder.html" class="flex items-center px-6 py-3 hover:bg-amber-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    Reorder
+                </a>
+                <a href="stockalert-settings.html" class="flex items-center px-6 py-3 hover:bg-amber-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-8 py-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Alerts</h2>
+                        <p class="text-gray-600 mt-1">Active alerts and notification history</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            Mark All Read
+                        </button>
+                        <button class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition">
+                            Configure Alerts
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Alert Stats -->
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Active Alerts</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">23</p>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-lg">
+                                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Critical (24h)</p>
+                                <p class="text-3xl font-bold text-red-600 mt-2">8</p>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-lg">
+                                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Resolved (24h)</p>
+                                <p class="text-3xl font-bold text-green-600 mt-2">42</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Avg Response Time</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">18m</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-lg">
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Alerts -->
+                <div class="bg-white rounded-lg shadow mb-8">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900">Active Alerts</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">All</button>
+                            <button class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-lg">Critical</button>
+                            <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">Warning</button>
+                            <button class="px-3 py-1 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">Info</button>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="p-6 hover:bg-gray-50">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-red-100 p-2 rounded-lg mt-1">
+                                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <div class="flex items-center space-x-3">
+                                                <h4 class="font-semibold text-gray-900">Out of Stock</h4>
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">CRITICAL</span>
+                                            </div>
+                                            <p class="text-gray-700 mt-2">Organic Milk 1L - Downtown Store</p>
+                                            <p class="text-sm text-gray-600 mt-1">Stock level reached zero. Last sold 15 minutes ago. High velocity item (4.2/day).</p>
+                                            <div class="flex items-center space-x-4 mt-3">
+                                                <span class="text-xs text-gray-500">15 min ago</span>
+                                                <span class="text-xs text-gray-500">Alert ID: #A1247</span>
+                                                <span class="text-xs text-gray-500">Notifications sent: Slack, SMS</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition text-sm">
+                                                Reorder Now
+                                            </button>
+                                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                                Dismiss
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 hover:bg-gray-50">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-red-100 p-2 rounded-lg mt-1">
+                                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <div class="flex items-center space-x-3">
+                                                <h4 class="font-semibold text-gray-900">Out of Stock</h4>
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">CRITICAL</span>
+                                            </div>
+                                            <p class="text-gray-700 mt-2">Protein Bars - Airport Location</p>
+                                            <p class="text-sm text-gray-600 mt-1">Stock level reached zero. High traffic location with frequent turnover.</p>
+                                            <div class="flex items-center space-x-4 mt-3">
+                                                <span class="text-xs text-gray-500">1 hr ago</span>
+                                                <span class="text-xs text-gray-500">Alert ID: #A1245</span>
+                                                <span class="text-xs text-gray-500">Notifications sent: Slack, SMS</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition text-sm">
+                                                Reorder Now
+                                            </button>
+                                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                                Dismiss
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 hover:bg-gray-50">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-orange-100 p-2 rounded-lg mt-1">
+                                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <div class="flex items-center space-x-3">
+                                                <h4 class="font-semibold text-gray-900">Low Stock Warning</h4>
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">WARNING</span>
+                                            </div>
+                                            <p class="text-gray-700 mt-2">Fresh Bread Loaves - Westside Mall</p>
+                                            <p class="text-sm text-gray-600 mt-1">12 units remaining (threshold: 20). Current velocity: 8.5/day. Stock will run out in ~1.4 days.</p>
+                                            <div class="flex items-center space-x-4 mt-3">
+                                                <span class="text-xs text-gray-500">2 hrs ago</span>
+                                                <span class="text-xs text-gray-500">Alert ID: #A1243</span>
+                                                <span class="text-xs text-gray-500">Notifications sent: Slack</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition text-sm">
+                                                View Details
+                                            </button>
+                                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                                Dismiss
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 hover:bg-gray-50">
+                            <div class="flex items-start space-x-4">
+                                <div class="bg-orange-100 p-2 rounded-lg mt-1">
+                                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between">
+                                        <div>
+                                            <div class="flex items-center space-x-3">
+                                                <h4 class="font-semibold text-gray-900">High Velocity Item Running Low</h4>
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">WARNING</span>
+                                            </div>
+                                            <p class="text-gray-700 mt-2">Coffee Beans 250g - Airport Location</p>
+                                            <p class="text-sm text-gray-600 mt-1">8 units remaining. Selling at 3.0/hr. Stock will run out in ~2.7 hours at current velocity.</p>
+                                            <div class="flex items-center space-x-4 mt-3">
+                                                <span class="text-xs text-gray-500">45 min ago</span>
+                                                <span class="text-xs text-gray-500">Alert ID: #A1240</span>
+                                                <span class="text-xs text-gray-500">Notifications sent: Slack, SMS</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition text-sm">
+                                                Auto-Reorder
+                                            </button>
+                                            <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition text-sm">
+                                                Dismiss
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Thresholds Configuration -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Alert Threshold Configuration</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Low Stock Threshold (units)</label>
+                                    <input type="number" value="20" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                    <p class="text-xs text-gray-500 mt-1">Alert when stock falls below this level</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Critical Stock Threshold (units)</label>
+                                    <input type="number" value="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                    <p class="text-xs text-gray-500 mt-1">Send critical alert when below this level</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">High Velocity Multiplier</label>
+                                    <input type="number" value="1.5" step="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                    <p class="text-xs text-gray-500 mt-1">Multiply thresholds for fast-moving items</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Alert Frequency (minutes)</label>
+                                    <input type="number" value="30" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                    <p class="text-xs text-gray-500 mt-1">Minimum time between repeated alerts</p>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-gray-200 pt-6">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-4">Notification Channels</h4>
+                                <div class="space-y-3">
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" checked class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
+                                        <div>
+                                            <span class="text-gray-900 font-medium">Slack Notifications</span>
+                                            <p class="text-xs text-gray-500">Send alerts to #inventory-alerts channel</p>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" checked class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
+                                        <div>
+                                            <span class="text-gray-900 font-medium">SMS Alerts (Critical Only)</span>
+                                            <p class="text-xs text-gray-500">Send SMS via Twilio for out-of-stock items</p>
+                                        </div>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-amber-600 rounded focus:ring-amber-500">
+                                        <div>
+                                            <span class="text-gray-900 font-medium">Email Digest</span>
+                                            <p class="text-xs text-gray-500">Daily summary of all alerts</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end space-x-3 pt-4">
+                                <button class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                                    Reset to Defaults
+                                </button>
+                                <button class="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

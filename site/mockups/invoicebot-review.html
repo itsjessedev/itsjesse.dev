@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvoiceBot - Review Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-teal-600 to-cyan-700 text-white p-6">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold">InvoiceBot</h1>
+                <p class="text-teal-100 text-sm">Receipt Automation</p>
+            </div>
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center space-x-3 hover:bg-white/10 rounded-lg px-4 py-3 text-teal-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 hover:bg-white/10 rounded-lg px-4 py-3 text-teal-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    <span>Upload</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 hover:bg-white/10 rounded-lg px-4 py-3 text-teal-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>History</span>
+                </a>
+                <a href="#" class="flex items-center space-x-3 hover:bg-white/10 rounded-lg px-4 py-3 text-teal-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>Settings</span>
+                </a>
+            </nav>
+            <div class="absolute bottom-6 left-6 right-6">
+                <div class="bg-white/10 rounded-lg p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-teal-300 rounded-full flex items-center justify-center text-teal-800 font-bold">
+                            JD
+                        </div>
+                        <div>
+                            <p class="font-medium text-sm">John Doe</p>
+                            <p class="text-xs text-teal-100">john@acme.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-900">Review Extracted Data</h2>
+                            <p class="text-gray-600 mt-1">Verify and edit the extracted information before syncing to QuickBooks</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                97% Confidence
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Form Section -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Basic Information -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-6">Basic Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Vendor/Merchant</label>
+                                    <input type="text" value="Starbucks Coffee" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                                    <input type="date" value="2025-12-24" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                                    <input type="time" value="09:42" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+                                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                        <option>Credit Card</option>
+                                        <option>Debit Card</option>
+                                        <option>Cash</option>
+                                        <option>Check</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Card Last 4 Digits</label>
+                                    <input type="text" value="5678" maxlength="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Amounts -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-6">Amounts</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Subtotal</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                                        <input type="number" value="16.45" step="0.01" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tax</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                                        <input type="number" value="1.48" step="0.01" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Total Amount</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                                        <input type="number" value="17.93" step="0.01" class="w-full pl-8 pr-4 py-2 border border-teal-300 bg-teal-50 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent font-semibold">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Categorization -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex items-start justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Categorization</h3>
+                                    <p class="text-sm text-gray-600 mt-1">AI-suggested category based on vendor and items</p>
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    AI Suggested
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                        <option>Office Supplies & Coffee</option>
+                                        <option>Meals & Entertainment</option>
+                                        <option>Travel & Transportation</option>
+                                        <option>Cloud Services</option>
+                                        <option>Marketing & Advertising</option>
+                                        <option>Other Business Expenses</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Account</label>
+                                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                        <option>Business Expenses</option>
+                                        <option>Operating Costs</option>
+                                        <option>Cost of Goods Sold</option>
+                                        <option>Utilities</option>
+                                    </select>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Memo / Notes</label>
+                                    <textarea rows="3" placeholder="Add any additional notes about this expense..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">Team meeting coffee and snacks</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Line Items -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-6">Line Items (Optional)</h3>
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-12 gap-3">
+                                    <div class="col-span-7">
+                                        <input type="text" value="Pike Place Roast" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Item description">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <input type="number" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Qty">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <input type="number" value="3.95" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Price">
+                                    </div>
+                                    <div class="col-span-1 flex items-center justify-center">
+                                        <button class="text-red-600 hover:text-red-700">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-12 gap-3">
+                                    <div class="col-span-7">
+                                        <input type="text" value="Croissant" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Item description">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <input type="number" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Qty">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <input type="number" value="4.25" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Price">
+                                    </div>
+                                    <div class="col-span-1 flex items-center justify-center">
+                                        <button class="text-red-600 hover:text-red-700">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-12 gap-3">
+                                    <div class="col-span-7">
+                                        <input type="text" value="Cappuccino" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Item description">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <input type="number" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Qty">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <input type="number" value="4.75" step="0.01" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Price">
+                                    </div>
+                                    <div class="col-span-1 flex items-center justify-center">
+                                        <button class="text-red-600 hover:text-red-700">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button class="text-teal-600 text-sm font-medium hover:text-teal-700 flex items-center mt-2">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    Add Line Item
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-4">
+                            <button class="px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors">
+                                Discard
+                            </button>
+                            <button class="px-6 py-3 bg-white border-2 border-teal-500 text-teal-600 font-semibold rounded-lg hover:bg-teal-50 transition-colors">
+                                Save as Draft
+                            </button>
+                            <button class="flex-1 px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-semibold rounded-lg hover:from-teal-600 hover:to-cyan-700 transition-all shadow-md hover:shadow-lg">
+                                Sync to QuickBooks
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Receipt Preview & Details -->
+                    <div class="space-y-6">
+                        <!-- Receipt Preview -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Receipt Preview</h3>
+                            <div class="bg-gray-100 rounded-lg aspect-[3/4] flex items-center justify-center relative overflow-hidden">
+                                <div class="w-full h-full bg-white p-6 text-xs font-mono">
+                                    <div class="text-center mb-4">
+                                        <div class="text-lg font-bold mb-1">STARBUCKS</div>
+                                        <div class="text-[10px] text-gray-600">Store #2845</div>
+                                        <div class="text-[10px] text-gray-600">123 Main Street</div>
+                                        <div class="text-[10px] text-gray-600">Seattle, WA 98101</div>
+                                    </div>
+                                    <div class="border-t border-b border-gray-300 py-3 my-3">
+                                        <div class="flex justify-between mb-1">
+                                            <span>Pike Place Roast</span>
+                                            <span>$3.95</span>
+                                        </div>
+                                        <div class="flex justify-between mb-1">
+                                            <span>Croissant</span>
+                                            <span>$4.25</span>
+                                        </div>
+                                        <div class="flex justify-between mb-1">
+                                            <span>Cappuccino</span>
+                                            <span>$4.75</span>
+                                        </div>
+                                        <div class="flex justify-between mb-1">
+                                            <span>Muffin</span>
+                                            <span>$3.50</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1 mb-3">
+                                        <div class="flex justify-between">
+                                            <span>Subtotal:</span>
+                                            <span>$16.45</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Tax:</span>
+                                            <span>$1.48</span>
+                                        </div>
+                                        <div class="flex justify-between font-bold text-sm">
+                                            <span>TOTAL:</span>
+                                            <span>$17.93</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center text-[10px] text-gray-600 mt-4">
+                                        <div>12/24/2025 09:42 AM</div>
+                                        <div>Card: **** **** **** 5678</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="w-full mt-4 text-teal-600 text-sm font-medium hover:text-teal-700">
+                                View Full Size →
+                            </button>
+                        </div>
+
+                        <!-- Extraction Confidence -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Extraction Confidence</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">Vendor</span>
+                                        <span class="font-semibold text-green-600">99%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 99%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">Date & Time</span>
+                                        <span class="font-semibold text-green-600">98%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 98%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">Total Amount</span>
+                                        <span class="font-semibold text-green-600">100%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span class="text-gray-600">Category</span>
+                                        <span class="font-semibold text-blue-600">92%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QuickBooks Preview -->
+                        <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-sm p-6 text-white">
+                            <h3 class="text-lg font-semibold mb-4">QuickBooks Sync</h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-green-100">Status</span>
+                                    <span class="font-semibold">Ready</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-green-100">Account</span>
+                                    <span class="font-semibold">Business Expenses</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-green-100">Will Create</span>
+                                    <span class="font-semibold">Expense Entry</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-white/20">
+                                <p class="text-xs text-green-100">This receipt will be synced as an expense transaction in your QuickBooks account.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

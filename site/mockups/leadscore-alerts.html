@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadScore - Alerts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-emerald-900 text-white flex flex-col">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold">LeadScore</h1>
+                <p class="text-emerald-300 text-sm mt-1">Intelligent Lead Prioritization</p>
+            </div>
+            <nav class="flex-1 px-4">
+                <a href="leadscore-dashboard.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="leadscore-leads.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Leads
+                </a>
+                <a href="leadscore-scoring.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Scoring Model
+                </a>
+                <a href="leadscore-analytics.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Analytics
+                </a>
+                <a href="leadscore-integrations.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Integrations
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    Alerts
+                </a>
+            </nav>
+            <div class="p-4 border-t border-emerald-800">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-emerald-700 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-semibold">JE</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Jesse Eldridge</p>
+                        <p class="text-xs text-emerald-300">Sales Manager</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <div class="bg-white border-b border-gray-200 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Alert Rules</h2>
+                        <p class="text-gray-600 mt-1">Configure when and how your team gets notified about hot leads</p>
+                    </div>
+                    <button class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700">
+                        Create New Rule
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Alert Rules -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Active Rules -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Active Rules</h3>
+
+                            <!-- Rule 1 -->
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-4">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-base font-semibold text-gray-900">Hot Lead - Score Threshold</h4>
+                                            <p class="text-sm text-gray-600">Trigger when lead reaches hot status</p>
+                                        </div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-emerald-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <h5 class="text-xs font-semibold text-gray-700 uppercase mb-2">Conditions</h5>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center">
+                                            <span class="text-gray-600">When</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Lead Score</span>
+                                            <span class="text-gray-600">is</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Greater than or equal to</span>
+                                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-emerald-600 font-bold">80</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h5 class="text-xs font-semibold text-gray-700 uppercase mb-2">Actions</h5>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center text-sm">
+                                            <svg class="w-4 h-4 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 01-2.523 2.521 2.527 2.527 0 01-2.52-2.521V2.522A2.527 2.527 0 0115.165 0a2.528 2.528 0 012.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 012.523 2.522A2.528 2.528 0 0115.165 24a2.527 2.527 0 01-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 01-2.52-2.523 2.526 2.526 0 012.52-2.52h6.313A2.527 2.527 0 0124 15.165a2.528 2.528 0 01-2.522 2.523h-6.313z"/>
+                                            </svg>
+                                            <span class="text-gray-900">Send Slack notification to <span class="font-medium">#sales-alerts</span></span>
+                                        </div>
+                                        <div class="flex items-center text-sm">
+                                            <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                            <span class="text-gray-900">Send email to <span class="font-medium">sales@company.com</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+                                    <span>Triggered 23 times today</span>
+                                    <button class="text-emerald-600 hover:text-emerald-700 font-medium">Edit Rule</button>
+                                </div>
+                            </div>
+
+                            <!-- Rule 2 -->
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-4">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-base font-semibold text-gray-900">Pricing Page Activity</h4>
+                                            <p class="text-sm text-gray-600">Alert on high-intent page visits</p>
+                                        </div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-emerald-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <h5 class="text-xs font-semibold text-gray-700 uppercase mb-2">Conditions</h5>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center">
+                                            <span class="text-gray-600">When</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Pricing Page Visits</span>
+                                            <span class="text-gray-600">is</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Greater than or equal to</span>
+                                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-blue-600 font-bold">3</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-gray-600">Within</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Last 24 hours</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h5 class="text-xs font-semibold text-gray-700 uppercase mb-2">Actions</h5>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center text-sm">
+                                            <svg class="w-4 h-4 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 01-2.523 2.521 2.527 2.527 0 01-2.52-2.521V2.522A2.527 2.527 0 0115.165 0a2.528 2.528 0 012.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 012.523 2.522A2.528 2.528 0 0115.165 24a2.527 2.527 0 01-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 01-2.52-2.523 2.526 2.526 0 012.52-2.52h6.313A2.527 2.527 0 0124 15.165a2.528 2.528 0 01-2.522 2.523h-6.313z"/>
+                                            </svg>
+                                            <span class="text-gray-900">Send Slack notification to <span class="font-medium">#sales-alerts</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+                                    <span>Triggered 12 times today</span>
+                                    <button class="text-emerald-600 hover:text-emerald-700 font-medium">Edit Rule</button>
+                                </div>
+                            </div>
+
+                            <!-- Rule 3 -->
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-4">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-base font-semibold text-gray-900">Demo Scheduled</h4>
+                                            <p class="text-sm text-gray-600">Notify when demo is booked</p>
+                                        </div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-emerald-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <h5 class="text-xs font-semibold text-gray-700 uppercase mb-2">Conditions</h5>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center">
+                                            <span class="text-gray-600">When</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Meeting Type</span>
+                                            <span class="text-gray-600">is</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-purple-600 font-medium">Demo</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h5 class="text-xs font-semibold text-gray-700 uppercase mb-2">Actions</h5>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center text-sm">
+                                            <svg class="w-4 h-4 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 01-2.523 2.521 2.527 2.527 0 01-2.52-2.521V2.522A2.527 2.527 0 0115.165 0a2.528 2.528 0 012.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 012.523 2.522A2.528 2.528 0 0115.165 24a2.527 2.527 0 01-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 01-2.52-2.523 2.526 2.526 0 012.52-2.52h6.313A2.527 2.527 0 0124 15.165a2.528 2.528 0 01-2.522 2.523h-6.313z"/>
+                                            </svg>
+                                            <span class="text-gray-900">Send Slack notification to <span class="font-medium">#sales-alerts</span></span>
+                                        </div>
+                                        <div class="flex items-center text-sm">
+                                            <svg class="w-4 h-4 text-orange-600 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M18.164 7.93V5.084a2.198 2.198 0 001.267-1.978v-.067A2.2 2.2 0 0017.238.85h-.067a2.2 2.2 0 00-2.193 2.193v.067a2.196 2.196 0 001.252 1.973l.015.007v2.855a6.72 6.72 0 00-2.803 1.578l-.01.01-3.138-3.153A2.187 2.187 0 0010.553 4a2.197 2.197 0 00-2.193-2.193h-.067A2.2 2.2 0 006.1 4.007v.067a2.194 2.194 0 001.252 1.973l.015.007v8.021a2.197 2.197 0 00-1.267 1.978v.067c0 1.21.983 2.193 2.193 2.193h.067a2.2 2.2 0 002.193-2.193v-.067a2.196 2.196 0 00-1.252-1.973l-.015-.007V9.052l3.138 3.153A2.187 2.187 0 0012.424 15a6.72 6.72 0 002.803-1.578l.01-.01 3.138 3.153a2.187 2.187 0 00-.259 1.378 2.197 2.197 0 002.193 2.193h.067a2.2 2.2 0 002.193-2.193v-.067a2.194 2.194 0 00-1.252-1.973l-.015-.007v-8.021a6.72 6.72 0 00-2.803-1.578l-.335-.067z"/>
+                                            </svg>
+                                            <span class="text-gray-900">Create task in HubSpot</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+                                    <span>Triggered 8 times today</span>
+                                    <button class="text-emerald-600 hover:text-emerald-700 font-medium">Edit Rule</button>
+                                </div>
+                            </div>
+
+                            <!-- Rule 4 - Disabled -->
+                            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-4 opacity-60">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h4 class="text-base font-semibold text-gray-900">Stale Lead Warning</h4>
+                                            <p class="text-sm text-gray-600">Alert on inactive hot leads</p>
+                                        </div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                    <h5 class="text-xs font-semibold text-gray-700 uppercase mb-2">Conditions</h5>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center">
+                                            <span class="text-gray-600">When</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Lead Score</span>
+                                            <span class="text-gray-600">is</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Greater than</span>
+                                            <span class="px-2 py-1 bg-white border border-gray-300 rounded text-amber-600 font-bold">80</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <span class="text-gray-600">And</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-gray-900 font-medium">Last Contact</span>
+                                            <span class="text-gray-600">was more than</span>
+                                            <span class="mx-2 px-2 py-1 bg-white border border-gray-300 rounded text-amber-600 font-bold">7 days ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h5 class="text-xs font-semibold text-gray-700 uppercase mb-2">Actions</h5>
+                                    <div class="space-y-2">
+                                        <div class="flex items-center text-sm">
+                                            <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                            <span class="text-gray-900">Send email to <span class="font-medium">sales@company.com</span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+                                    <span>Disabled</span>
+                                    <button class="text-emerald-600 hover:text-emerald-700 font-medium">Edit Rule</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Alerts & Stats -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <!-- Alert Stats -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Today's Alerts</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">Total Sent</span>
+                                        <span class="text-2xl font-bold text-gray-900">43</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-emerald-600 h-2 rounded-full" style="width: 86%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">86% of daily average</p>
+                                </div>
+                                <div class="pt-4 border-t border-gray-200">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">Hot Lead Alerts</span>
+                                        <span class="text-lg font-bold text-emerald-600">23</span>
+                                    </div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">Pricing Page Alerts</span>
+                                        <span class="text-lg font-bold text-blue-600">12</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Demo Scheduled</span>
+                                        <span class="text-lg font-bold text-purple-600">8</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Alert History -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Alerts</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="w-2 h-2 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900 font-medium truncate">Sarah Chen - Hot Lead</p>
+                                        <p class="text-xs text-gray-600">Score reached 94</p>
+                                        <p class="text-xs text-gray-400 mt-1">2 minutes ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-2 h-2 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900 font-medium truncate">Michael Park - Hot Lead</p>
+                                        <p class="text-xs text-gray-600">Score reached 91</p>
+                                        <p class="text-xs text-gray-400 mt-1">15 minutes ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900 font-medium truncate">Lisa Wang - Pricing Page</p>
+                                        <p class="text-xs text-gray-600">3 visits in 24 hours</p>
+                                        <p class="text-xs text-gray-400 mt-1">1 hour ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-2 h-2 bg-purple-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900 font-medium truncate">Emily Rodriguez - Demo</p>
+                                        <p class="text-xs text-gray-600">Demo scheduled</p>
+                                        <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-2 h-2 bg-emerald-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900 font-medium truncate">David Kim - Hot Lead</p>
+                                        <p class="text-xs text-gray-600">Score reached 84</p>
+                                        <p class="text-xs text-gray-400 mt-1">3 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <div class="w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-gray-900 font-medium truncate">James Taylor - Pricing Page</p>
+                                        <p class="text-xs text-gray-600">4 visits in 24 hours</p>
+                                        <p class="text-xs text-gray-400 mt-1">5 hours ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="w-full mt-4 pt-4 border-t border-gray-200 text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                                View All Alerts
+                            </button>
+                        </div>
+
+                        <!-- Performance -->
+                        <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg shadow-sm p-6 text-white">
+                            <h3 class="text-lg font-semibold mb-2">Alert Performance</h3>
+                            <div class="text-4xl font-bold mb-2">78%</div>
+                            <p class="text-sm text-emerald-100 mb-4">Response rate within 1 hour</p>
+                            <div class="pt-4 border-t border-emerald-500">
+                                <p class="text-xs">Alerts result in 3.2x faster contact vs. manual review</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

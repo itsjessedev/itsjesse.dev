@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts - FeedbackPulse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-rose-600 to-pink-700 text-white p-6">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold">FeedbackPulse</h1>
+                <p class="text-rose-100 text-sm mt-1">Review Analytics</p>
+            </div>
+            <nav class="space-y-2">
+                <a href="feedbackpulse-dashboard.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Dashboard</a>
+                <a href="feedbackpulse-reviews.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Reviews</a>
+                <a href="feedbackpulse-surveys.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Surveys</a>
+                <a href="feedbackpulse-trends.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Trends</a>
+                <a href="feedbackpulse-alerts.html" class="block px-4 py-3 bg-white bg-opacity-20 rounded-lg font-medium">Alerts</a>
+                <a href="feedbackpulse-sources.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Sources</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Alerts & Notifications</h2>
+                    <p class="text-gray-600 mt-1">Monitor negative feedback and get AI-powered response suggestions</p>
+                </div>
+
+                <!-- Alert Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Critical Alerts</p>
+                                <p class="text-3xl font-bold text-red-600 mt-2">2</p>
+                                <p class="text-red-600 text-sm mt-1">Requires immediate action</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Medium Priority</p>
+                                <p class="text-3xl font-bold text-yellow-600 mt-2">5</p>
+                                <p class="text-yellow-600 text-sm mt-1">Review when possible</p>
+                            </div>
+                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Resolved Today</p>
+                                <p class="text-3xl font-bold text-green-600 mt-2">8</p>
+                                <p class="text-green-600 text-sm mt-1">Great work!</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Alerts -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+                    <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">Active Alerts</h3>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700">Mark All Read</button>
+                            <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">Settings</button>
+                        </div>
+                    </div>
+
+                    <div class="divide-y divide-gray-100">
+                        <!-- Critical Alert 1 -->
+                        <div class="p-6 bg-red-50">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-start space-x-4">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-600 text-white">
+                                                CRITICAL
+                                            </span>
+                                            <span class="text-sm text-gray-600">5 hours ago</span>
+                                        </div>
+                                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Multiple Negative Reviews Detected</h4>
+                                        <p class="text-sm text-gray-700 mb-3">3 negative reviews posted on Yelp in the last 6 hours, all mentioning "wait time" and "staff shortage"</p>
+
+                                        <div class="bg-white rounded-lg p-4 mb-4 border border-red-200">
+                                            <p class="text-sm font-medium text-gray-900 mb-2">Latest Review:</p>
+                                            <p class="text-sm text-gray-700 italic mb-2">"Waited 45 minutes, staff seemed overwhelmed. Not acceptable for the price point."</p>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded">wait time</span>
+                                                <span class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded">staffing</span>
+                                                <span class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded">expectations</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-blue-50 rounded-lg p-4 mb-4 border border-blue-200">
+                                            <div class="flex items-start space-x-2 mb-2">
+                                                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                                </svg>
+                                                <div>
+                                                    <p class="text-sm font-medium text-blue-900 mb-2">AI Suggested Response:</p>
+                                                    <p class="text-sm text-gray-700">"We sincerely apologize for your experience. We're currently addressing staffing levels and implementing a new queue management system. Please contact us at [contact] so we can make this right. Your feedback helps us improve."</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex space-x-3">
+                                            <button class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700">Respond Now</button>
+                                            <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Mark as Resolved</button>
+                                            <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Escalate</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Critical Alert 2 -->
+                        <div class="p-6 bg-red-50">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-start space-x-4">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-2">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-red-600 text-white">
+                                                CRITICAL
+                                            </span>
+                                            <span class="text-sm text-gray-600">1 day ago</span>
+                                        </div>
+                                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Sentiment Score Drop</h4>
+                                        <p class="text-sm text-gray-700 mb-3">Overall sentiment score dropped from 8.4 to 7.8 in the last 48 hours</p>
+
+                                        <div class="bg-white rounded-lg p-4 mb-4 border border-red-200">
+                                            <p class="text-sm font-medium text-gray-900 mb-2">Primary Issues:</p>
+                                            <ul class="text-sm text-gray-700 space-y-1">
+                                                <li>• Increased complaints about response time (12 mentions)</li>
+                                                <li>• Product quality concerns (8 mentions)</li>
+                                                <li>• Customer service availability (6 mentions)</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="bg-blue-50 rounded-lg p-4 mb-4 border border-blue-200">
+                                            <div class="flex items-start space-x-2 mb-2">
+                                                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                                </svg>
+                                                <div>
+                                                    <p class="text-sm font-medium text-blue-900 mb-2">AI Recommendations:</p>
+                                                    <ul class="text-sm text-gray-700 space-y-1">
+                                                        <li>• Review recent changes to response time SLAs</li>
+                                                        <li>• Audit recent product batches for quality issues</li>
+                                                        <li>• Consider extending customer service hours</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex space-x-3">
+                                            <button class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700">View Details</button>
+                                            <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Mark as Resolved</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medium Priority Alert 1 -->
+                        <div class="p-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800">
+                                            MEDIUM
+                                        </span>
+                                        <span class="text-sm text-gray-600">2 days ago</span>
+                                    </div>
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-2">Unanswered Survey Comments</h4>
+                                    <p class="text-sm text-gray-700 mb-3">7 survey respondents requested follow-up but haven't been contacted yet</p>
+                                    <div class="flex space-x-3">
+                                        <button class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700">Review Requests</button>
+                                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Dismiss</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medium Priority Alert 2 -->
+                        <div class="p-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800">
+                                            MEDIUM
+                                        </span>
+                                        <span class="text-sm text-gray-600">3 days ago</span>
+                                    </div>
+                                    <h4 class="text-lg font-semibold text-gray-900 mb-2">Trending Negative Keyword</h4>
+                                    <p class="text-sm text-gray-700 mb-3">"Packaging" mentioned negatively 15 times this week, up from 4 last week</p>
+                                    <div class="flex space-x-3">
+                                        <button class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700">Investigate</button>
+                                        <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Dismiss</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Rules -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Alert Rules Configuration</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">Sentiment score drops below 7.0</p>
+                                <p class="text-sm text-gray-600">Critical alert • Email + SMS</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">3+ negative reviews in 24 hours</p>
+                                <p class="text-sm text-gray-600">Critical alert • Email</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">Keyword mentioned 10+ times in a week</p>
+                                <p class="text-sm text-gray-600">Medium alert • Email</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-900">Unanswered reviews older than 48 hours</p>
+                                <p class="text-sm text-gray-600">Low alert • Email</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="mt-6 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                        Add New Alert Rule
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

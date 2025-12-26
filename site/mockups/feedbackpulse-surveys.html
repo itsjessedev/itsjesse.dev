@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surveys - FeedbackPulse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-rose-600 to-pink-700 text-white p-6">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold">FeedbackPulse</h1>
+                <p class="text-rose-100 text-sm mt-1">Review Analytics</p>
+            </div>
+            <nav class="space-y-2">
+                <a href="feedbackpulse-dashboard.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Dashboard</a>
+                <a href="feedbackpulse-reviews.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Reviews</a>
+                <a href="feedbackpulse-surveys.html" class="block px-4 py-3 bg-white bg-opacity-20 rounded-lg font-medium">Surveys</a>
+                <a href="feedbackpulse-trends.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Trends</a>
+                <a href="feedbackpulse-alerts.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Alerts</a>
+                <a href="feedbackpulse-sources.html" class="block px-4 py-3 hover:bg-white hover:bg-opacity-10 rounded-lg transition">Sources</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Survey Responses</h2>
+                    <p class="text-gray-600 mt-1">Customer feedback from surveys with sentiment analysis</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Total Responses</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">342</p>
+                                <p class="text-green-600 text-sm mt-1">↑ 18% this month</p>
+                            </div>
+                            <div class="w-12 h-12 bg-rose-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Response Rate</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">67%</p>
+                                <p class="text-green-600 text-sm mt-1">↑ 5% from last month</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Avg. Satisfaction</p>
+                                <p class="text-3xl font-bold text-gray-900 mt-2">8.3/10</p>
+                                <p class="text-green-600 text-sm mt-1">↑ 0.4 from last month</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Satisfaction Distribution Chart -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Satisfaction Score Distribution</h3>
+                    <canvas id="satisfactionChart" height="80"></canvas>
+                </div>
+
+                <!-- Survey Responses -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900">Recent Responses</h3>
+                    </div>
+                    <div class="divide-y divide-gray-100">
+                        <!-- Response 1 -->
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <p class="font-semibold text-gray-900">Post-Purchase Survey</p>
+                                    <p class="text-sm text-gray-500">Submitted 3 hours ago</p>
+                                </div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Positive (8.9/10)
+                                </span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">How satisfied are you with your purchase?</p>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-rose-600 h-2 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">9/10</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">What did you like most about your experience?</p>
+                                    <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">"The product quality exceeded my expectations. Fast shipping and excellent packaging. Very happy with my purchase!"</p>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">product quality</span>
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">shipping</span>
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">packaging</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">Would you recommend us to a friend?</p>
+                                    <p class="text-sm text-gray-900 font-medium">Yes, definitely</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Response 2 -->
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <p class="font-semibold text-gray-900">Customer Service Feedback</p>
+                                    <p class="text-sm text-gray-500">Submitted 6 hours ago</p>
+                                </div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Negative (4.2/10)
+                                </span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">How would you rate your support experience?</p>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-rose-600 h-2 rounded-full" style="width: 40%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">4/10</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">Please describe your issue:</p>
+                                    <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">"I had to wait 45 minutes on hold before speaking to someone. The agent was helpful once I got through, but the wait time was unacceptable."</p>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">wait time</span>
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">hold time</span>
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">customer support</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">Would you contact support again if needed?</p>
+                                    <p class="text-sm text-gray-900 font-medium">Probably not</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Response 3 -->
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <p class="font-semibold text-gray-900">Website Experience Survey</p>
+                                    <p class="text-sm text-gray-500">Submitted 1 day ago</p>
+                                </div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    Neutral (6.8/10)
+                                </span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">How easy was it to find what you were looking for?</p>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-rose-600 h-2 rounded-full" style="width: 70%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">7/10</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">Any suggestions for improvement?</p>
+                                    <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">"The site is decent but could use better search functionality. Sometimes I have to browse through multiple pages to find specific items."</p>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">search function</span>
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">navigation</span>
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">user experience</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">Overall website rating:</p>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-rose-600 h-2 rounded-full" style="width: 65%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">6.5/10</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Response 4 -->
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <p class="font-semibold text-gray-900">Product Quality Survey</p>
+                                    <p class="text-sm text-gray-500">Submitted 2 days ago</p>
+                                </div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Positive (9.1/10)
+                                </span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">How would you rate the product quality?</p>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-rose-600 h-2 rounded-full" style="width: 95%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">9.5/10</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">What stands out about the product?</p>
+                                    <p class="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">"Outstanding build quality and attention to detail. Exactly what I was hoping for. Worth every penny!"</p>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">build quality</span>
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">value</span>
+                                        <span class="text-xs px-2 py-1 bg-rose-50 text-rose-700 rounded">expectations met</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-1">Likelihood to purchase again:</p>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-rose-600 h-2 rounded-full" style="width: 90%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">9/10</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Satisfaction Score Distribution Chart
+        const ctx = document.getElementById('satisfactionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                datasets: [{
+                    label: 'Number of Responses',
+                    data: [3, 5, 8, 12, 18, 28, 45, 87, 98, 38],
+                    backgroundColor: 'rgb(225, 29, 72)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 20
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Satisfaction Score'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

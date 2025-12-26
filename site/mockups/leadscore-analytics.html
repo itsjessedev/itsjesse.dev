@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadScore - Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-emerald-900 text-white flex flex-col">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold">LeadScore</h1>
+                <p class="text-emerald-300 text-sm mt-1">Intelligent Lead Prioritization</p>
+            </div>
+            <nav class="flex-1 px-4">
+                <a href="leadscore-dashboard.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="leadscore-leads.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Leads
+                </a>
+                <a href="leadscore-scoring.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Scoring Model
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Analytics
+                </a>
+                <a href="leadscore-integrations.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Integrations
+                </a>
+                <a href="leadscore-alerts.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    Alerts
+                </a>
+            </nav>
+            <div class="p-4 border-t border-emerald-800">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-emerald-700 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-semibold">JE</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Jesse Eldridge</p>
+                        <p class="text-xs text-emerald-300">Sales Manager</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <div class="bg-white border-b border-gray-200 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Analytics</h2>
+                        <p class="text-gray-600 mt-1">Lead conversion insights and scoring model performance</p>
+                    </div>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option>Last 30 Days</option>
+                        <option>Last 60 Days</option>
+                        <option>Last 90 Days</option>
+                        <option>Last 6 Months</option>
+                        <option>Last Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8">
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm text-gray-600 font-medium">Conversion Rate</p>
+                            <span class="text-xs text-emerald-600 font-semibold">+4.2%</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">12.8%</p>
+                        <p class="text-xs text-gray-500 mt-2">Hot leads to customers</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm text-gray-600 font-medium">Avg. Score Accuracy</p>
+                            <span class="text-xs text-emerald-600 font-semibold">+2.1%</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">87%</p>
+                        <p class="text-xs text-gray-500 mt-2">Prediction accuracy</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm text-gray-600 font-medium">Time to Convert</p>
+                            <span class="text-xs text-emerald-600 font-semibold">-3 days</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">18</p>
+                        <p class="text-xs text-gray-500 mt-2">Days average</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-sm text-gray-600 font-medium">ROI Improvement</p>
+                            <span class="text-xs text-emerald-600 font-semibold">+45%</span>
+                        </div>
+                        <p class="text-3xl font-bold text-gray-900">2.4x</p>
+                        <p class="text-xs text-gray-500 mt-2">Since using LeadScore</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Charts -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Conversion by Score Range -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-6">Conversion Rate by Score Range</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-700">90-100 (Hot)</span>
+                                        <span class="text-sm font-semibold text-emerald-600">42%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="bg-emerald-600 h-3 rounded-full" style="width: 42%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">12 of 29 leads converted</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-700">80-89 (Hot)</span>
+                                        <span class="text-sm font-semibold text-emerald-600">35%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="bg-emerald-600 h-3 rounded-full" style="width: 35%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">18 of 52 leads converted</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-700">70-79 (Warm)</span>
+                                        <span class="text-sm font-semibold text-amber-600">18%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="bg-amber-600 h-3 rounded-full" style="width: 18%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">14 of 78 leads converted</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-700">50-69 (Warm)</span>
+                                        <span class="text-sm font-semibold text-amber-600">8%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="bg-amber-600 h-3 rounded-full" style="width: 8%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">9 of 112 leads converted</p>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-700">0-49 (Cold)</span>
+                                        <span class="text-sm font-semibold text-blue-600">2%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-3">
+                                        <div class="bg-blue-600 h-3 rounded-full" style="width: 2%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">3 of 156 leads converted</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lead Score Trends -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-6">Lead Score Distribution Trend</h3>
+                            <div class="h-64 flex items-end justify-between space-x-2">
+                                <div class="flex-1 flex flex-col items-center">
+                                    <div class="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t" style="height: 35%"></div>
+                                    <div class="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t" style="height: 28%"></div>
+                                    <div class="w-full bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t" style="height: 15%"></div>
+                                    <span class="text-xs text-gray-600 mt-2">Week 1</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center">
+                                    <div class="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t" style="height: 32%"></div>
+                                    <div class="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t" style="height: 30%"></div>
+                                    <div class="w-full bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t" style="height: 18%"></div>
+                                    <span class="text-xs text-gray-600 mt-2">Week 2</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center">
+                                    <div class="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t" style="height: 30%"></div>
+                                    <div class="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t" style="height: 32%"></div>
+                                    <div class="w-full bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t" style="height: 20%"></div>
+                                    <span class="text-xs text-gray-600 mt-2">Week 3</span>
+                                </div>
+                                <div class="flex-1 flex flex-col items-center">
+                                    <div class="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t" style="height: 28%"></div>
+                                    <div class="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t" style="height: 35%"></div>
+                                    <div class="w-full bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t" style="height: 22%"></div>
+                                    <span class="text-xs text-gray-600 mt-2">Week 4</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-center space-x-6 mt-6">
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-emerald-500 rounded mr-2"></div>
+                                    <span class="text-sm text-gray-700">Hot (80-100)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-amber-500 rounded mr-2"></div>
+                                    <span class="text-sm text-gray-700">Warm (50-79)</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-blue-500 rounded mr-2"></div>
+                                    <span class="text-sm text-gray-700">Cold (0-49)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top Performing Signals -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-6">Top Performing Signals</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Pricing Page Visits</p>
+                                        <p class="text-xs text-gray-600">Website Activity</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-bold text-emerald-600">3.2x</p>
+                                        <p class="text-xs text-gray-600">Higher conversion</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Email Click-Through</p>
+                                        <p class="text-xs text-gray-600">Email Engagement</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-bold text-emerald-600">2.8x</p>
+                                        <p class="text-xs text-gray-600">Higher conversion</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Demo Scheduled</p>
+                                        <p class="text-xs text-gray-600">CRM Activity</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-bold text-emerald-600">2.5x</p>
+                                        <p class="text-xs text-gray-600">Higher conversion</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">C-Level Contact</p>
+                                        <p class="text-xs text-gray-600">Lead Profile</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-bold text-emerald-600">2.1x</p>
+                                        <p class="text-xs text-gray-600">Higher conversion</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Email Reply</p>
+                                        <p class="text-xs text-gray-600">Email Engagement</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-lg font-bold text-emerald-600">1.9x</p>
+                                        <p class="text-xs text-gray-600">Higher conversion</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Side Stats -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <!-- Score Accuracy Over Time -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Score Accuracy</h3>
+                            <div class="mb-6">
+                                <p class="text-4xl font-bold text-emerald-600">87%</p>
+                                <p class="text-sm text-gray-600 mt-1">Current accuracy rate</p>
+                            </div>
+                            <div class="space-y-3">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs text-gray-600">Last 7 days</span>
+                                        <span class="text-xs font-semibold">88%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-emerald-600 h-2 rounded-full" style="width: 88%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs text-gray-600">Last 30 days</span>
+                                        <span class="text-xs font-semibold">87%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-emerald-600 h-2 rounded-full" style="width: 87%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-xs text-gray-600">Last 90 days</span>
+                                        <span class="text-xs font-semibold">85%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-amber-600 h-2 rounded-full" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Conversion Funnel -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Conversion Funnel</h3>
+                            <div class="space-y-2">
+                                <div class="bg-blue-100 p-3 rounded">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-blue-900">All Leads</span>
+                                        <span class="text-sm font-bold text-blue-900">427</span>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-200 p-3 rounded ml-4">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-blue-900">Warm/Hot</span>
+                                        <span class="text-sm font-bold text-blue-900">271</span>
+                                    </div>
+                                    <p class="text-xs text-blue-700 mt-1">63% of total</p>
+                                </div>
+                                <div class="bg-amber-200 p-3 rounded ml-8">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-amber-900">Contacted</span>
+                                        <span class="text-sm font-bold text-amber-900">203</span>
+                                    </div>
+                                    <p class="text-xs text-amber-700 mt-1">75% of warm/hot</p>
+                                </div>
+                                <div class="bg-emerald-200 p-3 rounded ml-12">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-emerald-900">Qualified</span>
+                                        <span class="text-sm font-bold text-emerald-900">142</span>
+                                    </div>
+                                    <p class="text-xs text-emerald-700 mt-1">70% of contacted</p>
+                                </div>
+                                <div class="bg-emerald-300 p-3 rounded ml-16">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium text-emerald-900">Converted</span>
+                                        <span class="text-sm font-bold text-emerald-900">56</span>
+                                    </div>
+                                    <p class="text-xs text-emerald-700 mt-1">39% of qualified</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Time Saved -->
+                        <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg shadow-sm p-6 text-white">
+                            <h3 class="text-lg font-semibold mb-2">Time Saved</h3>
+                            <div class="text-4xl font-bold mb-2">23.5 hrs</div>
+                            <p class="text-sm text-emerald-100 mb-4">Per week on average</p>
+                            <div class="pt-4 border-t border-emerald-500">
+                                <p class="text-xs">By focusing on hot leads first, your team spends 40% less time on unqualified prospects</p>
+                            </div>
+                        </div>
+
+                        <!-- Response Time -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Avg. Response Time</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-700">Hot Leads</span>
+                                        <span class="text-sm font-bold text-emerald-600">2.3 hrs</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600">78% faster than before</p>
+                                </div>
+                                <div class="border-t border-gray-200 pt-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-700">Warm Leads</span>
+                                        <span class="text-sm font-bold text-amber-600">8.7 hrs</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600">52% faster than before</p>
+                                </div>
+                                <div class="border-t border-gray-200 pt-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-700">Cold Leads</span>
+                                        <span class="text-sm font-bold text-blue-600">24+ hrs</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600">Deprioritized appropriately</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
