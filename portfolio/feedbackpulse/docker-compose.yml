@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  feedbackpulse:
+    build: .
+    container_name: feedbackpulse
+    ports:
+      - "8000:8000"
+    environment:
+      - DEMO_MODE=true
+      - DEBUG=false
+    env_file:
+      - .env
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  # Optional: Add Redis for caching
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: feedbackpulse-redis
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+
+  # Optional: Add PostgreSQL for production database
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: feedbackpulse-db
+  #   environment:
+  #     POSTGRES_USER: feedbackpulse
+  #     POSTGRES_PASSWORD: feedbackpulse
+  #     POSTGRES_DB: feedbackpulse
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data:

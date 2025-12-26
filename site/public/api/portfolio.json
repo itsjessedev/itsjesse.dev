@@ -1,0 +1,360 @@
+{
+  "profile": {
+    "name": "Jesse Eldridge",
+    "title": "Automation & Integration Developer",
+    "photoUrl": "https://itsjesse.dev/jesse.jpg",
+    "location": "Cookeville, TN",
+    "remote": true,
+    "email": "jesse@itsjesse.dev",
+    "jobsEmail": "jobs@itsjesse.dev",
+    "github": "https://github.com/itsjessedev",
+    "linkedin": "https://linkedin.com/in/jesseeldridge",
+    "website": "https://itsjesse.dev",
+    "summary": "Software developer specializing in business automation and system integration. I build custom solutions that connect disparate systems, automate repetitive workflows, and provide real-time visibility into business operations."
+  },
+  "skills": {
+    "languages": ["Python", "JavaScript", "TypeScript", "SQL", "Dart"],
+    "frameworks": ["FastAPI", "React", "Next.js", "Flutter", "React Native"],
+    "databases": ["PostgreSQL", "SQLite", "ChromaDB"],
+    "integrations": ["Salesforce", "Shopify", "Amazon SP-API", "eBay", "Etsy", "HubSpot", "Jira", "QuickBooks", "Google Cloud", "Slack", "Twilio", "Stripe", "Square"],
+    "concepts": ["Workflow Automation", "ETL Pipelines", "REST APIs", "OAuth 2.0", "Webhooks", "Sentiment Analysis", "OCR", "RAG", "Machine Learning"]
+  },
+  "services": [
+    {
+      "id": "automation",
+      "name": "Business Automation",
+      "description": "Eliminate repetitive tasks and manual data entry with custom automation solutions.",
+      "icon": "automation"
+    },
+    {
+      "id": "integration",
+      "name": "System Integration",
+      "description": "Connect your existing tools and platforms into a unified workflow.",
+      "icon": "integration"
+    },
+    {
+      "id": "dashboard",
+      "name": "Real-time Dashboards",
+      "description": "Get instant visibility into your business metrics and operations.",
+      "icon": "dashboard"
+    },
+    {
+      "id": "native-apps",
+      "name": "Native App Development",
+      "description": "Build true native mobile apps for iOS and Android with native performance and features.",
+      "icon": "mobile"
+    },
+    {
+      "id": "site-to-app",
+      "name": "Website-to-App Conversion",
+      "description": "Transform your existing website into a native mobile app. Not a webview wrapper - true native UI with automatic content sync.",
+      "icon": "transform",
+      "highlight": true,
+      "features": [
+        "True native UI components, not a webview",
+        "Auto-sync: update website, app updates automatically",
+        "Push notifications",
+        "Offline access",
+        "Biometric authentication",
+        "Native performance and feel"
+      ]
+    },
+    {
+      "id": "ai-ml",
+      "name": "AI/ML Solutions",
+      "description": "Leverage machine learning and AI for intelligent automation, document processing, and predictive analytics.",
+      "icon": "ai"
+    },
+    {
+      "id": "migration",
+      "name": "Data Migration",
+      "description": "Safely migrate from legacy systems to modern platforms without losing data.",
+      "icon": "migration"
+    }
+  ],
+  "projects": [
+    {
+      "id": "syncflow",
+      "title": "SyncFlow",
+      "tagline": "Salesforce + Jira → Master Sheet",
+      "description": "Automated data sync that eliminated 6 hours of weekly manual CSV exports.",
+      "problem": "Sales team spent 90 minutes every week manually exporting CSVs from Salesforce and Jira to update a master reporting sheet.",
+      "solution": "Built an automated sync pipeline that pulls from both APIs, transforms the data, handles conflicts, and updates Google Sheets on a schedule.",
+      "results": [
+        "Saved 6 hours/week for a 4-person team",
+        "Zero data entry errors",
+        "Real-time sync vs weekly manual updates"
+      ],
+      "tech": ["Python", "Salesforce API", "Jira API", "Google Sheets API"],
+      "category": "automation",
+      "serviceId": "automation",
+      "image": "https://itsjesse.dev/projects/syncflow/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/syncflow/dashboard.png",
+        "https://itsjesse.dev/projects/syncflow/history.png",
+        "https://itsjesse.dev/projects/syncflow/mapping.png",
+        "https://itsjesse.dev/projects/syncflow/analytics.png",
+        "https://itsjesse.dev/projects/syncflow/settings.png",
+        "https://itsjesse.dev/projects/syncflow/alerts.png"
+      ],
+      "videoUrl": "https://itsjesse.dev/videos/syncflow-demo.webm",
+      "githubUrl": "https://github.com/itsjessedev/syncflow",
+      "featured": true
+    },
+    {
+      "id": "orderhub",
+      "title": "OrderHub",
+      "tagline": "Multi-Platform E-commerce Aggregator",
+      "description": "Unified dashboard for Shopify, Amazon, eBay, and Etsy orders.",
+      "problem": "E-commerce seller manually checked 4 platforms daily for new orders, leading to delayed fulfillment and inventory mismatches.",
+      "solution": "Created a single dashboard aggregating all orders with unified inventory sync and one-click status updates across platforms.",
+      "results": [
+        "Order processing time reduced by 70%",
+        "Eliminated overselling from inventory sync",
+        "$2M/year business running on autopilot"
+      ],
+      "tech": ["React", "FastAPI", "Shopify API", "Amazon SP-API", "PostgreSQL"],
+      "category": "integration",
+      "serviceId": "integration",
+      "image": "https://itsjesse.dev/projects/orderhub.png",
+      "githubUrl": "https://github.com/itsjessedev/orderhub",
+      "demoUrl": "https://orderhub.itsjesse.dev",
+      "featured": true
+    },
+    {
+      "id": "invoicebot",
+      "title": "InvoiceBot",
+      "tagline": "Receipt OCR → Accounting",
+      "description": "Photograph receipts, auto-categorize, and sync to QuickBooks.",
+      "problem": "Small business owner spent 2+ hours weekly manually entering receipts into accounting software.",
+      "solution": "Email or upload receipts → OCR extracts details → AI categorizes → auto-creates expense entries in QuickBooks.",
+      "results": [
+        "2 hours/week → 5 minutes",
+        "98% accuracy on extraction",
+        "Audit-ready expense tracking"
+      ],
+      "tech": ["Python", "Google Cloud Vision", "OpenAI", "QuickBooks API"],
+      "category": "automation",
+      "serviceId": "automation",
+      "image": "https://itsjesse.dev/projects/invoicebot.png",
+      "githubUrl": "https://github.com/itsjessedev/invoicebot",
+      "featured": true
+    },
+    {
+      "id": "leadscore",
+      "title": "LeadScore",
+      "tagline": "CRM + Email → Prioritized Leads",
+      "description": "Intelligent lead scoring based on engagement signals.",
+      "problem": "Sales team wasted time on cold leads while hot prospects went stale.",
+      "solution": "Analyze CRM activity + email engagement + website visits to generate prioritized lead lists with Slack alerts for hot leads.",
+      "results": [
+        "23% increase in close rate",
+        "Hot leads contacted within 1 hour",
+        "Sales team focused on high-intent prospects"
+      ],
+      "tech": ["Python", "HubSpot API", "Slack API", "Machine Learning"],
+      "category": "automation",
+      "serviceId": "automation",
+      "image": "https://itsjesse.dev/projects/leadscore.png",
+      "githubUrl": "https://github.com/itsjessedev/leadscore",
+      "featured": false
+    },
+    {
+      "id": "stockalert",
+      "title": "StockAlert",
+      "tagline": "Inventory Monitoring System",
+      "description": "Real-time stock level monitoring with smart reorder alerts.",
+      "problem": "Retail chain experienced frequent stockouts and overordering due to manual inventory tracking.",
+      "solution": "Connected POS systems across locations, monitor levels in real-time, alert on low stock, and suggest reorder quantities based on velocity.",
+      "results": [
+        "Prevented $50K in stockouts",
+        "Reduced overstock by 30%",
+        "Multi-location visibility in one dashboard"
+      ],
+      "tech": ["Python", "Square API", "Twilio", "Slack Webhooks"],
+      "category": "dashboard",
+      "serviceId": "dashboard",
+      "image": "https://itsjesse.dev/projects/stockalert.png",
+      "githubUrl": "https://github.com/itsjessedev/stockalert",
+      "demoUrl": "https://stockalert.itsjesse.dev",
+      "featured": false
+    },
+    {
+      "id": "reportgen",
+      "title": "ReportGen",
+      "tagline": "Automated Business Reports",
+      "description": "Pull data from multiple sources, generate beautiful PDF reports, email on schedule.",
+      "problem": "Operations manager spent every Monday morning pulling data from 5 sources to build a weekly report.",
+      "solution": "Automated report generation with configurable templates, multiple data source connectors, and scheduled email delivery.",
+      "results": [
+        "4 hours of weekly reporting → 0",
+        "Reports delivered at 8am every Monday",
+        "Historical archive with search"
+      ],
+      "tech": ["Python", "Pandas", "WeasyPrint", "SendGrid", "FastAPI"],
+      "category": "automation",
+      "serviceId": "automation",
+      "image": "https://itsjesse.dev/projects/reportgen.png",
+      "githubUrl": "https://github.com/itsjessedev/reportgen",
+      "featured": true
+    },
+    {
+      "id": "feedbackpulse",
+      "title": "FeedbackPulse",
+      "tagline": "Review & Survey Analyzer",
+      "description": "Aggregate feedback from all sources, analyze sentiment, detect trends.",
+      "problem": "Customer feedback scattered across Google Reviews, Yelp, surveys, and support tickets with no unified view.",
+      "solution": "Aggregate all feedback sources, run sentiment analysis, extract keywords, and alert on negative trends.",
+      "results": [
+        "Identified service issue before ratings dropped",
+        "Unified view of customer sentiment",
+        "Trend alerts for proactive response"
+      ],
+      "tech": ["Python", "React", "OpenAI", "Google Places API", "Yelp API"],
+      "category": "dashboard",
+      "serviceId": "dashboard",
+      "image": "https://itsjesse.dev/projects/feedbackpulse.png",
+      "githubUrl": "https://github.com/itsjessedev/feedbackpulse",
+      "demoUrl": "https://feedbackpulse.itsjesse.dev",
+      "featured": false
+    },
+    {
+      "id": "bookingsync",
+      "title": "BookingSync",
+      "tagline": "Appointment Automation",
+      "description": "Online booking, automated reminders, no-show reduction.",
+      "problem": "Service business had 25% no-show rate and spent hours on manual appointment reminders.",
+      "solution": "Online booking widget with automated SMS/email reminders, no-show tracking, and post-appointment follow-up sequences.",
+      "results": [
+        "No-shows reduced by 60%",
+        "Automated reminder sequences",
+        "Review requests boost ratings"
+      ],
+      "tech": ["FastAPI", "React", "Google Calendar API", "Twilio", "Stripe"],
+      "category": "automation",
+      "serviceId": "automation",
+      "image": "https://itsjesse.dev/projects/bookingsync.png",
+      "githubUrl": "https://github.com/itsjessedev/bookingsync",
+      "demoUrl": "https://bookingsync.itsjesse.dev",
+      "featured": false
+    },
+    {
+      "id": "databridge",
+      "title": "DataBridge",
+      "tagline": "Legacy System Migration",
+      "description": "Migrate data from legacy systems to modern platforms without losing anything.",
+      "problem": "Business stuck on 15-year-old Access database, unable to move to modern CRM without losing historical data.",
+      "solution": "Custom migration pipeline with data profiling, field mapping, validation, and incremental sync with rollback capability.",
+      "results": [
+        "50,000 records migrated to HubSpot",
+        "Zero data loss",
+        "Historical relationships preserved"
+      ],
+      "tech": ["Python", "Pandas", "ODBC", "HubSpot API", "Airtable API"],
+      "category": "migration",
+      "serviceId": "migration",
+      "image": "https://itsjesse.dev/projects/databridge.png",
+      "githubUrl": "https://github.com/itsjessedev/databridge",
+      "featured": false
+    },
+    {
+      "id": "workflowbot",
+      "title": "WorkflowBot",
+      "tagline": "Slack/Teams Process Automation",
+      "description": "Automate internal processes like PTO requests, expense approvals, onboarding.",
+      "problem": "Internal processes lived in email chains, requests got lost, no audit trail.",
+      "solution": "Slack bot handling requests, routing approvals, tracking status, and maintaining audit logs.",
+      "results": [
+        "5 internal workflows automated",
+        "Request-to-approval time cut by 80%",
+        "Complete audit trail for compliance"
+      ],
+      "tech": ["Python", "Slack Bolt SDK", "PostgreSQL", "n8n"],
+      "category": "automation",
+      "serviceId": "automation",
+      "image": "https://itsjesse.dev/projects/workflowbot.png",
+      "githubUrl": "https://github.com/itsjessedev/workflowbot",
+      "featured": false
+    },
+    {
+      "id": "itsjesse-mobile",
+      "title": "itsjesse.dev Mobile",
+      "tagline": "Website-to-Native App Demo",
+      "description": "This portfolio website converted to a true native Flutter app with auto-sync capability.",
+      "problem": "Businesses want mobile presence but webview wrappers provide poor user experience and can be rejected by app stores.",
+      "solution": "True native Flutter app that pulls from the same JSON API as the website. Update the website content, app updates automatically.",
+      "results": [
+        "True native performance and feel",
+        "Auto-sync with website content",
+        "Demonstrates Website-to-App service"
+      ],
+      "tech": ["Flutter", "Dart", "REST API", "SharedPreferences"],
+      "category": "native-apps",
+      "serviceId": "site-to-app",
+      "image": "https://itsjesse.dev/projects/itsjesse-mobile.png",
+      "githubUrl": "https://github.com/itsjessedev/itsjesse-mobile",
+      "featured": true
+    },
+    {
+      "id": "fieldops",
+      "title": "FieldOps",
+      "tagline": "Field Service Management App",
+      "description": "Native mobile app for field technicians to manage tasks, track locations, and document work.",
+      "problem": "Field service teams rely on paper-based systems and phone calls, leading to missed appointments and poor documentation.",
+      "solution": "React Native app with GPS tracking, task management, photo documentation, and offline support for areas with poor connectivity.",
+      "results": [
+        "Native app for iOS and Android",
+        "Offline-first architecture",
+        "Real-time task updates and location tracking"
+      ],
+      "tech": ["React Native", "TypeScript", "Expo", "AsyncStorage"],
+      "category": "native-apps",
+      "serviceId": "native-apps",
+      "image": "https://itsjesse.dev/projects/fieldops.png",
+      "githubUrl": "https://github.com/itsjessedev/fieldops",
+      "featured": true
+    },
+    {
+      "id": "documind",
+      "title": "DocuMind",
+      "tagline": "RAG Document Intelligence",
+      "description": "AI-powered document search and question-answering using Retrieval Augmented Generation.",
+      "problem": "Organizations struggle to find information across hundreds of policy documents, manuals, and knowledge bases.",
+      "solution": "RAG-powered system that ingests documents, generates semantic embeddings, and answers natural language questions with source citations.",
+      "results": [
+        "Semantic search across all documents",
+        "Natural language Q&A interface",
+        "Source attribution for every answer"
+      ],
+      "tech": ["Python", "FastAPI", "Sentence Transformers", "ChromaDB"],
+      "category": "ai-ml",
+      "serviceId": "ai-ml",
+      "image": "https://itsjesse.dev/projects/documind.png",
+      "githubUrl": "https://github.com/itsjessedev/documind",
+      "demoUrl": "https://documind.itsjesse.dev",
+      "featured": true
+    },
+    {
+      "id": "smartclassify",
+      "title": "SmartClassify",
+      "tagline": "ML Text Classification Pipeline",
+      "description": "Machine learning pipeline for multi-task text classification including category detection and sentiment analysis.",
+      "problem": "Businesses need to categorize and analyze large volumes of text data but manual review doesn't scale.",
+      "solution": "ML pipeline that classifies text into categories, analyzes sentiment, and extracts keywords using trained models.",
+      "results": [
+        "7-category classification",
+        "Sentiment analysis with confidence scores",
+        "Batch processing for high volume"
+      ],
+      "tech": ["Python", "FastAPI", "scikit-learn", "TF-IDF"],
+      "category": "ai-ml",
+      "serviceId": "ai-ml",
+      "image": "https://itsjesse.dev/projects/smartclassify.png",
+      "githubUrl": "https://github.com/itsjessedev/smartclassify",
+      "demoUrl": "https://smartclassify.itsjesse.dev",
+      "featured": true
+    }
+  ],
+  "version": "1.0.0",
+  "lastUpdated": "2025-12-26"
+}

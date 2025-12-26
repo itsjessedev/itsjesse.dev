@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SyncFlow - Field Mapping</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .logo { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .source-badge { font-size: 12px; padding: 4px 10px; border-radius: 6px; font-weight: 500; }
+    .salesforce { background: #00a1e0; }
+    .jira { background: #0052cc; }
+    .mapping-row { display: flex; align-items: center; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 12px; }
+    .field { flex: 1; }
+    .field-name { font-size: 14px; font-weight: 500; }
+    .field-type { font-size: 12px; color: #9ca3af; }
+    .arrow { color: #6366f1; font-size: 20px; padding: 0 20px; }
+    .sheet-field { flex: 1; text-align: right; }
+    .toggle { width: 44px; height: 24px; background: #22c55e; border-radius: 12px; position: relative; margin-left: 16px; }
+    .toggle::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; top: 2px; right: 2px; }
+    .toggle.off { background: #374151; }
+    .toggle.off::after { right: auto; left: 2px; }
+    .add-btn { background: rgba(99,102,241,0.2); border: 1px dashed #6366f1; border-radius: 8px; padding: 16px; text-align: center; color: #6366f1; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">SyncFlow</div>
+    <div style="display:flex;gap:12px;">
+      <button style="background:#6366f1;color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Save Mappings</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span class="source-badge salesforce">Salesforce</span>
+      Field Mappings
+    </div>
+    <div class="mapping-row">
+      <div class="field">
+        <div class="field-name">Account Name</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sheet-field">
+        <div class="field-name">Column A: Company</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+    <div class="mapping-row">
+      <div class="field">
+        <div class="field-name">Opportunity Value</div>
+        <div class="field-type">Currency</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sheet-field">
+        <div class="field-name">Column B: Deal Size</div>
+        <div class="field-type">Number</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+    <div class="mapping-row">
+      <div class="field">
+        <div class="field-name">Close Date</div>
+        <div class="field-type">Date</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sheet-field">
+        <div class="field-name">Column C: Expected Close</div>
+        <div class="field-type">Date</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+    <div class="mapping-row">
+      <div class="field">
+        <div class="field-name">Stage</div>
+        <div class="field-type">Picklist</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sheet-field">
+        <div class="field-name">Column D: Pipeline Stage</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="toggle off"></div>
+    </div>
+    <div class="add-btn">+ Add Field Mapping</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span class="source-badge jira">Jira</span>
+      Field Mappings
+    </div>
+    <div class="mapping-row">
+      <div class="field">
+        <div class="field-name">Issue Key</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sheet-field">
+        <div class="field-name">Column E: Ticket ID</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+    <div class="mapping-row">
+      <div class="field">
+        <div class="field-name">Summary</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sheet-field">
+        <div class="field-name">Column F: Task Name</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+    <div class="mapping-row">
+      <div class="field">
+        <div class="field-name">Sprint</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sheet-field">
+        <div class="field-name">Column G: Sprint</div>
+        <div class="field-type">Text</div>
+      </div>
+      <div class="toggle"></div>
+    </div>
+  </div>
+</body>
+</html>

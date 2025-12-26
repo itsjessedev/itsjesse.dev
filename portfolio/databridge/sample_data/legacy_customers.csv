@@ -1,0 +1,21 @@
+CustomerID,FirstName,LastName,EmailAddr,PhoneNum,StreetAddress,City,State,ZipCode,DateCreated,LastPurchase,TotalSpent
+1001,John,Doe,john.doe@example.com,555-0101,123 Main St,New York,NY,10001,2010-03-15,2024-11-20,15600.50
+1002,Jane,Smith,jane.smith@example.com,555-0102,456 Oak Ave,Los Angeles,CA,90001,2011-07-22,2024-12-01,8750.25
+1003,Robert,Johnson,robert.j@example.com,555-0103,789 Pine Rd,Chicago,IL,60601,2012-01-10,2024-10-15,22340.75
+1004,Mary,Williams,mary.w@example.com,555-0104,321 Elm St,Houston,TX,77001,2012-05-18,2024-09-30,5420.00
+1005,Michael,Brown,michael.brown@example.com,555-0105,654 Maple Dr,Phoenix,AZ,85001,2013-09-03,2024-12-10,31200.80
+1006,Sarah,Davis,sarah.davis@example.com,555-0106,987 Cedar Ln,Philadelphia,PA,19019,2014-02-28,2024-08-22,12890.45
+1007,David,Miller,david.m@example.com,555-0107,147 Birch Ct,San Antonio,TX,78201,2014-11-12,2024-11-05,9560.30
+1008,Jennifer,Wilson,jen.wilson@example.com,555-0108,258 Spruce Way,San Diego,CA,92101,2015-04-07,2024-10-28,18750.60
+1009,James,Moore,james.moore@example.com,555-0109,369 Ash Blvd,Dallas,TX,75201,2016-08-19,2024-12-15,6890.20
+1010,Lisa,Taylor,lisa.t@example.com,555-0110,741 Walnut Ave,San Jose,CA,95101,2017-01-25,2024-11-18,27340.95
+1011,William,Anderson,w.anderson@example.com,555-0111,852 Cherry St,Austin,TX,78701,2017-06-14,2024-09-12,14560.75
+1012,Patricia,Thomas,pat.thomas@example.com,555-0112,963 Pecan Dr,Jacksonville,FL,32099,2018-03-30,2024-12-05,10230.40
+1013,Richard,Jackson,rich.jackson@example.com,555-0113,159 Hickory Ln,Fort Worth,TX,76101,2018-10-08,2024-10-20,19870.85
+1014,Barbara,White,barbara.w@example.com,555-0114,357 Magnolia Ct,Columbus,OH,43004,2019-02-14,2024-11-25,7650.30
+1015,Thomas,Harris,tom.harris@example.com,555-0115,753 Poplar Way,Charlotte,NC,28201,2019-07-21,2024-08-30,25480.60
+1016,Nancy,Martin,nancy.martin@example.com,555-0116,951 Sycamore Rd,San Francisco,CA,94101,2020-01-03,2024-12-12,16890.50
+1017,Christopher,Thompson,chris.t@example.com,555-0117,147 Redwood Ave,Indianapolis,IN,46201,2020-05-17,2024-09-08,11340.25
+1018,Karen,Garcia,karen.garcia@example.com,555-0118,258 Cypress Blvd,Seattle,WA,98101,2020-11-29,2024-11-30,20150.70
+1019,Daniel,Martinez,dan.martinez@example.com,555-0119,369 Juniper Dr,Denver,CO,80201,2021-04-12,2024-10-05,8920.45
+1020,Betty,Robinson,betty.r@example.com,555-0120,741 Fir St,Boston,MA,02101,2021-09-23,2024-12-18,29760.90

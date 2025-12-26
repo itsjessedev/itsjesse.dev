@@ -1,0 +1,186 @@
+WORKFLOWBOT - PROJECT SUMMARY
+==============================
+
+Portfolio Project: Slack/Teams Process Automation Bot
+Location: /home/jesse/itsjesse.dev/portfolio/workflowbot/
+
+OVERVIEW
+--------
+Production-ready Slack bot for automating internal processes like PTO requests,
+expense approvals, and employee onboarding. Includes demo mode for portfolio
+presentation without requiring Slack credentials.
+
+TECH STACK
+----------
+- Backend: Python 3.11, FastAPI
+- Bot: Slack Bolt SDK
+- Database: PostgreSQL with SQLAlchemy ORM (async)
+- Cache/Queue: Redis, Celery
+- Testing: pytest with async support
+- Deployment: Docker, Docker Compose
+- UI: Rich console for demo mode
+
+KEY FEATURES
+------------
+✓ Three complete workflows: PTO, Expense Approval, Onboarding
+✓ Multi-level approval routing with conditional logic
+✓ Comprehensive audit logging for compliance
+✓ Interactive Slack UI with Block Kit modals
+✓ RESTful API with automatic OpenAPI docs
+✓ Demo mode for portfolio presentation
+✓ Full test coverage with pytest
+✓ Docker containerization
+✓ Production-ready error handling and logging
+
+PROJECT STRUCTURE
+-----------------
+workflowbot/
+├── src/
+│   ├── models/           # SQLAlchemy models (Request, Approval, Audit, Workflow)
+│   ├── services/         # Business logic (Engine, Router, Logger, SlackBot)
+│   ├── workflows/        # Workflow definitions (PTO, Expense, Onboarding)
+│   ├── api/             # FastAPI endpoints (Requests, Workflows, Audit)
+│   ├── db/              # Database configuration
+│   ├── config.py        # Settings management
+│   └── main.py          # Application entry point
+├── tests/               # Comprehensive test suite
+├── Dockerfile           # Production container
+├── docker-compose.yml   # Multi-service orchestration
+├── requirements.txt     # Python dependencies
+├── README.md           # Complete documentation
+└── DEMO.md             # Demo guide
+
+STATISTICS
+----------
+- ~2,500 lines of code
+- 20+ Python modules
+- 3 complete workflows
+- 10+ API endpoints
+- 10+ test cases
+- Full Docker setup
+- Comprehensive documentation
+
+DEMO OPTIONS
+------------
+1. Interactive Console Demo (no dependencies)
+   python src/main.py --demo
+
+2. Docker Demo
+   docker-compose --profile demo up demo
+
+3. API Server + Swagger UI
+   docker-compose up
+   Visit: http://localhost:8000/docs
+
+4. Full Slack Integration (requires tokens)
+   Set SLACK_BOT_TOKEN, SLACK_APP_TOKEN
+   Run normally
+
+WORKFLOWS IMPLEMENTED
+---------------------
+
+1. PTO REQUEST
+   - Interactive form for dates and reason
+   - Automatic calculation of business days
+   - Routes to manager (short) or manager+HR (long)
+   - Calendar integration ready
+   - Balance tracking capability
+
+2. EXPENSE APPROVAL
+   - Amount, category, description, receipt
+   - Amount-based routing: <$500 manager, ≥$500 manager+finance
+   - Receipt upload support
+   - Reimbursement tracking
+   - Budget validation hooks
+
+3. EMPLOYEE ONBOARDING
+   - Department-specific checklist generation
+   - Multi-stakeholder coordination (IT, HR, Manager)
+   - Task assignment and tracking
+   - Progress monitoring
+   - Welcome automation
+
+PRODUCTION FEATURES
+-------------------
+- Async database operations for performance
+- Connection pooling and optimization
+- Redis caching layer
+- Celery background tasks
+- Comprehensive error handling
+- Structured logging
+- Health check endpoints
+- CORS configuration
+- Security best practices
+- Database migrations ready
+- Monitoring hooks (Sentry ready)
+
+TESTING
+-------
+- Unit tests for all workflows
+- Integration tests for API
+- Database tests with in-memory SQLite
+- Async test support
+- pytest fixtures for setup/teardown
+- Coverage reporting ready
+
+DEPLOYMENT
+----------
+- Multi-stage Dockerfile
+- Docker Compose with PostgreSQL + Redis
+- Health checks configured
+- Non-root user
+- Volume mounts for uploads
+- Environment-based configuration
+- Production/staging/dev configs
+
+EXTENSIBILITY
+-------------
+Easy to add new workflows:
+1. Create workflow definition in src/workflows/
+2. Add validation and routing logic
+3. Register in workflow registry
+4. Add API endpoints if needed
+5. Add tests
+6. Document
+
+PORTFOLIO STRENGTHS
+-------------------
+✓ Solves real business problem
+✓ Production-ready quality
+✓ Clean, organized code
+✓ Comprehensive documentation
+✓ Demo-friendly (works without Slack)
+✓ Full test coverage
+✓ Modern tech stack
+✓ Scalable architecture
+✓ Shows full-stack skills
+✓ Professional deployment
+
+DEMO TALKING POINTS
+-------------------
+1. Problem: Manual processes, lost requests, no audit trail
+2. Solution: Automated workflows with approval routing
+3. Tech: Async Python, FastAPI, Slack Bolt, PostgreSQL
+4. Architecture: Event-driven, state machine, microservices-ready
+5. Production: Docker, tests, monitoring, error handling
+6. Extensibility: Easy to add workflows, integrations
+
+NEXT STEPS (Future Enhancements)
+--------------------------------
+- Microsoft Teams integration
+- Mobile app for approvals
+- Analytics dashboard
+- Custom workflow builder UI
+- Integration marketplace
+- SLA monitoring
+- NLP for request parsing
+- Multi-language support
+
+CONTACT
+-------
+Jesse Eldridge
+Portfolio: https://itsjesse.dev
+GitHub: @jesse-eldridge
+Email: jesse@example.com
+
+STATUS: ✅ COMPLETE - Ready for portfolio showcase

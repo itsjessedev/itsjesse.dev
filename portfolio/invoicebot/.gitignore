@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+venv/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Environment and secrets
+.env
+google-credentials.json
+*.pem
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Database
+*.db
+
+# Testing
+.coverage
+.pytest_cache/
+
+# Misc
+.DS_Store
+*.log

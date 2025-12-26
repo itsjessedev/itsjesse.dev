@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SyncFlow Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .status-badge {
+      background: #22c55e;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #6366f1;
+    }
+    .stat-label {
+      color: #9ca3af;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon {
+      width: 20px;
+      height: 20px;
+      background: #6366f1;
+      border-radius: 4px;
+    }
+    .sync-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sync-row:last-child { border-bottom: none; }
+    .sync-source {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .source-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .salesforce { background: #00a1e0; }
+    .jira { background: #0052cc; }
+    .sheets { background: #34a853; }
+    .sync-info h4 { font-size: 14px; margin-bottom: 2px; }
+    .sync-info p { font-size: 12px; color: #9ca3af; }
+    .sync-status {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 12px;
+    }
+    .synced { background: rgba(34,197,94,0.2); color: #22c55e; }
+    .syncing { background: rgba(99,102,241,0.2); color: #6366f1; }
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-top: 6px;
+    }
+    .dot-green { background: #22c55e; }
+    .dot-blue { background: #6366f1; }
+    .dot-yellow { background: #eab308; }
+    .activity-text {
+      font-size: 13px;
+      color: #d1d5db;
+    }
+    .activity-time {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">SyncFlow</div>
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      All Systems Synced
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">2,847</div>
+      <div class="stat-label">Records Synced Today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">99.9%</div>
+      <div class="stat-label">Sync Accuracy</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">6 hrs</div>
+      <div class="stat-label">Time Saved Weekly</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Sync Errors</div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="card">
+      <div class="card-title">
+        <div class="icon"></div>
+        Connected Systems
+      </div>
+      <div class="sync-row">
+        <div class="sync-source">
+          <div class="source-icon salesforce">SF</div>
+          <div class="sync-info">
+            <h4>Salesforce CRM</h4>
+            <p>1,234 opportunities synced</p>
+          </div>
+        </div>
+        <span class="sync-status synced">Synced</span>
+      </div>
+      <div class="sync-row">
+        <div class="sync-source">
+          <div class="source-icon jira">J</div>
+          <div class="sync-info">
+            <h4>Jira Projects</h4>
+            <p>892 issues synced</p>
+          </div>
+        </div>
+        <span class="sync-status synced">Synced</span>
+      </div>
+      <div class="sync-row">
+        <div class="sync-source">
+          <div class="source-icon sheets">G</div>
+          <div class="sync-info">
+            <h4>Google Sheets Master</h4>
+            <p>Last updated: 2 min ago</p>
+          </div>
+        </div>
+        <span class="sync-status syncing">Updating...</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <div class="icon"></div>
+        Recent Activity
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot dot-green"></div>
+        <div>
+          <div class="activity-text">Synced 47 new Salesforce records</div>
+          <div class="activity-time">2 minutes ago</div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot dot-blue"></div>
+        <div>
+          <div class="activity-text">Jira sprint data updated</div>
+          <div class="activity-time">15 minutes ago</div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot dot-green"></div>
+        <div>
+          <div class="activity-text">Master sheet refreshed</div>
+          <div class="activity-time">18 minutes ago</div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot dot-yellow"></div>
+        <div>
+          <div class="activity-text">Resolved field mapping conflict</div>
+          <div class="activity-time">1 hour ago</div>
+        </div>
+      </div>
+      <div class="activity-item">
+        <div class="activity-dot dot-green"></div>
+        <div>
+          <div class="activity-text">Daily sync completed</div>
+          <div class="activity-time">6 hours ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

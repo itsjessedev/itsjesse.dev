@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jesse Eldridge - Resume</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #1a1a1a;
+            background: white;
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        h1 {
+            font-size: 24pt;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .contact-info {
+            color: #4b5563;
+            font-size: 10pt;
+        }
+
+        .contact-info a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .contact-info span {
+            margin: 0 8px;
+        }
+
+        section {
+            margin-bottom: 18px;
+        }
+
+        h2 {
+            font-size: 12pt;
+            font-weight: 700;
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary {
+            color: #374151;
+            text-align: justify;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .skill-category h3 {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .skill-category p {
+            color: #4b5563;
+            font-size: 10pt;
+        }
+
+        .project {
+            margin-bottom: 14px;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+        }
+
+        .project-title {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .project-subtitle {
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .project-description {
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        .project ul {
+            margin-left: 18px;
+            color: #374151;
+        }
+
+        .project li {
+            margin-bottom: 2px;
+        }
+
+        .project-tech {
+            font-size: 9pt;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .education-item, .experience-item {
+            margin-bottom: 12px;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .item-title {
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .item-subtitle {
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .item-date {
+            color: #6b7280;
+            font-size: 10pt;
+        }
+
+        .item-details {
+            color: #374151;
+            margin-top: 4px;
+        }
+
+        .item-details li {
+            margin-left: 18px;
+            margin-bottom: 2px;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .print-button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">Save as PDF</button>
+
+    <header>
+        <h1>JESSE ELDRIDGE</h1>
+        <div class="contact-info">
+            Cookeville, TN (Remote)<span>|</span>
+            <a href="mailto:jobs@itsjesse.dev">jobs@itsjesse.dev</a><span>|</span>
+            <a href="https://itsjesse.dev">itsjesse.dev</a><span>|</span>
+            <a href="https://github.com/itsjessedev">github.com/itsjessedev</a>
+        </div>
+    </header>
+
+    <section>
+        <h2>Summary</h2>
+        <p class="summary">
+            Software developer specializing in business automation and system integration. I build custom solutions that connect disparate systems, automate repetitive workflows, and provide real-time visibility into business operations. Portfolio includes 10+ production-ready projects demonstrating API integration, data pipeline development, and full-stack dashboard creation.
+        </p>
+    </section>
+
+    <section>
+        <h2>Technical Skills</h2>
+        <div class="skills-grid">
+            <div class="skill-category">
+                <h3>Languages & Frameworks</h3>
+                <p>Python, JavaScript/TypeScript, SQL, FastAPI, React, Next.js</p>
+            </div>
+            <div class="skill-category">
+                <h3>Data & Infrastructure</h3>
+                <p>PostgreSQL, SQLite, Pandas, Docker, Git, Linux, CI/CD</p>
+            </div>
+            <div class="skill-category">
+                <h3>APIs & Integrations</h3>
+                <p>Salesforce, Shopify, Amazon SP-API, HubSpot, QuickBooks, Google Cloud, Slack, Twilio, Stripe</p>
+            </div>
+            <div class="skill-category">
+                <h3>Concepts</h3>
+                <p>Workflow Automation, ETL Pipelines, REST APIs, OAuth 2.0, Webhooks, Sentiment Analysis, OCR</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Projects</h2>
+
+        <div class="project">
+            <div class="project-header">
+                <span class="project-title">OrderHub</span>
+                <span class="project-subtitle">Multi-Platform E-commerce Aggregator</span>
+            </div>
+            <p class="project-description">Unified dashboard aggregating orders from Shopify, Amazon, eBay, and Etsy with real-time inventory sync.</p>
+            <ul>
+                <li>Reduced order processing time by 70%</li>
+                <li>Eliminated overselling through cross-platform inventory synchronization</li>
+            </ul>
+            <p class="project-tech">React, FastAPI, Shopify API, Amazon SP-API, PostgreSQL</p>
+        </div>
+
+        <div class="project">
+            <div class="project-header">
+                <span class="project-title">SyncFlow</span>
+                <span class="project-subtitle">Automated Data Pipeline</span>
+            </div>
+            <p class="project-description">Scheduled sync between Salesforce, Jira, and Google Sheets with conflict resolution and error handling.</p>
+            <ul>
+                <li>Saved 6 hours/week for a 4-person sales team</li>
+                <li>Eliminated manual CSV exports and data entry errors</li>
+            </ul>
+            <p class="project-tech">Python, Salesforce API, Jira API, Google Sheets API</p>
+        </div>
+
+        <div class="project">
+            <div class="project-header">
+                <span class="project-title">InvoiceBot</span>
+                <span class="project-subtitle">Receipt OCR & Expense Automation</span>
+            </div>
+            <p class="project-description">Email or upload receipts → OCR extracts details → AI categorizes → auto-creates entries in QuickBooks.</p>
+            <ul>
+                <li>Reduced expense entry from 2 hours/week to 5 minutes</li>
+                <li>Achieved 98% extraction accuracy</li>
+            </ul>
+            <p class="project-tech">Python, Google Cloud Vision, OpenAI, QuickBooks API</p>
+        </div>
+
+        <div class="project">
+            <div class="project-header">
+                <span class="project-title">FeedbackPulse</span>
+                <span class="project-subtitle">Review Aggregation & Sentiment Analysis</span>
+            </div>
+            <p class="project-description">Aggregates customer feedback from multiple sources with real-time sentiment analysis and trend alerts.</p>
+            <ul>
+                <li>Identified service issues before ratings dropped</li>
+                <li>Unified view of customer sentiment across platforms</li>
+            </ul>
+            <p class="project-tech">Python, React, OpenAI, Google Places API, Yelp API</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Education</h2>
+        <div class="education-item">
+            <div class="item-header">
+                <span class="item-title">Western Governors University</span>
+                <span class="item-date">Expected 2025</span>
+            </div>
+            <div class="item-subtitle">Bachelor of Science, Computer Science</div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Work Experience</h2>
+
+        <div class="experience-item">
+            <div class="item-header">
+                <span class="item-title">Spark Driver</span>
+                <span class="item-date">July 2024 – Present</span>
+            </div>
+            <div class="item-subtitle">Delivery Driver</div>
+            <ul class="item-details">
+                <li>Self-directed gig work requiring route optimization, time management, and consistent customer service</li>
+            </ul>
+        </div>
+
+        <div class="experience-item">
+            <div class="item-header">
+                <span class="item-title">Amazon</span>
+                <span class="item-date">January 2023 – July 2024</span>
+            </div>
+            <div class="item-subtitle">FC Associate, MQY1</div>
+            <ul class="item-details">
+                <li>Met productivity quotas in high-volume fulfillment environment; demonstrated reliability in fast-paced operations</li>
+            </ul>
+        </div>
+
+        <div class="experience-item">
+            <div class="item-header">
+                <span class="item-title">Eldridge Signing</span>
+                <span class="item-date">January 2022 – December 2022</span>
+            </div>
+            <div class="item-subtitle">Loan Signing Agent (Self-Employed)</div>
+            <ul class="item-details">
+                <li>Managed client scheduling, legal document verification, and compliance requirements for loan signings</li>
+            </ul>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SyncFlow - Settings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .logo { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .grid { display: grid; grid-template-columns: 250px 1fr; gap: 24px; }
+    .sidebar { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; height: fit-content; }
+    .nav-item { padding: 12px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; color: #9ca3af; margin-bottom: 4px; }
+    .nav-item.active { background: rgba(99,102,241,0.2); color: #6366f1; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .setting-row:last-child { border-bottom: none; }
+    .setting-info h4 { font-size: 14px; margin-bottom: 4px; }
+    .setting-info p { font-size: 12px; color: #9ca3af; }
+    .toggle { width: 44px; height: 24px; background: #22c55e; border-radius: 12px; position: relative; cursor: pointer; }
+    .toggle::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; top: 2px; right: 2px; }
+    .toggle.off { background: #374151; }
+    .toggle.off::after { right: auto; left: 2px; }
+    .select { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 14px; }
+    .input { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 14px; width: 200px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">SyncFlow</div>
+  </div>
+
+  <div class="grid">
+    <div class="sidebar">
+      <div class="nav-item active">General</div>
+      <div class="nav-item">Connections</div>
+      <div class="nav-item">Scheduling</div>
+      <div class="nav-item">Notifications</div>
+      <div class="nav-item">API Keys</div>
+      <div class="nav-item">Team</div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-title">Sync Schedule</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Auto-Sync Enabled</h4>
+            <p>Automatically sync data on a schedule</p>
+          </div>
+          <div class="toggle"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Sync Frequency</h4>
+            <p>How often to sync data</p>
+          </div>
+          <select class="select">
+            <option>Every 15 minutes</option>
+            <option>Every 30 minutes</option>
+            <option>Every hour</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Sync Window</h4>
+            <p>Only sync during business hours</p>
+          </div>
+          <div class="toggle off"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Conflict Resolution</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Auto-Resolve Conflicts</h4>
+            <p>Automatically handle data conflicts</p>
+          </div>
+          <div class="toggle"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Priority Source</h4>
+            <p>Which source takes priority in conflicts</p>
+          </div>
+          <select class="select">
+            <option>Salesforce</option>
+            <option>Jira</option>
+            <option>Most Recent</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Notifications</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Email Alerts</h4>
+            <p>Send email on sync failures</p>
+          </div>
+          <div class="toggle"></div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <h4>Slack Integration</h4>
+            <p>Post updates to Slack channel</p>
+          </div>
+          <div class="toggle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
