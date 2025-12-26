@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkflowBot - Requests</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-purple-900 to-purple-800 text-white flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">WorkflowBot</h1>
+                        <p class="text-xs text-purple-200">Acme Corp</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-1">
+                <a href="workflowbot-dashboard.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="workflowbot-workflows.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    <span>Workflows</span>
+                </a>
+                <a href="workflowbot-requests.html" class="flex items-center space-x-3 px-4 py-3 bg-purple-700 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="font-medium">Requests</span>
+                </a>
+                <a href="workflowbot-approvals.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Approvals</span>
+                    <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">3</span>
+                </a>
+                <a href="workflowbot-audit.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Audit Log</span>
+                </a>
+                <a href="workflowbot-editor.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
+                    </svg>
+                    <span>Builder</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-purple-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center font-semibold">
+                        JD
+                    </div>
+                    <div>
+                        <p class="font-medium text-sm">John Doe</p>
+                        <p class="text-xs text-purple-200">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">All Requests</h2>
+                        <p class="text-gray-600 mt-1">View and manage workflow requests</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition">
+                            New Request
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Filters -->
+            <div class="bg-white border-b border-gray-200 px-8 py-4">
+                <div class="flex items-center space-x-4">
+                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option>All Workflows</option>
+                        <option>PTO Request</option>
+                        <option>Expense Report</option>
+                        <option>Access Request</option>
+                        <option>Equipment Request</option>
+                    </select>
+
+                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option>All Statuses</option>
+                        <option>Pending</option>
+                        <option>Approved</option>
+                        <option>Rejected</option>
+                        <option>In Progress</option>
+                    </select>
+
+                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option>All Time</option>
+                        <option>Today</option>
+                        <option>This Week</option>
+                        <option>This Month</option>
+                        <option>Last 30 Days</option>
+                    </select>
+
+                    <div class="flex-1"></div>
+
+                    <div class="relative">
+                        <input type="text" placeholder="Search requests..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm w-64">
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Requests Table -->
+            <div class="p-8">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Request</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Requester</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Workflow</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Submitted</th>
+                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Vacation Request</p>
+                                        <p class="text-xs text-gray-600">Dec 20-27, 2024 (8 days)</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            SC
+                                        </div>
+                                        <span class="text-sm text-gray-900">Sarah Chen</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">PTO</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded">Pending</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">10 min ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Team Lunch Expense</p>
+                                        <p class="text-xs text-gray-600">$184.50 - Q4 planning meeting</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            MT
+                                        </div>
+                                        <span class="text-sm text-gray-900">Michael Torres</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">EXPENSE</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded">Pending</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">1 hour ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">GitHub Admin Access</p>
+                                        <p class="text-xs text-gray-600">Organization: engineering-team</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            AK
+                                        </div>
+                                        <span class="text-sm text-gray-900">Alex Kim</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">ACCESS</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Approved</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">2 hours ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">MacBook Pro 16" Replacement</p>
+                                        <p class="text-xs text-gray-600">Due to damaged device</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            DP
+                                        </div>
+                                        <span class="text-sm text-gray-900">David Park</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded">EQUIPMENT</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">In Progress</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">3 hours ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Sick Day</p>
+                                        <p class="text-xs text-gray-600">Nov 15, 2024 (1 day)</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            EW
+                                        </div>
+                                        <span class="text-sm text-gray-900">Emma Wilson</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">PTO</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Auto-Approved</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">1 day ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Conference Travel</p>
+                                        <p class="text-xs text-gray-600">$2,450 - AWS re:Invent, Las Vegas</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            RJ
+                                        </div>
+                                        <span class="text-sm text-gray-900">Rachel Johnson</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">EXPENSE</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Approved</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">2 days ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">AWS Account Access</p>
+                                        <p class="text-xs text-gray-600">Production environment access</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            JL
+                                        </div>
+                                        <span class="text-sm text-gray-900">James Lee</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">ACCESS</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded">Rejected</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">3 days ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Standing Desk Request</p>
+                                        <p class="text-xs text-gray-600">Ergonomic upgrade</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            MR
+                                        </div>
+                                        <span class="text-sm text-gray-900">Maria Rodriguez</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded">EQUIPMENT</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Approved</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">3 days ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Holiday PTO</p>
+                                        <p class="text-xs text-gray-600">Dec 25-Jan 2 (9 days)</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            TN
+                                        </div>
+                                        <span class="text-sm text-gray-900">Tom Nguyen</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">PTO</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Approved</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">4 days ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50 transition cursor-pointer">
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Software License</p>
+                                        <p class="text-xs text-gray-600">$299/year - JetBrains All Products</p>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                            LB
+                                        </div>
+                                        <span class="text-sm text-gray-900">Lisa Brown</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">EXPENSE</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Approved</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <p class="text-sm text-gray-900">5 days ago</p>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">View</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between mt-6">
+                    <p class="text-sm text-gray-600">Showing 1 to 10 of 143 requests</p>
+                    <div class="flex items-center space-x-2">
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 disabled:opacity-50" disabled>
+                            Previous
+                        </button>
+                        <button class="px-3 py-2 bg-purple-600 text-white rounded-lg text-sm">1</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">3</button>
+                        <span class="px-2 text-gray-500">...</span>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">15</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

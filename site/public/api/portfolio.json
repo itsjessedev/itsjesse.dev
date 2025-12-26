@@ -116,7 +116,15 @@
       "tech": ["React", "FastAPI", "Shopify API", "Amazon SP-API", "PostgreSQL"],
       "category": "integration",
       "serviceId": "integration",
-      "image": "https://itsjesse.dev/projects/orderhub.png",
+      "image": "https://itsjesse.dev/projects/orderhub/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/orderhub/dashboard.png",
+        "https://itsjesse.dev/projects/orderhub/orders.png",
+        "https://itsjesse.dev/projects/orderhub/inventory.png",
+        "https://itsjesse.dev/projects/orderhub/integrations.png",
+        "https://itsjesse.dev/projects/orderhub/analytics.png",
+        "https://itsjesse.dev/projects/orderhub/settings.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/orderhub",
       "demoUrl": "https://orderhub.itsjesse.dev",
       "featured": true
@@ -136,7 +144,15 @@
       "tech": ["Python", "Google Cloud Vision", "OpenAI", "QuickBooks API"],
       "category": "automation",
       "serviceId": "automation",
-      "image": "https://itsjesse.dev/projects/invoicebot.png",
+      "image": "https://itsjesse.dev/projects/invoicebot/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/invoicebot/dashboard.png",
+        "https://itsjesse.dev/projects/invoicebot/upload.png",
+        "https://itsjesse.dev/projects/invoicebot/processing.png",
+        "https://itsjesse.dev/projects/invoicebot/review.png",
+        "https://itsjesse.dev/projects/invoicebot/history.png",
+        "https://itsjesse.dev/projects/invoicebot/settings.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/invoicebot",
       "featured": true
     },
@@ -155,7 +171,15 @@
       "tech": ["Python", "HubSpot API", "Slack API", "Machine Learning"],
       "category": "automation",
       "serviceId": "automation",
-      "image": "https://itsjesse.dev/projects/leadscore.png",
+      "image": "https://itsjesse.dev/projects/leadscore/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/leadscore/dashboard.png",
+        "https://itsjesse.dev/projects/leadscore/leads.png",
+        "https://itsjesse.dev/projects/leadscore/scoring.png",
+        "https://itsjesse.dev/projects/leadscore/analytics.png",
+        "https://itsjesse.dev/projects/leadscore/integrations.png",
+        "https://itsjesse.dev/projects/leadscore/settings.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/leadscore",
       "featured": false
     },
@@ -174,7 +198,15 @@
       "tech": ["Python", "Square API", "Twilio", "Slack Webhooks"],
       "category": "dashboard",
       "serviceId": "dashboard",
-      "image": "https://itsjesse.dev/projects/stockalert.png",
+      "image": "https://itsjesse.dev/projects/stockalert/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/stockalert/dashboard.png",
+        "https://itsjesse.dev/projects/stockalert/inventory.png",
+        "https://itsjesse.dev/projects/stockalert/locations.png",
+        "https://itsjesse.dev/projects/stockalert/alerts.png",
+        "https://itsjesse.dev/projects/stockalert/reorder.png",
+        "https://itsjesse.dev/projects/stockalert/settings.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/stockalert",
       "demoUrl": "https://stockalert.itsjesse.dev",
       "featured": false
@@ -194,7 +226,15 @@
       "tech": ["Python", "Pandas", "WeasyPrint", "SendGrid", "FastAPI"],
       "category": "automation",
       "serviceId": "automation",
-      "image": "https://itsjesse.dev/projects/reportgen.png",
+      "image": "https://itsjesse.dev/projects/reportgen/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/reportgen/dashboard.png",
+        "https://itsjesse.dev/projects/reportgen/templates.png",
+        "https://itsjesse.dev/projects/reportgen/editor.png",
+        "https://itsjesse.dev/projects/reportgen/sources.png",
+        "https://itsjesse.dev/projects/reportgen/schedule.png",
+        "https://itsjesse.dev/projects/reportgen/history.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/reportgen",
       "featured": true
     },
@@ -213,7 +253,15 @@
       "tech": ["Python", "React", "OpenAI", "Google Places API", "Yelp API"],
       "category": "dashboard",
       "serviceId": "dashboard",
-      "image": "https://itsjesse.dev/projects/feedbackpulse.png",
+      "image": "https://itsjesse.dev/projects/feedbackpulse/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/feedbackpulse/dashboard.png",
+        "https://itsjesse.dev/projects/feedbackpulse/reviews.png",
+        "https://itsjesse.dev/projects/feedbackpulse/surveys.png",
+        "https://itsjesse.dev/projects/feedbackpulse/trends.png",
+        "https://itsjesse.dev/projects/feedbackpulse/alerts.png",
+        "https://itsjesse.dev/projects/feedbackpulse/sources.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/feedbackpulse",
       "demoUrl": "https://feedbackpulse.itsjesse.dev",
       "featured": false
@@ -233,7 +281,15 @@
       "tech": ["FastAPI", "React", "Google Calendar API", "Twilio", "Stripe"],
       "category": "automation",
       "serviceId": "automation",
-      "image": "https://itsjesse.dev/projects/bookingsync.png",
+      "image": "https://itsjesse.dev/projects/bookingsync/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/bookingsync/dashboard.png",
+        "https://itsjesse.dev/projects/bookingsync/calendar.png",
+        "https://itsjesse.dev/projects/bookingsync/bookings.png",
+        "https://itsjesse.dev/projects/bookingsync/reminders.png",
+        "https://itsjesse.dev/projects/bookingsync/widget.png",
+        "https://itsjesse.dev/projects/bookingsync/settings.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/bookingsync",
       "demoUrl": "https://bookingsync.itsjesse.dev",
       "featured": false
@@ -253,7 +309,15 @@
       "tech": ["Python", "Pandas", "ODBC", "HubSpot API", "Airtable API"],
       "category": "migration",
       "serviceId": "migration",
-      "image": "https://itsjesse.dev/projects/databridge.png",
+      "image": "https://itsjesse.dev/projects/databridge/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/databridge/dashboard.png",
+        "https://itsjesse.dev/projects/databridge/sources.png",
+        "https://itsjesse.dev/projects/databridge/mapping.png",
+        "https://itsjesse.dev/projects/databridge/validation.png",
+        "https://itsjesse.dev/projects/databridge/progress.png",
+        "https://itsjesse.dev/projects/databridge/history.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/databridge",
       "featured": false
     },
@@ -272,7 +336,15 @@
       "tech": ["Python", "Slack Bolt SDK", "PostgreSQL", "n8n"],
       "category": "automation",
       "serviceId": "automation",
-      "image": "https://itsjesse.dev/projects/workflowbot.png",
+      "image": "https://itsjesse.dev/projects/workflowbot/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/workflowbot/dashboard.png",
+        "https://itsjesse.dev/projects/workflowbot/workflows.png",
+        "https://itsjesse.dev/projects/workflowbot/editor.png",
+        "https://itsjesse.dev/projects/workflowbot/requests.png",
+        "https://itsjesse.dev/projects/workflowbot/approvals.png",
+        "https://itsjesse.dev/projects/workflowbot/settings.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/workflowbot",
       "featured": false
     },

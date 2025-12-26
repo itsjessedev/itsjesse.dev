@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkflowBot - Workflow Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gradient-to-b from-purple-900 to-purple-800 text-white flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">WorkflowBot</h1>
+                        <p class="text-xs text-purple-200">Acme Corp</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-1">
+                <a href="workflowbot-dashboard.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="workflowbot-workflows.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    <span>Workflows</span>
+                </a>
+                <a href="workflowbot-requests.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Requests</span>
+                </a>
+                <a href="workflowbot-approvals.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Approvals</span>
+                    <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">3</span>
+                </a>
+                <a href="workflowbot-audit.html" class="flex items-center space-x-3 px-4 py-3 text-purple-100 hover:bg-purple-700 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Audit Log</span>
+                </a>
+                <a href="workflowbot-editor.html" class="flex items-center space-x-3 px-4 py-3 bg-purple-700 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path>
+                    </svg>
+                    <span class="font-medium">Builder</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-purple-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center font-semibold">
+                        JD
+                    </div>
+                    <div>
+                        <p class="font-medium text-sm">John Doe</p>
+                        <p class="text-xs text-purple-200">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-hidden flex flex-col">
+            <!-- Header -->
+            <header class="bg-white border-b border-gray-200 px-8 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900">PTO Request Workflow</h2>
+                            <p class="text-sm text-gray-600">Edit approval chain and conditions</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition">
+                            Test Workflow
+                        </button>
+                        <button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Builder Area -->
+            <div class="flex-1 flex overflow-hidden">
+                <!-- Component Palette -->
+                <aside class="w-72 bg-white border-r border-gray-200 overflow-auto">
+                    <div class="p-4">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-4">Workflow Components</h3>
+
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="text-xs font-medium text-gray-600 mb-2 uppercase">Triggers</h4>
+                                <div class="space-y-2">
+                                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100 transition">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Slack Command</p>
+                                                <p class="text-xs text-gray-600">User initiates request</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-gray-600 rounded flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Scheduled</p>
+                                                <p class="text-xs text-gray-600">Time-based trigger</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-xs font-medium text-gray-600 mb-2 uppercase">Actions</h4>
+                                <div class="space-y-2">
+                                    <div class="p-3 bg-purple-50 border border-purple-200 rounded-lg cursor-pointer hover:bg-purple-100 transition">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-purple-600 rounded flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Request Approval</p>
+                                                <p class="text-xs text-gray-600">Send to approver</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 bg-green-50 border border-green-200 rounded-lg cursor-pointer hover:bg-green-100 transition">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Send Notification</p>
+                                                <p class="text-xs text-gray-600">Notify via Slack/email</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-lg cursor-pointer hover:bg-yellow-100 transition">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-yellow-600 rounded flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Update Database</p>
+                                                <p class="text-xs text-gray-600">Store data</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="text-xs font-medium text-gray-600 mb-2 uppercase">Logic</h4>
+                                <div class="space-y-2">
+                                    <div class="p-3 bg-orange-50 border border-orange-200 rounded-lg cursor-pointer hover:bg-orange-100 transition">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-orange-600 rounded flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Condition</p>
+                                                <p class="text-xs text-gray-600">If/then logic</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-3 bg-indigo-50 border border-indigo-200 rounded-lg cursor-pointer hover:bg-indigo-100 transition">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Route to User</p>
+                                                <p class="text-xs text-gray-600">Dynamic routing</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Canvas -->
+                <div class="flex-1 bg-gray-100 overflow-auto p-8">
+                    <div class="max-w-4xl mx-auto">
+                        <!-- Workflow visualization -->
+                        <div class="space-y-6">
+                            <!-- Start Node -->
+                            <div class="flex items-center justify-center">
+                                <div class="bg-white rounded-lg shadow-lg border-2 border-purple-600 p-4 w-64">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Trigger: Slack Command</p>
+                                            <p class="text-xs text-gray-600">/pto request</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Connection -->
+                            <div class="flex justify-center">
+                                <div class="w-0.5 h-12 bg-gray-400"></div>
+                            </div>
+
+                            <!-- Validation Node -->
+                            <div class="flex items-center justify-center">
+                                <div class="bg-white rounded-lg shadow-lg border-2 border-blue-500 p-4 w-64">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Validate Request</p>
+                                            <p class="text-xs text-gray-600">Check PTO balance</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Connection -->
+                            <div class="flex justify-center">
+                                <div class="w-0.5 h-12 bg-gray-400"></div>
+                            </div>
+
+                            <!-- Condition Node -->
+                            <div class="flex items-center justify-center">
+                                <div class="bg-white rounded-lg shadow-lg border-2 border-orange-500 p-4 w-64">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16l2.879-2.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Condition</p>
+                                            <p class="text-xs text-gray-600">Days > 5?</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Split Branches -->
+                            <div class="flex justify-center space-x-4">
+                                <div class="flex flex-col items-center space-y-6">
+                                    <div class="text-xs font-medium text-gray-600">YES</div>
+                                    <div class="w-0.5 h-12 bg-gray-400"></div>
+
+                                    <!-- HR Approval -->
+                                    <div class="bg-white rounded-lg shadow-lg border-2 border-purple-500 p-4 w-56">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-gray-900">Manager Approval</p>
+                                                <p class="text-xs text-gray-600">Direct manager</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="w-0.5 h-12 bg-gray-400"></div>
+
+                                    <!-- Manager Approval -->
+                                    <div class="bg-white rounded-lg shadow-lg border-2 border-purple-500 p-4 w-56">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-gray-900">HR Approval</p>
+                                                <p class="text-xs text-gray-600">HR team</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col items-center space-y-6">
+                                    <div class="text-xs font-medium text-gray-600">NO</div>
+                                    <div class="w-0.5 h-12 bg-gray-400"></div>
+
+                                    <!-- Auto Approval -->
+                                    <div class="bg-white rounded-lg shadow-lg border-2 border-purple-500 p-4 w-56">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-gray-900">Manager Approval</p>
+                                                <p class="text-xs text-gray-600">Direct manager</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Merge -->
+                            <div class="flex justify-center">
+                                <div class="w-0.5 h-12 bg-gray-400"></div>
+                            </div>
+
+                            <!-- Notification Node -->
+                            <div class="flex items-center justify-center">
+                                <div class="bg-white rounded-lg shadow-lg border-2 border-green-500 p-4 w-64">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Send Notification</p>
+                                            <p class="text-xs text-gray-600">Notify requester</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Connection -->
+                            <div class="flex justify-center">
+                                <div class="w-0.5 h-12 bg-gray-400"></div>
+                            </div>
+
+                            <!-- End Node -->
+                            <div class="flex items-center justify-center">
+                                <div class="bg-white rounded-lg shadow-lg border-2 border-gray-600 p-4 w-64">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-gray-600 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-semibold text-gray-900">Complete</p>
+                                            <p class="text-xs text-gray-600">Workflow finished</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Properties Panel -->
+                <aside class="w-80 bg-white border-l border-gray-200 overflow-auto">
+                    <div class="p-4">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-4">Node Properties</h3>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Node Type</label>
+                                <input type="text" value="Manager Approval" disabled class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Approver Role</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                    <option>Direct Manager</option>
+                                    <option>Department Head</option>
+                                    <option>HR Team</option>
+                                    <option>Finance Team</option>
+                                    <option>C-Level</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Timeout (hours)</label>
+                                <input type="number" value="24" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Escalation</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                    <option>None</option>
+                                    <option>Skip to next approver</option>
+                                    <option>Auto-approve</option>
+                                    <option>Auto-reject</option>
+                                    <option>Notify admin</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded text-purple-600">
+                                    <span class="text-sm text-gray-700">Send reminder at 12h</span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" checked class="rounded text-purple-600">
+                                    <span class="text-sm text-gray-700">Allow delegation</span>
+                                </label>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-200">
+                                <h4 class="text-xs font-semibold text-gray-900 mb-3">Notification Settings</h4>
+
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" checked class="rounded text-purple-600">
+                                        <span class="text-sm text-gray-700">Slack DM</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded text-purple-600">
+                                        <span class="text-sm text-gray-700">Email</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="rounded text-purple-600">
+                                        <span class="text-sm text-gray-700">SMS (urgent)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-200">
+                                <h4 class="text-xs font-semibold text-gray-900 mb-3">Message Template</h4>
+                                <textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="Customize approval request message...">Hi {{approver_name}},
+
+{{requester_name}} has requested PTO from {{start_date}} to {{end_date}} ({{days}} days).
+
+Please review and approve.</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

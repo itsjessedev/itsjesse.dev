@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadScore - All Leads</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-emerald-900 text-white flex flex-col">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold">LeadScore</h1>
+                <p class="text-emerald-300 text-sm mt-1">Intelligent Lead Prioritization</p>
+            </div>
+            <nav class="flex-1 px-4">
+                <a href="leadscore-dashboard.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Leads
+                </a>
+                <a href="leadscore-scoring.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Scoring Model
+                </a>
+                <a href="leadscore-analytics.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Analytics
+                </a>
+                <a href="leadscore-integrations.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Integrations
+                </a>
+                <a href="leadscore-alerts.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    Alerts
+                </a>
+            </nav>
+            <div class="p-4 border-t border-emerald-800">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-emerald-700 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-semibold">JE</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Jesse Eldridge</p>
+                        <p class="text-xs text-emerald-300">Sales Manager</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <div class="bg-white border-b border-gray-200 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">All Leads</h2>
+                        <p class="text-gray-600 mt-1">232 total leads • Updated 5 minutes ago</p>
+                    </div>
+                    <button class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700">
+                        Export to CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="bg-white border-b border-gray-200 px-8 py-4">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-1">
+                        <input type="text" placeholder="Search leads..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option>All Scores</option>
+                        <option>Hot (80-100)</option>
+                        <option>Warm (50-79)</option>
+                        <option>Cold (0-49)</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option>All Companies</option>
+                        <option>TechCorp</option>
+                        <option>DataDrive</option>
+                        <option>CloudScale</option>
+                    </select>
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <option>Sort: Score (High to Low)</option>
+                        <option>Sort: Score (Low to High)</option>
+                        <option>Sort: Name (A-Z)</option>
+                        <option>Sort: Recent Activity</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <!-- Table Header -->
+                    <div class="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase">
+                        <div class="col-span-3">Lead</div>
+                        <div class="col-span-2">Company</div>
+                        <div class="col-span-1 text-center">Score</div>
+                        <div class="col-span-2">Email Engagement</div>
+                        <div class="col-span-2">Website Activity</div>
+                        <div class="col-span-1">Last Contact</div>
+                        <div class="col-span-1"></div>
+                    </div>
+
+                    <!-- Table Rows -->
+                    <div class="divide-y divide-gray-200">
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    SC
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">Sarah Chen</h4>
+                                    <p class="text-xs text-gray-600">VP of Sales</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">TechCorp Solutions</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-lg">94</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">100% open rate</div>
+                                    <div class="text-xs text-gray-600">Opened last 3 emails</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">5 visits today</div>
+                                    <div class="text-xs text-gray-600">Pricing page focus</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">2 days ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-emerald-600 text-white text-xs font-medium rounded hover:bg-emerald-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    MP
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">Michael Park</h4>
+                                    <p class="text-xs text-gray-600">CTO</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">DataDrive Inc</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-lg">91</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">85% open rate</div>
+                                    <div class="text-xs text-gray-600">2 click-throughs</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">12 page views</div>
+                                    <div class="text-xs text-gray-600">Demo scheduled</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">1 day ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-emerald-600 text-white text-xs font-medium rounded hover:bg-emerald-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    ER
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">Emily Rodriguez</h4>
+                                    <p class="text-xs text-gray-600">Director of Ops</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">CloudScale Systems</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-lg">87</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">90% open rate</div>
+                                    <div class="text-xs text-gray-600">Replied 2hrs ago</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">8 page views</div>
+                                    <div class="text-xs text-gray-600">Case studies focus</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">3 days ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-emerald-600 text-white text-xs font-medium rounded hover:bg-emerald-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    DK
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">David Kim</h4>
+                                    <p class="text-xs text-gray-600">CEO</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">Innovate Labs</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 text-emerald-700 rounded-lg font-bold text-lg">84</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">100% open rate</div>
+                                    <div class="text-xs text-gray-600">All emails opened</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">15 page views</div>
+                                    <div class="text-xs text-gray-600">Downloaded whitepaper</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">5 days ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-emerald-600 text-white text-xs font-medium rounded hover:bg-emerald-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    LW
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">Lisa Wang</h4>
+                                    <p class="text-xs text-gray-600">Product Manager</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">NextGen Tech</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-amber-100 text-amber-700 rounded-lg font-bold text-lg">72</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">70% open rate</div>
+                                    <div class="text-xs text-gray-600">1 click-through</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">6 page views</div>
+                                    <div class="text-xs text-gray-600">Features page</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">1 week ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-amber-600 text-white text-xs font-medium rounded hover:bg-amber-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    JT
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">James Taylor</h4>
+                                    <p class="text-xs text-gray-600">IT Director</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">Velocity Corp</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-amber-100 text-amber-700 rounded-lg font-bold text-lg">68</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">60% open rate</div>
+                                    <div class="text-xs text-gray-600">Opened last email</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">4 page views</div>
+                                    <div class="text-xs text-gray-600">Product tour</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">10 days ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-amber-600 text-white text-xs font-medium rounded hover:bg-amber-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    AB
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">Anna Brown</h4>
+                                    <p class="text-xs text-gray-600">VP Engineering</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">Digital Dynamics</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-amber-100 text-amber-700 rounded-lg font-bold text-lg">65</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">55% open rate</div>
+                                    <div class="text-xs text-gray-600">2 of 4 opened</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">7 page views</div>
+                                    <div class="text-xs text-gray-600">Integration docs</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">2 weeks ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-amber-600 text-white text-xs font-medium rounded hover:bg-amber-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    RM
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">Robert Martinez</h4>
+                                    <p class="text-xs text-gray-600">Sales Lead</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">Growth Systems</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 text-blue-700 rounded-lg font-bold text-lg">42</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">40% open rate</div>
+                                    <div class="text-xs text-gray-600">No clicks</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">2 page views</div>
+                                    <div class="text-xs text-gray-600">Homepage only</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">3 weeks ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    NK
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">Nina Kumar</h4>
+                                    <p class="text-xs text-gray-600">Marketing Dir</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">Apex Solutions</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 text-blue-700 rounded-lg font-bold text-lg">38</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">30% open rate</div>
+                                    <div class="text-xs text-gray-600">1 of 3 opened</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">1 page view</div>
+                                    <div class="text-xs text-gray-600">Blog post</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">1 month ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700">Contact</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50">
+                            <div class="col-span-3 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                                    TL
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="text-sm font-semibold text-gray-900">Tom Lee</h4>
+                                    <p class="text-xs text-gray-600">CFO</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <p class="text-sm text-gray-900">Finance First</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-center">
+                                <span class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 text-blue-700 rounded-lg font-bold text-lg">25</span>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">20% open rate</div>
+                                    <div class="text-xs text-gray-600">No recent opens</div>
+                                </div>
+                            </div>
+                            <div class="col-span-2 flex items-center">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">0 page views</div>
+                                    <div class="text-xs text-gray-600">No activity</div>
+                                </div>
+                            </div>
+                            <div class="col-span-1 flex items-center">
+                                <p class="text-xs text-gray-600">2 months ago</p>
+                            </div>
+                            <div class="col-span-1 flex items-center justify-end">
+                                <button class="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700">Contact</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-6 flex items-center justify-between">
+                    <p class="text-sm text-gray-600">Showing 1-10 of 232 leads</p>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50" disabled>Previous</button>
+                        <button class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium">1</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">3</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">...</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">24</button>
+                        <button class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

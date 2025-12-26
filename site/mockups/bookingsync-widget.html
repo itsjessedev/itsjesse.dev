@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookingSync - Widget</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-sky-600">BookingSync</h1>
+                <p class="text-sm text-gray-500">Appointment Automation</p>
+            </div>
+            <nav class="px-4 space-y-1">
+                <a href="bookingsync-dashboard.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="bookingsync-calendar.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Calendar
+                </a>
+                <a href="bookingsync-bookings.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Bookings
+                </a>
+                <a href="bookingsync-reminders.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    Reminders
+                </a>
+                <a href="bookingsync-widget.html" class="flex items-center px-4 py-3 text-sm font-medium text-sky-600 bg-sky-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
+                    Widget
+                </a>
+                <a href="bookingsync-settings.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Booking Widget</h2>
+                    <p class="text-gray-600 mt-1">Embed on your website to accept online bookings</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-8">
+                    <!-- Widget Preview -->
+                    <div>
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Live Preview</h3>
+                            <p class="text-sm text-gray-600">This is how the widget will appear on your website</p>
+                        </div>
+
+                        <!-- Widget Container -->
+                        <div class="bg-gray-100 p-8 rounded-xl">
+                            <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+                                <!-- Widget Header -->
+                                <div class="bg-gradient-to-r from-sky-500 to-blue-600 p-6 text-white">
+                                    <h3 class="text-2xl font-bold">Book Your Appointment</h3>
+                                    <p class="text-sm opacity-90 mt-1">Wellness Massage Therapy</p>
+                                </div>
+
+                                <!-- Widget Body -->
+                                <div class="p-6 space-y-4">
+                                    <!-- Service Selection -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Select Service</label>
+                                        <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                            <option>Deep Tissue Massage (60 min - $95)</option>
+                                            <option>Swedish Massage (60 min - $85)</option>
+                                            <option>Sports Therapy (45 min - $75)</option>
+                                            <option>Full Body Relaxation (90 min - $130)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Date Selection -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Choose Date</label>
+                                        <input type="date" value="2025-12-26" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    </div>
+
+                                    <!-- Time Slots -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Available Times</label>
+                                        <div class="grid grid-cols-3 gap-2">
+                                            <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-sky-50 hover:border-sky-500 hover:text-sky-700">9:00 AM</button>
+                                            <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-sky-50 hover:border-sky-500 hover:text-sky-700">10:00 AM</button>
+                                            <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-sky-50 hover:border-sky-500 hover:text-sky-700">11:00 AM</button>
+                                            <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-sky-50 hover:border-sky-500 hover:text-sky-700">1:00 PM</button>
+                                            <button class="px-3 py-2 text-sm bg-sky-600 text-white rounded-lg font-medium">2:00 PM</button>
+                                            <button class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-sky-50 hover:border-sky-500 hover:text-sky-700">3:00 PM</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contact Info -->
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                            <input type="text" placeholder="John Doe" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                            <input type="tel" placeholder="(555) 123-4567" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input type="email" placeholder="john@example.com" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    </div>
+
+                                    <!-- Book Button -->
+                                    <button class="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold py-3 rounded-lg hover:from-sky-600 hover:to-blue-700 transition">
+                                        Confirm Booking
+                                    </button>
+
+                                    <p class="text-xs text-gray-500 text-center">You'll receive SMS and email confirmation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Widget Configuration -->
+                    <div class="space-y-6">
+                        <!-- Embed Code -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">Embed Code</h3>
+                                <button class="px-3 py-1 text-sm bg-sky-600 text-white rounded-lg hover:bg-sky-700">Copy Code</button>
+                            </div>
+                            <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
+                                <pre class="text-sm text-green-400 font-mono"><code>&lt;!-- BookingSync Widget --&gt;
+&lt;script src="https://cdn.bookingsync.io/widget.js"&gt;&lt;/script&gt;
+&lt;div id="bookingsync-widget" data-business-id="ws_abc123"&gt;&lt;/div&gt;
+&lt;script&gt;
+  BookingSync.init({
+    businessId: 'ws_abc123',
+    theme: 'sky',
+    autoReminders: true
+  });
+&lt;/script&gt;</code></pre>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-3">Paste this code into your website's HTML where you want the booking widget to appear.</p>
+                        </div>
+
+                        <!-- Widget Settings -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Customization</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Color Theme</label>
+                                    <div class="flex space-x-2">
+                                        <button class="w-10 h-10 rounded-lg bg-sky-600 border-4 border-sky-600 ring-2 ring-sky-200"></button>
+                                        <button class="w-10 h-10 rounded-lg bg-blue-600 border-4 border-transparent hover:border-gray-300"></button>
+                                        <button class="w-10 h-10 rounded-lg bg-purple-600 border-4 border-transparent hover:border-gray-300"></button>
+                                        <button class="w-10 h-10 rounded-lg bg-green-600 border-4 border-transparent hover:border-gray-300"></button>
+                                        <button class="w-10 h-10 rounded-lg bg-pink-600 border-4 border-transparent hover:border-gray-300"></button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
+                                    <input type="text" value="Wellness Massage Therapy" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tagline</label>
+                                    <input type="text" value="Book your relaxation session today" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Show Prices</p>
+                                        <p class="text-xs text-gray-500">Display service prices in widget</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Require Payment</p>
+                                        <p class="text-xs text-gray-500">Collect deposit at booking</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Auto-Reminders</p>
+                                        <p class="text-xs text-gray-500">Send automated SMS/email reminders</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Widget Stats -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Widget Performance</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm text-gray-600">Total Bookings</p>
+                                    <p class="text-xl font-bold text-gray-900">1,247</p>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm text-gray-600">This Month</p>
+                                    <p class="text-xl font-bold text-green-600">156</p>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm text-gray-600">Conversion Rate</p>
+                                    <p class="text-xl font-bold text-sky-600">68%</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Share Link -->
+                        <div class="bg-gradient-to-br from-sky-500 to-blue-600 rounded-xl shadow-sm p-6 text-white">
+                            <h3 class="text-lg font-semibold mb-2">Direct Booking Link</h3>
+                            <p class="text-sm opacity-90 mb-3">Share this link on social media or via email</p>
+                            <div class="flex space-x-2">
+                                <input type="text" value="https://book.bookingsync.io/wellness-massage" readonly class="flex-1 px-4 py-2 bg-white bg-opacity-20 rounded-lg text-white placeholder-white placeholder-opacity-60">
+                                <button class="px-4 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-medium transition">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

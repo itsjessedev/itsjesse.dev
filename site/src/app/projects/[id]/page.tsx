@@ -76,7 +76,14 @@ const projectDetails: Record<
       "Daily sales reports across all channels",
     ],
     demoUrl: "https://orderhub.itsjesse.dev",
-    screenshots: ["/projects/orderhub/orders.png", "/projects/orderhub/inventory.png"],
+    screenshots: [
+      "/projects/orderhub/dashboard.png",
+      "/projects/orderhub/orders.png",
+      "/projects/orderhub/inventory.png",
+      "/projects/orderhub/integrations.png",
+      "/projects/orderhub/analytics.png",
+      "/projects/orderhub/settings.png",
+    ],
   },
   invoicebot: {
     whatItDoes:
@@ -89,7 +96,14 @@ const projectDetails: Record<
       "Direct sync to QuickBooks Online",
       "Audit-ready expense reports on demand",
     ],
-    screenshots: ["/projects/invoicebot/scan.png", "/projects/invoicebot/expenses.png"],
+    screenshots: [
+      "/projects/invoicebot/dashboard.png",
+      "/projects/invoicebot/upload.png",
+      "/projects/invoicebot/processing.png",
+      "/projects/invoicebot/review.png",
+      "/projects/invoicebot/history.png",
+      "/projects/invoicebot/settings.png",
+    ],
   },
   leadscore: {
     whatItDoes:
@@ -102,7 +116,14 @@ const projectDetails: Record<
       "Priority call lists updated automatically",
       "Integration with HubSpot and major email platforms",
     ],
-    screenshots: ["/projects/leadscore/dashboard.png", "/projects/leadscore/alerts.png"],
+    screenshots: [
+      "/projects/leadscore/dashboard.png",
+      "/projects/leadscore/leads.png",
+      "/projects/leadscore/scoring.png",
+      "/projects/leadscore/analytics.png",
+      "/projects/leadscore/integrations.png",
+      "/projects/leadscore/settings.png",
+    ],
   },
   stockalert: {
     whatItDoes:
@@ -116,7 +137,14 @@ const projectDetails: Record<
       "Overstock warnings to prevent cash tied in inventory",
     ],
     demoUrl: "https://stockalert.itsjesse.dev",
-    screenshots: ["/projects/stockalert/dashboard.png", "/projects/stockalert/alerts.png"],
+    screenshots: [
+      "/projects/stockalert/dashboard.png",
+      "/projects/stockalert/inventory.png",
+      "/projects/stockalert/locations.png",
+      "/projects/stockalert/alerts.png",
+      "/projects/stockalert/reorder.png",
+      "/projects/stockalert/settings.png",
+    ],
   },
   reportgen: {
     whatItDoes:
@@ -129,7 +157,14 @@ const projectDetails: Record<
       "Scheduled delivery - daily, weekly, monthly",
       "Historical archive with search",
     ],
-    screenshots: ["/projects/reportgen/template.png", "/projects/reportgen/report.png"],
+    screenshots: [
+      "/projects/reportgen/dashboard.png",
+      "/projects/reportgen/templates.png",
+      "/projects/reportgen/editor.png",
+      "/projects/reportgen/sources.png",
+      "/projects/reportgen/schedule.png",
+      "/projects/reportgen/history.png",
+    ],
   },
   feedbackpulse: {
     whatItDoes:
@@ -143,7 +178,14 @@ const projectDetails: Record<
       "Competitive comparison with local businesses",
     ],
     demoUrl: "https://feedbackpulse.itsjesse.dev",
-    screenshots: ["/projects/feedbackpulse/dashboard.png", "/projects/feedbackpulse/trends.png"],
+    screenshots: [
+      "/projects/feedbackpulse/dashboard.png",
+      "/projects/feedbackpulse/reviews.png",
+      "/projects/feedbackpulse/surveys.png",
+      "/projects/feedbackpulse/trends.png",
+      "/projects/feedbackpulse/alerts.png",
+      "/projects/feedbackpulse/sources.png",
+    ],
   },
   bookingsync: {
     whatItDoes:
@@ -157,7 +199,14 @@ const projectDetails: Record<
       "Post-appointment review request sequences",
     ],
     demoUrl: "https://bookingsync.itsjesse.dev",
-    screenshots: ["/projects/bookingsync/booking.png", "/projects/bookingsync/reminders.png"],
+    screenshots: [
+      "/projects/bookingsync/dashboard.png",
+      "/projects/bookingsync/calendar.png",
+      "/projects/bookingsync/bookings.png",
+      "/projects/bookingsync/reminders.png",
+      "/projects/bookingsync/widget.png",
+      "/projects/bookingsync/settings.png",
+    ],
   },
   databridge: {
     whatItDoes:
@@ -170,7 +219,14 @@ const projectDetails: Record<
       "Incremental sync during transition period",
       "Full rollback capability if anything goes wrong",
     ],
-    screenshots: ["/projects/databridge/mapping.png", "/projects/databridge/validation.png"],
+    screenshots: [
+      "/projects/databridge/dashboard.png",
+      "/projects/databridge/sources.png",
+      "/projects/databridge/mapping.png",
+      "/projects/databridge/validation.png",
+      "/projects/databridge/progress.png",
+      "/projects/databridge/history.png",
+    ],
   },
   workflowbot: {
     whatItDoes:
@@ -183,7 +239,14 @@ const projectDetails: Record<
       "Status tracking and reminders",
       "Complete audit trail for compliance",
     ],
-    screenshots: ["/projects/workflowbot/request.png", "/projects/workflowbot/dashboard.png"],
+    screenshots: [
+      "/projects/workflowbot/dashboard.png",
+      "/projects/workflowbot/workflows.png",
+      "/projects/workflowbot/editor.png",
+      "/projects/workflowbot/requests.png",
+      "/projects/workflowbot/approvals.png",
+      "/projects/workflowbot/settings.png",
+    ],
   },
 };
 

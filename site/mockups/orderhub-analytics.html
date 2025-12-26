@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OrderHub - Analytics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-gray-100">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 bg-indigo-900 text-white">
+      <div class="p-6">
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+          OrderHub
+        </h1>
+      </div>
+      <nav class="mt-6">
+        <a href="#" class="flex items-center px-6 py-3 text-indigo-200 hover:bg-indigo-800">Dashboard</a>
+        <a href="#" class="flex items-center px-6 py-3 text-indigo-200 hover:bg-indigo-800">Orders</a>
+        <a href="#" class="flex items-center px-6 py-3 text-indigo-200 hover:bg-indigo-800">Inventory</a>
+        <a href="#" class="flex items-center px-6 py-3 text-indigo-200 hover:bg-indigo-800">Integrations</a>
+        <a href="#" class="flex items-center px-6 py-3 bg-indigo-800 text-white">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+          Analytics
+        </a>
+        <a href="#" class="flex items-center px-6 py-3 text-indigo-200 hover:bg-indigo-800">Settings</a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <header class="bg-white shadow-sm border-b border-gray-200 px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-semibold text-gray-800">Sales Analytics</h2>
+            <p class="text-gray-500">Cross-platform performance insights</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <select class="border border-gray-300 rounded-lg px-4 py-2 text-sm">
+              <option>Last 7 days</option>
+              <option selected>Last 30 days</option>
+              <option>Last 90 days</option>
+              <option>This year</option>
+            </select>
+            <button class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50">Export Report</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-8">
+        <!-- Revenue Overview -->
+        <div class="grid grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-500 text-sm">Total Revenue</span>
+              <span class="text-green-500 text-xs font-medium">+18.2%</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800">$284,532</p>
+            <p class="text-sm text-gray-500 mt-1">Last 30 days</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-500 text-sm">Total Orders</span>
+              <span class="text-green-500 text-xs font-medium">+12.5%</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800">2,847</p>
+            <p class="text-sm text-gray-500 mt-1">Last 30 days</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-500 text-sm">Avg Order Value</span>
+              <span class="text-green-500 text-xs font-medium">+5.1%</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800">$99.94</p>
+            <p class="text-sm text-gray-500 mt-1">Last 30 days</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-gray-500 text-sm">Conversion Rate</span>
+              <span class="text-red-500 text-xs font-medium">-0.3%</span>
+            </div>
+            <p class="text-3xl font-bold text-gray-800">3.2%</p>
+            <p class="text-sm text-gray-500 mt-1">Last 30 days</p>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-2 gap-6 mb-8">
+          <!-- Revenue Chart -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Revenue Trend</h3>
+            <div class="h-64 flex items-end justify-between gap-2 px-4">
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="w-full bg-indigo-500 rounded-t" style="height: 120px;"></div>
+                <span class="text-xs text-gray-500">Week 1</span>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="w-full bg-indigo-500 rounded-t" style="height: 150px;"></div>
+                <span class="text-xs text-gray-500">Week 2</span>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="w-full bg-indigo-500 rounded-t" style="height: 100px;"></div>
+                <span class="text-xs text-gray-500">Week 3</span>
+              </div>
+              <div class="flex flex-col items-center gap-1 flex-1">
+                <div class="w-full bg-indigo-600 rounded-t" style="height: 180px;"></div>
+                <span class="text-xs text-gray-500">Week 4</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Platform Distribution -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Revenue by Platform</h3>
+            <div class="flex items-center justify-center h-64">
+              <div class="relative w-48 h-48">
+                <svg viewBox="0 0 36 36" class="w-full h-full">
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#e5e7eb" stroke-width="3"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f97316" stroke-width="3" stroke-dasharray="43 57" stroke-dashoffset="25"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="24 76" stroke-dashoffset="82"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#3b82f6" stroke-width="3" stroke-dasharray="22 78" stroke-dashoffset="106"/>
+                  <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="11 89" stroke-dashoffset="128"/>
+                </svg>
+              </div>
+              <div class="ml-8 space-y-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+                  <span class="text-sm text-gray-600">Amazon - 43% ($122,349)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span class="text-sm text-gray-600">Shopify - 24% ($68,288)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                  <span class="text-sm text-gray-600">eBay - 22% ($62,597)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                  <span class="text-sm text-gray-600">Etsy - 11% ($31,298)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Products & Platform Performance -->
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Top Products -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Selling Products</h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-800">Wireless Bluetooth Headphones</p>
+                    <p class="text-xs text-gray-500">452 units sold</p>
+                  </div>
+                </div>
+                <span class="text-sm font-semibold text-gray-800">$40,680</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-800">Smart Watch Pro</p>
+                    <p class="text-xs text-gray-500">287 units sold</p>
+                  </div>
+                </div>
+                <span class="text-sm font-semibold text-gray-800">$34,440</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-800">Premium Cotton T-Shirt</p>
+                    <p class="text-xs text-gray-500">1,234 units sold</p>
+                  </div>
+                </div>
+                <span class="text-sm font-semibold text-gray-800">$30,850</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-800">Vintage Leather Wallet</p>
+                    <p class="text-xs text-gray-500">389 units sold</p>
+                  </div>
+                </div>
+                <span class="text-sm font-semibold text-gray-800">$23,340</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gray-200 rounded-lg"></div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-800">USB-C Charging Cable</p>
+                    <p class="text-xs text-gray-500">2,156 units sold</p>
+                  </div>
+                </div>
+                <span class="text-sm font-semibold text-gray-800">$21,560</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Platform Performance -->
+          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Platform Performance</h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">Amazon</span>
+                  <span class="text-sm text-gray-500">$122,349 (43%)</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-orange-500 h-2 rounded-full" style="width: 43%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">Shopify</span>
+                  <span class="text-sm text-gray-500">$68,288 (24%)</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-500 h-2 rounded-full" style="width: 24%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">eBay</span>
+                  <span class="text-sm text-gray-500">$62,597 (22%)</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-blue-500 h-2 rounded-full" style="width: 22%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">Etsy</span>
+                  <span class="text-sm text-gray-500">$31,298 (11%)</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-amber-500 h-2 rounded-full" style="width: 11%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-gray-100">
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Key Insights</h4>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  Amazon revenue up 23% from last month
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  Etsy showing strongest growth at 31%
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg class="w-4 h-4 text-yellow-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  eBay conversion rate needs attention
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

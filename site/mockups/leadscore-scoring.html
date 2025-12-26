@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadScore - Scoring Model</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-emerald-900 text-white flex flex-col">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold">LeadScore</h1>
+                <p class="text-emerald-300 text-sm mt-1">Intelligent Lead Prioritization</p>
+            </div>
+            <nav class="flex-1 px-4">
+                <a href="leadscore-dashboard.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="leadscore-leads.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Leads
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Scoring Model
+                </a>
+                <a href="leadscore-analytics.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Analytics
+                </a>
+                <a href="leadscore-integrations.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Integrations
+                </a>
+                <a href="leadscore-alerts.html" class="flex items-center px-4 py-3 text-emerald-100 hover:bg-emerald-800 rounded-lg mb-2">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    Alerts
+                </a>
+            </nav>
+            <div class="p-4 border-t border-emerald-800">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-emerald-700 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-semibold">JE</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Jesse Eldridge</p>
+                        <p class="text-xs text-emerald-300">Sales Manager</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <div class="bg-white border-b border-gray-200 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Scoring Model Configuration</h2>
+                        <p class="text-gray-600 mt-1">Customize how leads are scored based on their behavior and attributes</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+                            Reset to Default
+                        </button>
+                        <button class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Scoring Weights -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Email Engagement -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Email Engagement</h3>
+                                    <p class="text-sm text-gray-600 mt-1">Weight: 35 points (35% of total score)</p>
+                                </div>
+                                <div class="text-3xl font-bold text-emerald-600">35</div>
+                            </div>
+                            <input type="range" min="0" max="50" value="35" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 mb-6">
+
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Email Open Rate</p>
+                                        <p class="text-xs text-gray-600">Points awarded based on percentage of emails opened</p>
+                                    </div>
+                                    <input type="number" value="15" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Click-Through Rate</p>
+                                        <p class="text-xs text-gray-600">Points for clicking links in emails</p>
+                                    </div>
+                                    <input type="number" value="12" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                                <div class="flex items-center justify-between py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Email Replies</p>
+                                        <p class="text-xs text-gray-600">Direct responses to outreach emails</p>
+                                    </div>
+                                    <input type="number" value="8" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Website Activity -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Website Activity</h3>
+                                    <p class="text-sm text-gray-600 mt-1">Weight: 30 points (30% of total score)</p>
+                                </div>
+                                <div class="text-3xl font-bold text-blue-600">30</div>
+                            </div>
+                            <input type="range" min="0" max="50" value="30" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mb-6">
+
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Page Views</p>
+                                        <p class="text-xs text-gray-600">Number of pages visited on website</p>
+                                    </div>
+                                    <input type="number" value="10" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">High-Value Pages</p>
+                                        <p class="text-xs text-gray-600">Pricing, demo, contact page visits</p>
+                                    </div>
+                                    <input type="number" value="12" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                                <div class="flex items-center justify-between py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Time on Site</p>
+                                        <p class="text-xs text-gray-600">Total session duration</p>
+                                    </div>
+                                    <input type="number" value="8" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CRM Activity -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">CRM Activity</h3>
+                                    <p class="text-sm text-gray-600 mt-1">Weight: 20 points (20% of total score)</p>
+                                </div>
+                                <div class="text-3xl font-bold text-purple-600">20</div>
+                            </div>
+                            <input type="range" min="0" max="50" value="20" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-600 mb-6">
+
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Meeting Scheduled</p>
+                                        <p class="text-xs text-gray-600">Demo or sales call booked</p>
+                                    </div>
+                                    <input type="number" value="10" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Form Submissions</p>
+                                        <p class="text-xs text-gray-600">Contact forms, demo requests</p>
+                                    </div>
+                                    <input type="number" value="7" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                                <div class="flex items-center justify-between py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Content Downloads</p>
+                                        <p class="text-xs text-gray-600">Whitepapers, case studies</p>
+                                    </div>
+                                    <input type="number" value="3" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lead Profile -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Lead Profile</h3>
+                                    <p class="text-sm text-gray-600 mt-1">Weight: 15 points (15% of total score)</p>
+                                </div>
+                                <div class="text-3xl font-bold text-amber-600">15</div>
+                            </div>
+                            <input type="range" min="0" max="50" value="15" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-600 mb-6">
+
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Company Size Match</p>
+                                        <p class="text-xs text-gray-600">Fits ideal customer profile</p>
+                                    </div>
+                                    <input type="number" value="6" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Decision Maker Role</p>
+                                        <p class="text-xs text-gray-600">C-level, VP, Director titles</p>
+                                    </div>
+                                    <input type="number" value="5" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                                <div class="flex items-center justify-between py-3">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Industry Match</p>
+                                        <p class="text-xs text-gray-600">Target industry alignment</p>
+                                    </div>
+                                    <input type="number" value="4" class="w-16 px-2 py-1 border border-gray-300 rounded text-center text-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Summary & ML Insights -->
+                    <div class="lg:col-span-1 space-y-6">
+                        <!-- Score Distribution -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Score Distribution</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">Email Engagement</span>
+                                        <span class="text-sm font-semibold text-emerald-600">35%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-emerald-600 h-2 rounded-full" style="width: 35%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">Website Activity</span>
+                                        <span class="text-sm font-semibold text-blue-600">30%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 30%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">CRM Activity</span>
+                                        <span class="text-sm font-semibold text-purple-600">20%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-purple-600 h-2 rounded-full" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-sm text-gray-600">Lead Profile</span>
+                                        <span class="text-sm font-semibold text-amber-600">15%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-amber-600 h-2 rounded-full" style="width: 15%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-semibold text-gray-900">Total</span>
+                                    <span class="text-2xl font-bold text-gray-900">100</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ML Recommendations -->
+                        <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg shadow-sm p-6 text-white">
+                            <div class="flex items-center mb-4">
+                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                <h3 class="text-lg font-semibold">ML Insights</h3>
+                            </div>
+                            <div class="space-y-3 text-sm">
+                                <div class="bg-purple-800 bg-opacity-40 rounded-lg p-3">
+                                    <p class="font-medium mb-1">Increase Email Weight</p>
+                                    <p class="text-purple-200 text-xs">Email engagement shows 92% correlation with conversions</p>
+                                </div>
+                                <div class="bg-purple-800 bg-opacity-40 rounded-lg p-3">
+                                    <p class="font-medium mb-1">High-Value Pages</p>
+                                    <p class="text-purple-200 text-xs">Pricing page visits are 3x more predictive than other pages</p>
+                                </div>
+                                <div class="bg-purple-800 bg-opacity-40 rounded-lg p-3">
+                                    <p class="font-medium mb-1">Decision Maker Boost</p>
+                                    <p class="text-purple-200 text-xs">C-level contacts convert 45% more than other roles</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Score Thresholds -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Score Thresholds</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-sm text-gray-600 mb-2 block">Hot Lead Minimum</label>
+                                    <div class="flex items-center">
+                                        <input type="number" value="80" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                        <span class="ml-2 text-sm text-gray-600">points</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-sm text-gray-600 mb-2 block">Warm Lead Minimum</label>
+                                    <div class="flex items-center">
+                                        <input type="number" value="50" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                        <span class="ml-2 text-sm text-gray-600">points</span>
+                                    </div>
+                                </div>
+                                <div class="pt-4 border-t border-gray-200">
+                                    <p class="text-xs text-gray-600">
+                                        <span class="font-semibold">Note:</span> Leads below warm threshold are classified as cold
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Model Performance -->
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Model Performance</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Accuracy</span>
+                                    <span class="text-sm font-semibold text-emerald-600">87%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Precision</span>
+                                    <span class="text-sm font-semibold text-emerald-600">82%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Recall</span>
+                                    <span class="text-sm font-semibold text-emerald-600">79%</span>
+                                </div>
+                                <div class="pt-3 border-t border-gray-200">
+                                    <p class="text-xs text-gray-600">Last updated: 2 hours ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookingSync - Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-sky-600">BookingSync</h1>
+                <p class="text-sm text-gray-500">Appointment Automation</p>
+            </div>
+            <nav class="px-4 space-y-1">
+                <a href="bookingsync-dashboard.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="bookingsync-calendar.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Calendar
+                </a>
+                <a href="bookingsync-bookings.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    Bookings
+                </a>
+                <a href="bookingsync-reminders.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    Reminders
+                </a>
+                <a href="bookingsync-widget.html" class="flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
+                    Widget
+                </a>
+                <a href="bookingsync-settings.html" class="flex items-center px-4 py-3 text-sm font-medium text-sky-600 bg-sky-50 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900">Settings</h2>
+                    <p class="text-gray-600 mt-1">Configure your business and integrations</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-8">
+                    <!-- Business Information -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Business Information</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
+                                <input type="text" value="Wellness Massage Therapy" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                <input type="tel" value="(555) 123-4567" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <input type="email" value="info@wellnessmassage.com" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                                <input type="text" value="123 Wellness St, Suite 200" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                                    <input type="text" value="San Francisco" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">State</label>
+                                    <input type="text" value="CA" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">ZIP</label>
+                                    <input type="text" value="94102" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Hours -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Business Hours</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" checked class="w-4 h-4 text-sky-600 rounded">
+                                    <span class="text-sm font-medium text-gray-700 w-20">Monday</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="time" value="09:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                    <span class="text-gray-500">to</span>
+                                    <input type="time" value="17:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" checked class="w-4 h-4 text-sky-600 rounded">
+                                    <span class="text-sm font-medium text-gray-700 w-20">Tuesday</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="time" value="09:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                    <span class="text-gray-500">to</span>
+                                    <input type="time" value="17:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" checked class="w-4 h-4 text-sky-600 rounded">
+                                    <span class="text-sm font-medium text-gray-700 w-20">Wednesday</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="time" value="09:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                    <span class="text-gray-500">to</span>
+                                    <input type="time" value="17:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" checked class="w-4 h-4 text-sky-600 rounded">
+                                    <span class="text-sm font-medium text-gray-700 w-20">Thursday</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="time" value="09:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                    <span class="text-gray-500">to</span>
+                                    <input type="time" value="17:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" checked class="w-4 h-4 text-sky-600 rounded">
+                                    <span class="text-sm font-medium text-gray-700 w-20">Friday</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="time" value="09:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                    <span class="text-gray-500">to</span>
+                                    <input type="time" value="17:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" checked class="w-4 h-4 text-sky-600 rounded">
+                                    <span class="text-sm font-medium text-gray-700 w-20">Saturday</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="time" value="10:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                    <span class="text-gray-500">to</span>
+                                    <input type="time" value="15:00" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <input type="checkbox" class="w-4 h-4 text-sky-600 rounded">
+                                    <span class="text-sm font-medium text-gray-400 w-20">Sunday</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-400 italic">Closed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Services -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Services</h3>
+                            <button class="px-3 py-1 text-sm bg-sky-600 text-white rounded-lg hover:bg-sky-700">+ Add Service</button>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">Deep Tissue Massage</p>
+                                    <p class="text-sm text-gray-500">60 minutes</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-lg font-semibold text-gray-900">$95</span>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">Swedish Massage</p>
+                                    <p class="text-sm text-gray-500">60 minutes</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-lg font-semibold text-gray-900">$85</span>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">Sports Therapy</p>
+                                    <p class="text-sm text-gray-500">45 minutes</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-lg font-semibold text-gray-900">$75</span>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">Full Body Relaxation</p>
+                                    <p class="text-sm text-gray-500">90 minutes</p>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-lg font-semibold text-gray-900">$130</span>
+                                    <button class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Integrations -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Integrations</h3>
+                        <div class="space-y-4">
+                            <!-- Google Calendar -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-xl">📅</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-900">Google Calendar</p>
+                                            <p class="text-xs text-gray-500">Sync appointments to calendar</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Connected</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">wellness@gmail.com</p>
+                                <button class="text-sm text-red-600 hover:text-red-800">Disconnect</button>
+                            </div>
+
+                            <!-- Twilio -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-xl">💬</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-900">Twilio SMS</p>
+                                            <p class="text-xs text-gray-500">Send SMS reminders</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Connected</span>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-3">
+                                    <p>Account SID: AC••••••••••••••••••••5678</p>
+                                    <p>Phone: +1 (555) 987-6543</p>
+                                </div>
+                                <button class="text-sm text-sky-600 hover:text-sky-800">Reconfigure</button>
+                            </div>
+
+                            <!-- Stripe -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-xl">💳</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-900">Stripe Payments</p>
+                                            <p class="text-xs text-gray-500">Accept deposits & payments</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Connected</span>
+                                </div>
+                                <div class="text-sm text-gray-600 mb-3">
+                                    <p>Account: wellness_massage</p>
+                                    <p>156 transactions this month</p>
+                                </div>
+                                <button class="text-sm text-sky-600 hover:text-sky-800">View Dashboard</button>
+                            </div>
+
+                            <!-- Zapier -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <span class="text-xl">⚡</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-900">Zapier</p>
+                                            <p class="text-xs text-gray-500">Connect 1000+ apps</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full">Not Connected</span>
+                                </div>
+                                <button class="text-sm text-sky-600 hover:text-sky-800">Connect Now</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification Settings -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Notification Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">New Booking Notifications</p>
+                                    <p class="text-xs text-gray-500">Get notified when someone books</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Cancellation Alerts</p>
+                                    <p class="text-xs text-gray-500">Alert when appointments are cancelled</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Daily Summary Email</p>
+                                    <p class="text-xs text-gray-500">Daily report of bookings</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Weekly Analytics</p>
+                                    <p class="text-xs text-gray-500">Performance metrics every week</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Settings -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Account & Billing</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200 rounded-lg">
+                                <div class="flex items-center justify-between mb-2">
+                                    <p class="font-semibold text-gray-900">Pro Plan</p>
+                                    <span class="px-2 py-1 bg-sky-600 text-white text-xs font-bold rounded">ACTIVE</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-3">$49/month - Unlimited bookings & reminders</p>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50">Change Plan</button>
+                                    <button class="px-3 py-1 text-sm text-sky-600 hover:text-sky-800">View Invoices</button>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-200">
+                                <p class="text-sm font-medium text-gray-900 mb-2">Team Members</p>
+                                <div class="space-y-2 mb-3">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-700">admin@wellnessmassage.com</span>
+                                        <span class="text-gray-500">Owner</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-gray-700">therapist@wellnessmassage.com</span>
+                                        <span class="text-gray-500">Staff</span>
+                                    </div>
+                                </div>
+                                <button class="text-sm text-sky-600 hover:text-sky-800">+ Invite Team Member</button>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-200">
+                                <button class="text-sm text-red-600 hover:text-red-800">Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="mt-8 flex justify-end">
+                    <button class="px-6 py-3 bg-sky-600 text-white font-semibold rounded-lg hover:bg-sky-700">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

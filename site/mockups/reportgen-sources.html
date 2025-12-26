@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReportGen - Data Sources</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-gradient-to-b from-violet-600 to-violet-800 text-white">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold">ReportGen</h1>
+                <p class="text-violet-200 text-sm mt-1">Automated Reports</p>
+            </div>
+            <nav class="mt-6">
+                <a href="reportgen-dashboard.html" class="flex items-center px-6 py-3 hover:bg-violet-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="reportgen-templates.html" class="flex items-center px-6 py-3 hover:bg-violet-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Templates
+                </a>
+                <a href="reportgen-sources.html" class="flex items-center px-6 py-3 bg-violet-700 border-l-4 border-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                    </svg>
+                    Data Sources
+                </a>
+                <a href="reportgen-schedule.html" class="flex items-center px-6 py-3 hover:bg-violet-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Schedule
+                </a>
+                <a href="reportgen-history.html" class="flex items-center px-6 py-3 hover:bg-violet-700 transition">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    History
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <div class="bg-white shadow-sm border-b border-gray-200">
+                <div class="px-8 py-4 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-800">Data Sources</h2>
+                        <p class="text-gray-500 text-sm mt-1">Manage your data connections and integrations</p>
+                    </div>
+                    <button class="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                        Add Data Source
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <!-- Connected Sources -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Connected Sources</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- PostgreSQL Database -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-gray-800">Sales Database</h4>
+                                        <p class="text-sm text-gray-500">PostgreSQL</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Connected</span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Host:</span>
+                                    <span class="text-gray-800 font-medium">db.company.com</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Database:</span>
+                                    <span class="text-gray-800 font-medium">sales_prod</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Last sync:</span>
+                                    <span class="text-gray-800 font-medium">2 minutes ago</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Used in:</span>
+                                    <span class="text-gray-800 font-medium">3 templates</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="flex-1 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    Test Connection
+                                </button>
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                                    Configure
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Google Sheets -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-gray-800">Q4 Sales Data</h4>
+                                        <p class="text-sm text-gray-500">Google Sheets</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Connected</span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Sheet ID:</span>
+                                    <span class="text-gray-800 font-medium">1a2b3c...</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Worksheet:</span>
+                                    <span class="text-gray-800 font-medium">Sales Summary</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Last sync:</span>
+                                    <span class="text-gray-800 font-medium">15 minutes ago</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Used in:</span>
+                                    <span class="text-gray-800 font-medium">2 templates</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="flex-1 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    Refresh Data
+                                </button>
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                                    Configure
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Shopify API -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-gray-800">Store Analytics</h4>
+                                        <p class="text-sm text-gray-500">Shopify API</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Connected</span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Store:</span>
+                                    <span class="text-gray-800 font-medium">mystore.myshopify.com</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">API Version:</span>
+                                    <span class="text-gray-800 font-medium">2024-01</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Last sync:</span>
+                                    <span class="text-gray-800 font-medium">5 minutes ago</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Used in:</span>
+                                    <span class="text-gray-800 font-medium">4 templates</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="flex-1 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    Test Connection
+                                </button>
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                                    Configure
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- QuickBooks -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-gray-800">Financial Data</h4>
+                                        <p class="text-sm text-gray-500">QuickBooks Online</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Connected</span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Company:</span>
+                                    <span class="text-gray-800 font-medium">Acme Corp</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Account ID:</span>
+                                    <span class="text-gray-800 font-medium">QB-12345</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Last sync:</span>
+                                    <span class="text-gray-800 font-medium">1 hour ago</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Used in:</span>
+                                    <span class="text-gray-800 font-medium">1 template</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="flex-1 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    Sync Now
+                                </button>
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                                    Configure
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- CSV Upload -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-gray-800">Inventory Data</h4>
+                                        <p class="text-sm text-gray-500">CSV File</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">Stale</span>
+                            </div>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">File:</span>
+                                    <span class="text-gray-800 font-medium">inventory_2024.csv</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Size:</span>
+                                    <span class="text-gray-800 font-medium">2.4 MB</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Last updated:</span>
+                                    <span class="text-gray-800 font-medium">3 days ago</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-600">Used in:</span>
+                                    <span class="text-gray-800 font-medium">1 template</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="flex-1 bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                    Upload New
+                                </button>
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                                    Download
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Integrations -->
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Available Integrations</h3>
+                    <div class="bg-white rounded-lg shadow">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-gray-200">
+                            <div class="bg-white p-6 hover:bg-gray-50 transition cursor-pointer">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7"></path>
+                                            </svg>
+                                        </div>
+                                        <h4 class="ml-3 font-semibold text-gray-800">MySQL</h4>
+                                    </div>
+                                    <button class="text-violet-600 hover:text-violet-700 text-sm font-medium">Connect</button>
+                                </div>
+                                <p class="text-sm text-gray-600">Connect to MySQL databases</p>
+                            </div>
+
+                            <div class="bg-white p-6 hover:bg-gray-50 transition cursor-pointer">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                            </svg>
+                                        </div>
+                                        <h4 class="ml-3 font-semibold text-gray-800">Salesforce</h4>
+                                    </div>
+                                    <button class="text-violet-600 hover:text-violet-700 text-sm font-medium">Connect</button>
+                                </div>
+                                <p class="text-sm text-gray-600">Import CRM data</p>
+                            </div>
+
+                            <div class="bg-white p-6 hover:bg-gray-50 transition cursor-pointer">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
+                                            </svg>
+                                        </div>
+                                        <h4 class="ml-3 font-semibold text-gray-800">Airtable</h4>
+                                    </div>
+                                    <button class="text-violet-600 hover:text-violet-700 text-sm font-medium">Connect</button>
+                                </div>
+                                <p class="text-sm text-gray-600">Sync Airtable bases</p>
+                            </div>
+
+                            <div class="bg-white p-6 hover:bg-gray-50 transition cursor-pointer">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                        </div>
+                                        <h4 class="ml-3 font-semibold text-gray-800">REST API</h4>
+                                    </div>
+                                    <button class="text-violet-600 hover:text-violet-700 text-sm font-medium">Connect</button>
+                                </div>
+                                <p class="text-sm text-gray-600">Custom API endpoints</p>
+                            </div>
+
+                            <div class="bg-white p-6 hover:bg-gray-50 transition cursor-pointer">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                                            </svg>
+                                        </div>
+                                        <h4 class="ml-3 font-semibold text-gray-800">Google Analytics</h4>
+                                    </div>
+                                    <button class="text-violet-600 hover:text-violet-700 text-sm font-medium">Connect</button>
+                                </div>
+                                <p class="text-sm text-gray-600">Website analytics data</p>
+                            </div>
+
+                            <div class="bg-white p-6 hover:bg-gray-50 transition cursor-pointer">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <h4 class="ml-3 font-semibold text-gray-800">SendGrid</h4>
+                                    </div>
+                                    <button class="text-violet-600 hover:text-violet-700 text-sm font-medium">Connect</button>
+                                </div>
+                                <p class="text-sm text-gray-600">Email delivery metrics</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

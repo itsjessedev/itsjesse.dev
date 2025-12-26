@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataBridge - Validation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-800 text-white flex flex-col">
+            <div class="p-6 border-b border-slate-700">
+                <h1 class="text-2xl font-bold">DataBridge</h1>
+                <p class="text-slate-400 text-sm mt-1">Legacy Migration Tool</p>
+            </div>
+            <nav class="flex-1 p-4">
+                <a href="databridge-dashboard.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="databridge-sources.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                    </svg>
+                    Data Sources
+                </a>
+                <a href="databridge-mapping.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                    Field Mapping
+                </a>
+                <a href="databridge-validation.html" class="flex items-center px-4 py-3 mb-2 bg-slate-700 rounded-lg text-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Validation
+                </a>
+                <a href="databridge-progress.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Progress
+                </a>
+                <a href="databridge-history.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    History
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-slate-600 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-semibold">JE</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Jesse Eldridge</p>
+                        <p class="text-xs text-slate-400">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <header class="bg-white border-b border-slate-200 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-900">Data Validation</h2>
+                        <p class="text-slate-600 mt-1">Configure validation rules and review errors</p>
+                    </div>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+                        Run Validation
+                    </button>
+                </div>
+            </header>
+
+            <div class="p-8">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-slate-600 text-sm font-medium">Total Validated</p>
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-slate-900">47,832</p>
+                        <p class="text-xs text-slate-500 mt-2">100% of records</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-slate-600 text-sm font-medium">Passed</p>
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-green-600">47,705</p>
+                        <p class="text-xs text-slate-500 mt-2">99.7% pass rate</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-slate-600 text-sm font-medium">Errors</p>
+                            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-red-600">89</p>
+                        <p class="text-xs text-slate-500 mt-2">0.2% failure rate</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-slate-600 text-sm font-medium">Warnings</p>
+                            <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-amber-600">38</p>
+                        <p class="text-xs text-slate-500 mt-2">0.1% warning rate</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-8">
+                    <!-- Validation Rules -->
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200">
+                        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-slate-900">Active Validation Rules</h3>
+                            <button class="px-3 py-1 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700">
+                                + Add Rule
+                            </button>
+                        </div>
+                        <div class="divide-y divide-slate-200">
+                            <!-- Rule 1 -->
+                            <div class="p-4">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                            <h4 class="text-sm font-semibold text-slate-900">Email Format Validation</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-5">Ensures email addresses match RFC 5322 standard</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                </div>
+                                <div class="ml-5 mt-2 text-xs text-slate-500">
+                                    <span class="font-medium">Field:</span> EmailAddress → email
+                                </div>
+                            </div>
+
+                            <!-- Rule 2 -->
+                            <div class="p-4">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                            <h4 class="text-sm font-semibold text-slate-900">Phone Number Format</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-5">Validates E.164 international phone format</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                </div>
+                                <div class="ml-5 mt-2 text-xs text-slate-500">
+                                    <span class="font-medium">Field:</span> PhoneNumber → phone
+                                </div>
+                            </div>
+
+                            <!-- Rule 3 -->
+                            <div class="p-4">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                            <h4 class="text-sm font-semibold text-slate-900">Required Fields Check</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-5">Ensures critical fields are not null or empty</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                </div>
+                                <div class="ml-5 mt-2 text-xs text-slate-500">
+                                    <span class="font-medium">Fields:</span> CustomerName, EmailAddress, DateCreated
+                                </div>
+                            </div>
+
+                            <!-- Rule 4 -->
+                            <div class="p-4">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                            <h4 class="text-sm font-semibold text-slate-900">Duplicate Detection</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-5">Identifies potential duplicate records by email</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                </div>
+                                <div class="ml-5 mt-2 text-xs text-slate-500">
+                                    <span class="font-medium">Match Field:</span> EmailAddress (case-insensitive)
+                                </div>
+                            </div>
+
+                            <!-- Rule 5 -->
+                            <div class="p-4">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                            <h4 class="text-sm font-semibold text-slate-900">Date Range Validation</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-5">Ensures dates are within reasonable range</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-medium">Active</span>
+                                </div>
+                                <div class="ml-5 mt-2 text-xs text-slate-500">
+                                    <span class="font-medium">Range:</span> 1990-01-01 to present
+                                </div>
+                            </div>
+
+                            <!-- Rule 6 -->
+                            <div class="p-4 bg-slate-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <span class="w-2 h-2 bg-slate-400 rounded-full mr-3"></span>
+                                            <h4 class="text-sm font-semibold text-slate-500">State Code Validation</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-500 mt-1 ml-5">Validates US state abbreviations</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-slate-200 text-slate-600 rounded text-xs font-medium">Disabled</span>
+                                </div>
+                                <div class="ml-5 mt-2 text-xs text-slate-400">
+                                    <span class="font-medium">Field:</span> StateCode
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Errors -->
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200">
+                        <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-slate-900">Recent Validation Errors</h3>
+                            <button class="px-3 py-1 border border-slate-300 text-slate-700 rounded text-sm font-medium hover:bg-slate-50">
+                                Export Errors
+                            </button>
+                        </div>
+                        <div class="divide-y divide-slate-200">
+                            <!-- Error 1 -->
+                            <div class="p-4 hover:bg-slate-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center mr-3">
+                                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-sm font-semibold text-slate-900">Invalid Email Format</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-9">Record ID: 23847</p>
+                                        <p class="text-xs text-red-600 mt-1 ml-9 font-mono">Value: "john.doe@incomplete"</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">Error</span>
+                                </div>
+                            </div>
+
+                            <!-- Error 2 -->
+                            <div class="p-4 hover:bg-slate-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 bg-amber-100 rounded flex items-center justify-center mr-3">
+                                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-sm font-semibold text-slate-900">Possible Duplicate</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-9">Record IDs: 15234, 15892</p>
+                                        <p class="text-xs text-amber-600 mt-1 ml-9 font-mono">Email: "sarah.johnson@acme.com"</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-medium">Warning</span>
+                                </div>
+                            </div>
+
+                            <!-- Error 3 -->
+                            <div class="p-4 hover:bg-slate-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center mr-3">
+                                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-sm font-semibold text-slate-900">Missing Required Field</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-9">Record ID: 31245</p>
+                                        <p class="text-xs text-red-600 mt-1 ml-9 font-mono">Field: CustomerName (NULL)</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">Error</span>
+                                </div>
+                            </div>
+
+                            <!-- Error 4 -->
+                            <div class="p-4 hover:bg-slate-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center mr-3">
+                                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-sm font-semibold text-slate-900">Invalid Phone Format</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-9">Record ID: 28934</p>
+                                        <p class="text-xs text-red-600 mt-1 ml-9 font-mono">Value: "(555) 123 456"</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">Error</span>
+                                </div>
+                            </div>
+
+                            <!-- Error 5 -->
+                            <div class="p-4 hover:bg-slate-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 bg-amber-100 rounded flex items-center justify-center mr-3">
+                                                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-sm font-semibold text-slate-900">Unusual Date Value</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-9">Record ID: 42187</p>
+                                        <p class="text-xs text-amber-600 mt-1 ml-9 font-mono">Date: 1901-01-01 (very old)</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs font-medium">Warning</span>
+                                </div>
+                            </div>
+
+                            <!-- Error 6 -->
+                            <div class="p-4 hover:bg-slate-50">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div class="flex-1">
+                                        <div class="flex items-center">
+                                            <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center mr-3">
+                                                <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="text-sm font-semibold text-slate-900">Data Type Mismatch</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-600 mt-1 ml-9">Record ID: 19023</p>
+                                        <p class="text-xs text-red-600 mt-1 ml-9 font-mono">Expected: Number, Got: "N/A"</p>
+                                    </div>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">Error</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Summary -->
+                <div class="mt-8 bg-white rounded-lg shadow-sm border border-slate-200">
+                    <div class="px-6 py-4 border-b border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Error Summary by Type</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-slate-700">Invalid Email Format</span>
+                                    <span class="font-medium text-slate-900">34 errors</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-red-500 h-2 rounded-full" style="width: 38%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-slate-700">Invalid Phone Format</span>
+                                    <span class="font-medium text-slate-900">27 errors</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-red-500 h-2 rounded-full" style="width: 30%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-slate-700">Missing Required Fields</span>
+                                    <span class="font-medium text-slate-900">18 errors</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-red-500 h-2 rounded-full" style="width: 20%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-slate-700">Possible Duplicates</span>
+                                    <span class="font-medium text-amber-700">24 warnings</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-amber-500 h-2 rounded-full" style="width: 27%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-slate-700">Data Type Mismatch</span>
+                                    <span class="font-medium text-slate-900">10 errors</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-red-500 h-2 rounded-full" style="width: 11%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

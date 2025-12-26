@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataBridge - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-800 text-white flex flex-col">
+            <div class="p-6 border-b border-slate-700">
+                <h1 class="text-2xl font-bold">DataBridge</h1>
+                <p class="text-slate-400 text-sm mt-1">Legacy Migration Tool</p>
+            </div>
+            <nav class="flex-1 p-4">
+                <a href="databridge-dashboard.html" class="flex items-center px-4 py-3 mb-2 bg-slate-700 rounded-lg text-white">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="databridge-sources.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                    </svg>
+                    Data Sources
+                </a>
+                <a href="databridge-mapping.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                    Field Mapping
+                </a>
+                <a href="databridge-validation.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Validation
+                </a>
+                <a href="databridge-progress.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Progress
+                </a>
+                <a href="databridge-history.html" class="flex items-center px-4 py-3 mb-2 text-slate-300 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    History
+                </a>
+            </nav>
+            <div class="p-4 border-t border-slate-700">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 bg-slate-600 rounded-full flex items-center justify-center">
+                        <span class="text-sm font-semibold">JE</span>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">Jesse Eldridge</p>
+                        <p class="text-xs text-slate-400">Admin</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <header class="bg-white border-b border-slate-200 px-8 py-6">
+                <h2 class="text-3xl font-bold text-slate-900">Migration Dashboard</h2>
+                <p class="text-slate-600 mt-1">Overview of all active migration projects</p>
+            </header>
+
+            <div class="p-8">
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 text-sm font-medium">Total Records</p>
+                                <p class="text-3xl font-bold text-slate-900 mt-2">47,832</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 text-sm font-medium">Migrated</p>
+                                <p class="text-3xl font-bold text-green-600 mt-2">42,156</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 text-sm font-medium">Validation Errors</p>
+                                <p class="text-3xl font-bold text-amber-600 mt-2">127</p>
+                            </div>
+                            <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-slate-600 text-sm font-medium">Success Rate</p>
+                                <p class="text-3xl font-bold text-slate-900 mt-2">88.1%</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Migrations -->
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 mb-8">
+                    <div class="px-6 py-4 border-b border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Active Migrations</h3>
+                    </div>
+                    <div class="divide-y divide-slate-200">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h4 class="text-base font-semibold text-slate-900">Access DB → HubSpot CRM</h4>
+                                    <p class="text-sm text-slate-600 mt-1">Customer and contact records migration</p>
+                                </div>
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">In Progress</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="flex justify-between text-sm text-slate-600 mb-2">
+                                    <span>Progress: 42,156 / 47,832 records</span>
+                                    <span>88.1%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 88.1%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm text-slate-600">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Started: Dec 20, 2025 10:30 AM
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h4 class="text-base font-semibold text-slate-900">Access DB → Airtable</h4>
+                                    <p class="text-sm text-slate-600 mt-1">Project and task data migration</p>
+                                </div>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Completed</span>
+                            </div>
+                            <div class="mb-3">
+                                <div class="flex justify-between text-sm text-slate-600 mb-2">
+                                    <span>Progress: 12,483 / 12,483 records</span>
+                                    <span>100%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm text-slate-600">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Completed: Dec 19, 2025 3:45 PM
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200">
+                    <div class="px-6 py-4 border-b border-slate-200">
+                        <h3 class="text-lg font-semibold text-slate-900">Recent Activity</h3>
+                    </div>
+                    <div class="divide-y divide-slate-200">
+                        <div class="p-4 flex items-center">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-slate-900">Batch #847 completed successfully</p>
+                                <p class="text-xs text-slate-500 mt-1">500 records migrated to HubSpot</p>
+                            </div>
+                            <span class="text-xs text-slate-500">2 min ago</span>
+                        </div>
+                        <div class="p-4 flex items-center">
+                            <div class="w-2 h-2 bg-amber-500 rounded-full mr-4"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-slate-900">Validation warning in batch #846</p>
+                                <p class="text-xs text-slate-500 mt-1">12 records require manual review</p>
+                            </div>
+                            <span class="text-xs text-slate-500">15 min ago</span>
+                        </div>
+                        <div class="p-4 flex items-center">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-4"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-slate-900">Field mapping updated</p>
+                                <p class="text-xs text-slate-500 mt-1">Phone number format standardized</p>
+                            </div>
+                            <span class="text-xs text-slate-500">1 hour ago</span>
+                        </div>
+                        <div class="p-4 flex items-center">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-4"></div>
+                            <div class="flex-1">
+                                <p class="text-sm text-slate-900">New data source connected</p>
+                                <p class="text-xs text-slate-500 mt-1">Access database: legacy_customers.accdb</p>
+                            </div>
+                            <span class="text-xs text-slate-500">3 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
