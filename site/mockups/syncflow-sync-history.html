@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SyncFlow - Sync History</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .logo { font-size: 24px; font-weight: bold; background: linear-gradient(135deg, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav { display: flex; gap: 24px; }
+    .nav a { color: #9ca3af; text-decoration: none; font-size: 14px; }
+    .nav a.active { color: #6366f1; }
+    .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th { text-align: left; padding: 12px; color: #9ca3af; font-size: 12px; font-weight: 500; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+    .status { padding: 4px 12px; border-radius: 12px; font-size: 12px; }
+    .success { background: rgba(34,197,94,0.2); color: #22c55e; }
+    .warning { background: rgba(234,179,8,0.2); color: #eab308; }
+    .records { color: #6366f1; font-weight: 600; }
+    .time { color: #9ca3af; }
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; }
+    .filter { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px 16px; color: #fff; font-size: 14px; }
+    .filter.active { border-color: #6366f1; background: rgba(99,102,241,0.1); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">SyncFlow</div>
+    <div class="nav">
+      <a href="#">Dashboard</a>
+      <a href="#" class="active">Sync History</a>
+      <a href="#">Settings</a>
+      <a href="#">Reports</a>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="filter active">All Syncs</div>
+    <div class="filter">Salesforce</div>
+    <div class="filter">Jira</div>
+    <div class="filter">Last 7 Days</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Sync History</div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Source</th>
+          <th>Records</th>
+          <th>Duration</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="time">Dec 26, 2024 2:45 PM</td>
+          <td>Salesforce → Sheets</td>
+          <td class="records">47 records</td>
+          <td>12s</td>
+          <td><span class="status success">Completed</span></td>
+        </tr>
+        <tr>
+          <td class="time">Dec 26, 2024 2:30 PM</td>
+          <td>Jira → Sheets</td>
+          <td class="records">23 records</td>
+          <td>8s</td>
+          <td><span class="status success">Completed</span></td>
+        </tr>
+        <tr>
+          <td class="time">Dec 26, 2024 2:15 PM</td>
+          <td>Salesforce → Sheets</td>
+          <td class="records">156 records</td>
+          <td>34s</td>
+          <td><span class="status success">Completed</span></td>
+        </tr>
+        <tr>
+          <td class="time">Dec 26, 2024 2:00 PM</td>
+          <td>Jira → Sheets</td>
+          <td class="records">12 records</td>
+          <td>5s</td>
+          <td><span class="status warning">Partial</span></td>
+        </tr>
+        <tr>
+          <td class="time">Dec 26, 2024 1:45 PM</td>
+          <td>Salesforce → Sheets</td>
+          <td class="records">89 records</td>
+          <td>21s</td>
+          <td><span class="status success">Completed</span></td>
+        </tr>
+        <tr>
+          <td class="time">Dec 26, 2024 1:30 PM</td>
+          <td>Jira → Sheets</td>
+          <td class="records">67 records</td>
+          <td>15s</td>
+          <td><span class="status success">Completed</span></td>
+        </tr>
+        <tr>
+          <td class="time">Dec 26, 2024 1:15 PM</td>
+          <td>Salesforce → Sheets</td>
+          <td class="records">234 records</td>
+          <td>45s</td>
+          <td><span class="status success">Completed</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

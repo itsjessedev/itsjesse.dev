@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: workflowbot-db
+    environment:
+      POSTGRES_USER: workflowbot
+      POSTGRES_PASSWORD: workflowbot
+      POSTGRES_DB: workflowbot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflowbot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and task queue
+  redis:
+    image: redis:7-alpine
+    container_name: workflowbot-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # WorkflowBot Application
+  workflowbot:
+    build: .
+    container_name: workflowbot-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://workflowbot:workflowbot@postgres:5432/workflowbot
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      DEMO_MODE: ${DEMO_MODE:-false}
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN:-}
+      SLACK_APP_TOKEN: ${SLACK_APP_TOKEN:-}
+      SLACK_SIGNING_SECRET: ${SLACK_SIGNING_SECRET:-}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      DEBUG: ${DEBUG:-false}
+    volumes:
+      - ./uploads:/tmp/workflowbot/uploads
+    restart: unless-stopped
+
+  # Celery Worker (for background tasks)
+  worker:
+    build: .
+    container_name: workflowbot-worker
+    command: celery -A src.tasks worker --loglevel=info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://workflowbot:workflowbot@postgres:5432/workflowbot
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+    restart: unless-stopped
+
+  # Demo Mode Service
+  demo:
+    build: .
+    container_name: workflowbot-demo
+    command: python src/main.py --demo
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://workflowbot:workflowbot@postgres:5432/workflowbot
+      DEMO_MODE: "true"
+    stdin_open: true
+    tty: true
+    profiles:
+      - demo
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: workflowbot-network

@@ -1,0 +1,44 @@
+# r/startups - 'need technical cofounder' Prospects - 2025-12-25 00:17
+Found 7 posts
+
+## 1. I have no clue how to market the skincare app I bootstrapped. I will not promote.
+- Author: u/baincs
+- URL: https://reddit.com/r/startups/comments/1ptimcw/i_have_no_clue_how_to_market_the_skincare_app_i/
+- Date: 2025-12-22 | Score: 0 | Comments: 8
+- Preview: I've been bootstrapping an AI skincare assistant web app (I described the features at the bottom). For the context, I have a full-time job as a software dev, and working on this part-time.  When I started, the #1 advice was to 'not build before you figure out the marketing channel'. My naive, first-...
+
+## 2. [Hiring/Seeking/Offering] Jobs / Co-Founders Weekly Thread
+- Author: u/AutoModerator
+- URL: https://reddit.com/r/startups/comments/1psr1sh/hiringseekingoffering_jobs_cofounders_weekly/
+- Date: 2025-12-21 | Score: 8 | Comments: 12
+- Preview: # [Hiring/Seeking/Offering] Jobs / Co-Founders Weekly Thread  This is an experiment. We see there is a demand from the community to:  * Find Co-Founders * Hiring / Seeking Jobs * Offering Your Skillset / Looking for Talent  # Please use the following template:  * \*\*\[SEEKING / HIRING / OFFERING\]\...
+
+## 3. Being a shy founder: How critical is it to be "face-forward" on social media video? - I will not promote
+- Author: u/Grubtok
+- URL: https://reddit.com/r/startups/comments/1prirw9/being_a_shy_founder_how_critical_is_it_to_be/
+- Date: 2025-12-20 | Score: 46 | Comments: 55
+- Preview: Hi everyone,  I’m a technical founder building a B2C product in the food/restaurant discovery space. We are at the stage where we need to ramp up organic marketing, and obviously, short-form video (TikTok/Reels) is the biggest lever right now.  The problem is, I am genuinely shy and uncomfortable on...
+
+## 4. AI is killing startups (as we know them) and I think it's not a bad thing (I will not promote)
+- Author: u/quang-vybe
+- URL: https://reddit.com/r/startups/comments/1pqijqi/ai_is_killing_startups_as_we_know_them_and_i/
+- Date: 2025-12-19 | Score: 0 | Comments: 25
+- Preview: I've been putting some thought into what vibe coding has brought us after I saw the Cursor guys ditching their CMS for something more artisanal, and I drafted the following post. Before I publish it on my blog I'd love to have your thoughts about it.  I think that applies to most startups but mostly...
+
+## 5. I will not promote my startup, just sharing the idea i have been working on...
+- Author: u/The_Boy4time
+- URL: https://reddit.com/r/startups/comments/1pq0jo6/i_will_not_promote_my_startup_just_sharing_the/
+- Date: 2025-12-18 | Score: 6 | Comments: 13
+- Preview: I wanted to share the reasoning and the build behind my current startup...  I’m a 19-year-old management student in India. Over the last year, I’ve been building a B2B SaaS platform for the higher education sector, but with a specific contrarian bet to **deliberately ignore the big universities**.  ...
+
+## 6. Looking for a technical cofounder / build partner (b2b saas, auto) - i will not promote
+- Author: u/krzygrk
+- URL: https://reddit.com/r/startups/comments/1ppgu2c/looking_for_a_technical_cofounder_build_partner/
+- Date: 2025-12-17 | Score: 5 | Comments: 14
+- Preview: I’ll try to keep this simple.  I run a few car dealerships and I’m working on a software idea that came straight out of day-to-day ops. It’s basically an operations scorecard for sales, finance, and service so managers and GMs can actually see what’s happening and coach people before problems show u...
+
+## 7. Looking to collaborate with a startup as a backend / tech contributor - i will not promote
+- Author: u/Unhappy_Bug_5277
+- URL: https://reddit.com/r/startups/comments/1ppd3zs/looking_to_collaborate_with_a_startup_as_a/
+- Date: 2025-12-17 | Score: 3 | Comments: 2
+- Preview: If you’re building something and need help shipping or strengthening the backend, I’d love to connect and learn more about what you’re working on.  I’m a senior backend engineer with **7+ years of experience** building and maintaining production systems using **Java, Spring Boot, JPA/Hibernate, REST...

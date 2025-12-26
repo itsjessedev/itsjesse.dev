@@ -1,0 +1,62 @@
+# r/SaaS - 'looking for developer' Prospects - 2025-12-25 00:17
+Found 10 posts
+
+## 1. Is 10–15% reasonable for a founding CTO at pre-seed (with prototype + LOIs in progress)?
+- Author: u/Fast_Permit_454
+- URL: https://reddit.com/r/SaaS/comments/1puzsj1/is_1015_reasonable_for_a_founding_cto_at_preseed/
+- Date: 2025-12-24 | Score: 1 | Comments: 1
+- Preview: Hey everyone, I’d love some advice from founders who have gone through the early-stage co-founder equity structuring process.  I’m building a SaaS platform and we’re currently pre-seed. I’m in active discussions to secure four Letters of Intent (LOIs) before fundraising, since traction is difficult ...
+
+## 2. AI Stacks
+- Author: u/Outrageous_Guess_962
+- URL: https://reddit.com/r/SaaS/comments/1puyo5z/ai_stacks/
+- Date: 2025-12-24 | Score: 1 | Comments: 0
+- Preview: Hey everyone,  I’ve been struggling with something for a while and decided to build a small MVP around it.  **The problem (at least for me):**   AI tools are everywhere now, but finding *actually useful* ones and figuring out how they fit together is exhausting. Most directories feel like huge, unfi...
+
+## 3. What's your “I wish there was an app for that” moment?
+- Author: u/moi_cila
+- URL: https://reddit.com/r/SaaS/comments/1puryg3/whats_your_i_wish_there_was_an_app_for_that_moment/
+- Date: 2025-12-24 | Score: 1 | Comments: 1
+- Preview: Hey folks 👋    I'm a developer who wants to build something genuinely useful, not just another app looking for a problem.  What’s a recurring problem or annoying situation in your life where you’ve thought: &gt; “Why isn’t there an app (or tool) that just does this properly?”  It can be: - Small dai...
+
+## 4. Week 1: 15 users, 93% onboarding completion, $0 spent. Here's what's working.
+- Author: u/IntelligentCause2043
+- URL: https://reddit.com/r/SaaS/comments/1purma1/week_1_15_users_93_onboarding_completion_0_spent/
+- Date: 2025-12-24 | Score: 1 | Comments: 4
+- Preview: Launched a B2B SaaS for ecommerce product research last week. No ads, just Reddit posts and Twitter. The numbers: 15 signups 14 completed onboarding (93%) 9 actively using core features 5 dormant (33%) - still figuring out why What's working: Onboarding flow keeps it simple - 4 steps, under 2 mins U...
+
+## 5. Built a really cool Saas for students - ask me anything (AMA)
+- Author: u/Reasonable-Stop-7233
+- URL: https://reddit.com/r/SaaS/comments/1puov3v/built_a_really_cool_saas_for_students_ask_me/
+- Date: 2025-12-24 | Score: 0 | Comments: 2
+- Preview: Hey everyone, I’m a 15-year-old student/developer from India, and I’ve been building a small side project for the past few weeks. It started as something I wanted for myself - a simple learning + AI tool where I could experiment, study, and test out ideas.  I finally put it together in a usable form...
+
+## 6. SaaS Product Manager Available – Looking to Collaborate with Early-Stage Startup (No Pay Required)
+- Author: u/No-Wasabi2012
+- URL: https://reddit.com/r/SaaS/comments/1pucdtr/saas_product_manager_available_looking_to/
+- Date: 2025-12-23 | Score: 3 | Comments: 4
+- Preview: Hi everyone 👋  I’m a SaaS Product Manager with hands-on experience in building and scaling digital products. At the moment, I have availability and I’m open to collaborating with a promising early-stage startup.  I’m not looking for money right now — my goal is to:  Work with a strong founding team ...
+
+## 7. Inviting early testers/critique for IngestGPT. Free Pro plan for real use cases
+- Author: u/Creative-Chance514
+- URL: https://reddit.com/r/SaaS/comments/1pu8o7p/inviting_early_testerscritique_for_ingestgpt_free/
+- Date: 2025-12-23 | Score: 1 | Comments: 3
+- Preview: Hello everyone,  I built IngestGPT and now looking for a small group of early testers (around 10) who have a real use case and are willing to actually use the product and share feedback. I am looking for honest feedback positive or negative both are welcome. I am also open to add new features on req...
+
+## 8. I built a marketplace for developers and I’m looking for devs to check it out
+- Author: u/Kind-Relation304
+- URL: https://reddit.com/r/SaaS/comments/1ptwm1y/i_built_a_marketplace_for_developers_and_im/
+- Date: 2025-12-23 | Score: 2 | Comments: 6
+- Preview: I built a marketplace where developers can sell their tools directly to other developers. No commissions, no hidden fees, and no marketing circus. The idea is simple: tools shouldn’t die in repos just because selling them is annoying. The platform is live, and right now I’m mainly looking for develo...
+
+## 9. I rebuild slow SaaS landing pages into &lt;1s load time, conversion-focused sites — looking to help 1–2 founders
+- Author: u/AlphaWaveXX
+- URL: https://reddit.com/r/SaaS/comments/1ptvb8t/i_rebuild_slow_saas_landing_pages_into_1s_load/
+- Date: 2025-12-23 | Score: 1 | Comments: 1
+- Preview: I’m a frontend developer currently working with a startup on their marketing website (Next.js + Tailwind + headless CMS).  Over the past few months, I’ve noticed the same issue across many SaaS sites:  * Pages look good in Figma but feel slow in production * Animations hurt performance instead of he...
+
+## 10. Funding and Core founding team
+- Author: u/LeiraGotSkills
+- URL: https://reddit.com/r/SaaS/comments/1ptv5ma/funding_and_core_founding_team/
+- Date: 2025-12-23 | Score: 1 | Comments: 0
+- Preview: I am a startup founder.  This is our Saas, zelon.io  We are in a development stage. As of now it is just me and my co founder which is a CTO.  My background is over half a decade of entrepreneurship, i used to own a restaurant and lending corporation. Lost it all and became bankrupt.  One thing i le...
