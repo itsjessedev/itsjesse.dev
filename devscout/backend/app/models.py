@@ -32,6 +32,11 @@ class Post(Base):
     status = Column(String(20), default="new")  # new, skipped, responded
     responded_at = Column(DateTime, nullable=True)
 
+    # Reply tracking
+    my_comment_url = Column(String(500), nullable=True)  # URL to user's comment
+    last_reply_check = Column(DateTime, nullable=True)
+    unread_replies = Column(Integer, default=0)
+
     # Timestamps
     discovered_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

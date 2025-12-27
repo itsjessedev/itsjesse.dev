@@ -288,26 +288,15 @@ async function fetchLobsters() {
   return posts;
 }
 
-// Fetch from all sources (client-side)
+// Fetch from Reddit only (client-side)
 export async function fetchFromReddit(onProgress = null) {
   const allPosts = [];
-  const totalSources = TARGET_SUBREDDITS.length + 2; // +2 for HN and Lobsters
-  let current = 0;
-
-  // Fetch from Hacker News first
-  if (onProgress) onProgress(++current, totalSources, 'Hacker News');
-  const hnPosts = await fetchHackerNews();
-  allPosts.push(...hnPosts);
-
-  // Fetch from Lobsters
-  if (onProgress) onProgress(++current, totalSources, 'Lobsters');
-  const lobstersPosts = await fetchLobsters();
-  allPosts.push(...lobstersPosts);
+  const totalSources = TARGET_SUBREDDITS.length;
 
   // Fetch from Reddit subreddits
   for (let i = 0; i < TARGET_SUBREDDITS.length; i++) {
     const subreddit = TARGET_SUBREDDITS[i];
-    if (onProgress) onProgress(++current, totalSources, `r/${subreddit}`);
+    if (onProgress) onProgress(i + 1, totalSources, `r/${subreddit}`);
 
     const posts = await fetchSubreddit(subreddit);
     allPosts.push(...posts);
@@ -317,6 +306,145 @@ export async function fetchFromReddit(onProgress = null) {
       await new Promise(r => setTimeout(r, 300));
     }
   }
+
+  // Sort by relevance
+  allPosts.sort((a, b) => b.relevance_score - a.relevance_score);
+  return allPosts;
+}
+
+// Fetch from Dev.to
+async function fetchDevTo() {
+  const posts = [];
+  const cutoffTime = Date.now() / 1000 - (MAX_POST_AGE_HOURS * 3600);
+
+  try {
+    // Get latest articles - use top=7 to get popular posts from last week
+    const response = await fetch('https://dev.to/api/articles?per_page=50&top=7');
+    if (!response.ok) return [];
+
+    const articles = await response.json();
+
+    for (const article of articles) {
+      const createdAt = new Date(article.published_at).getTime() / 1000;
+
+      // Skip old posts
+      if (createdAt < cutoffTime) continue;
+
+      // Skip posts with too many comments (already saturated)
+      if (article.comments_count > MAX_COMMENTS * 2) continue;
+
+      const fullText = `${article.title} ${article.description || ''} ${article.tag_list?.join(' ') || ''}`;
+      const matched = matchesKeywords(fullText);
+
+      if (matched.length > 0) {
+        const relevance = calculateRelevance({
+          title: article.title,
+          num_comments: article.comments_count,
+          created_utc: createdAt,
+        }, matched);
+
+        posts.push({
+          reddit_id: `devto_${article.id}`,
+          subreddit: `DEV:${article.tag_list?.[0] || 'general'}`,
+          title: article.title,
+          body: article.description?.slice(0, 2000) || null,
+          url: article.url,
+          author: article.user?.username || '[deleted]',
+          score: article.public_reactions_count || 0,
+          num_comments: article.comments_count || 0,
+          created_utc: createdAt,
+          relevance_score: relevance,
+          keywords_matched: matched,
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching Dev.to:', err);
+  }
+
+  return posts;
+}
+
+// Fetch from Hashnode
+async function fetchHashnode() {
+  const posts = [];
+  const cutoffTime = Date.now() / 1000 - (MAX_POST_AGE_HOURS * 3600);
+
+  try {
+    // Hashnode has a GraphQL API, but we can use their feed API
+    const response = await fetch('https://hashnode.com/api/feed/hot?page=0');
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    const articles = data.posts || [];
+
+    for (const article of articles) {
+      const createdAt = new Date(article.dateAdded).getTime() / 1000;
+
+      // Skip old posts
+      if (createdAt < cutoffTime) continue;
+
+      // Skip posts with too many responses
+      if ((article.responseCount || 0) > MAX_COMMENTS * 2) continue;
+
+      const fullText = `${article.title} ${article.brief || ''} ${article.tags?.map(t => t.name).join(' ') || ''}`;
+      const matched = matchesKeywords(fullText);
+
+      if (matched.length > 0) {
+        const relevance = calculateRelevance({
+          title: article.title,
+          num_comments: article.responseCount || 0,
+          created_utc: createdAt,
+        }, matched);
+
+        posts.push({
+          reddit_id: `hashnode_${article._id || article.cuid}`,
+          subreddit: `Hashnode:${article.tags?.[0]?.name || 'general'}`,
+          title: article.title,
+          body: article.brief?.slice(0, 2000) || null,
+          url: article.publication?.domain
+            ? `https://${article.publication.domain}/${article.slug}`
+            : `https://hashnode.com/post/${article.slug}`,
+          author: article.author?.username || '[deleted]',
+          score: article.totalReactions || 0,
+          num_comments: article.responseCount || 0,
+          created_utc: createdAt,
+          relevance_score: relevance,
+          keywords_matched: matched,
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching Hashnode:', err);
+  }
+
+  return posts;
+}
+
+// Fetch from HN, Lobsters, Dev.to, and Hashnode (client-side)
+export async function fetchNews(onProgress = null) {
+  const allPosts = [];
+  const totalSources = 4;
+
+  // Fetch from Hacker News
+  if (onProgress) onProgress(1, totalSources, 'Hacker News');
+  const hnPosts = await fetchHackerNews();
+  allPosts.push(...hnPosts);
+
+  // Fetch from Lobsters
+  if (onProgress) onProgress(2, totalSources, 'Lobsters');
+  const lobstersPosts = await fetchLobsters();
+  allPosts.push(...lobstersPosts);
+
+  // Fetch from Dev.to
+  if (onProgress) onProgress(3, totalSources, 'Dev.to');
+  const devtoPosts = await fetchDevTo();
+  allPosts.push(...devtoPosts);
+
+  // Fetch from Hashnode
+  if (onProgress) onProgress(4, totalSources, 'Hashnode');
+  const hashnodePosts = await fetchHashnode();
+  allPosts.push(...hashnodePosts);
 
   // Sort by relevance
   allPosts.sort((a, b) => b.relevance_score - a.relevance_score);
@@ -361,6 +489,28 @@ export async function generateResponse(postId, customContext = null) {
   return res.json();
 }
 
+// Generate a response to a reply to user's comment
+export async function generateReplyResponse({ subreddit, myComment, theirReply }) {
+  const res = await fetch(`${API_BASE}/api/posts/generate-reply`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subreddit, my_comment: myComment, their_reply: theirReply }),
+  });
+  if (!res.ok) throw new Error('Failed to generate reply');
+  return res.json();
+}
+
+// Generate an engagement post for starting a discussion
+export async function generateEngagePost({ subreddit, ideaTemplate, category }) {
+  const res = await fetch(`${API_BASE}/api/posts/generate-engage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subreddit, idea_template: ideaTemplate, category }),
+  });
+  if (!res.ok) throw new Error('Failed to generate engage post');
+  return res.json();
+}
+
 export async function updatePost(postId, updates) {
   const res = await fetch(`${API_BASE}/api/posts/${postId}`, {
     method: 'PATCH',
@@ -375,6 +525,120 @@ export async function deletePost(postId) {
   const res = await fetch(`${API_BASE}/api/posts/${postId}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Failed to delete post');
   return res.json();
+}
+
+export async function clearStalePosts() {
+  const res = await fetch(`${API_BASE}/api/posts/clear/stale`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to clear posts');
+  return res.json();
+}
+
+// Reply tracking functions
+export async function fetchTrackedPosts() {
+  const res = await fetch(`${API_BASE}/api/posts/tracked`);
+  if (!res.ok) throw new Error('Failed to fetch tracked posts');
+  return res.json();
+}
+
+export async function updateReplyCount(postId, count) {
+  const res = await fetch(`${API_BASE}/api/posts/${postId}/update-replies?count=${count}`, {
+    method: 'POST',
+  });
+  if (!res.ok) throw new Error('Failed to update reply count');
+  return res.json();
+}
+
+export async function markRepliesRead(postId) {
+  const res = await fetch(`${API_BASE}/api/posts/${postId}/mark-read`, {
+    method: 'POST',
+  });
+  if (!res.ok) throw new Error('Failed to mark replies read');
+  return res.json();
+}
+
+// Parse Reddit comment URL to extract info
+function parseRedditCommentUrl(url) {
+  // Expected format: https://reddit.com/r/subreddit/comments/postid/title/commentid/
+  const match = url.match(/reddit\.com\/r\/(\w+)\/comments\/(\w+)\/[^/]+\/(\w+)/);
+  if (!match) return null;
+  return {
+    subreddit: match[1],
+    postId: match[2],
+    commentId: match[3],
+  };
+}
+
+// Fetch replies to a Reddit comment (client-side)
+export async function fetchCommentReplies(commentUrl) {
+  const parsed = parseRedditCommentUrl(commentUrl);
+  if (!parsed) return { replies: [], error: 'Invalid Reddit comment URL' };
+
+  try {
+    // Fetch the comment thread
+    const response = await fetch(
+      `https://www.reddit.com/r/${parsed.subreddit}/comments/${parsed.postId}/_/${parsed.commentId}.json`,
+      { headers: { 'Accept': 'application/json' } }
+    );
+
+    if (!response.ok) {
+      return { replies: [], error: `Failed to fetch: ${response.status}` };
+    }
+
+    const data = await response.json();
+
+    // The structure is: [post, comments]
+    // comments.data.children contains the comment and its replies
+    const replies = [];
+
+    if (data[1]?.data?.children) {
+      for (const child of data[1].data.children) {
+        if (child.kind === 't1' && child.data.id !== parsed.commentId) {
+          // Find replies to our comment
+          const findReplies = (comment, parentId) => {
+            if (comment.data?.parent_id === `t1_${parentId}`) {
+              replies.push({
+                id: comment.data.id,
+                author: comment.data.author || '[deleted]',
+                body: comment.data.body || '',
+                created_utc: comment.data.created_utc,
+                score: comment.data.score || 0,
+                permalink: `https://reddit.com${comment.data.permalink}`,
+              });
+            }
+            // Check nested replies
+            if (comment.data?.replies?.data?.children) {
+              for (const reply of comment.data.replies.data.children) {
+                if (reply.kind === 't1') {
+                  findReplies(reply, parentId);
+                }
+              }
+            }
+          };
+          findReplies(child, parsed.commentId);
+        }
+
+        // Also check if this IS our comment and has replies
+        if (child.data?.id === parsed.commentId && child.data?.replies?.data?.children) {
+          for (const reply of child.data.replies.data.children) {
+            if (reply.kind === 't1') {
+              replies.push({
+                id: reply.data.id,
+                author: reply.data.author || '[deleted]',
+                body: reply.data.body || '',
+                created_utc: reply.data.created_utc,
+                score: reply.data.score || 0,
+                permalink: `https://reddit.com${reply.data.permalink}`,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    return { replies, error: null };
+  } catch (err) {
+    return { replies: [], error: err.message };
+  }
 }
 
 // Fetch GitHub issues for contribution opportunities
@@ -466,4 +730,462 @@ ${issue.body || 'No description provided.'}
 
 ---
 Please help me make a contribution to fix this issue. Clone the repo, understand the codebase, implement a fix, and create a pull request.`;
+}
+
+// ============= REPLIES TRACKING =============
+
+const TARGET_USERNAME = 'jessedev_';
+
+// Scrape a Reddit post for user's comments and their replies
+export async function scrapePostForUserComments(postUrl) {
+  console.log(`[DevScout] scrapePostForUserComments called with URL: ${postUrl}`);
+
+  try {
+    // Extract post ID from URL - handle both old.reddit and www.reddit URLs
+    const match = postUrl.match(/reddit\.com\/r\/\w+\/comments\/(\w+)/);
+    if (!match) {
+      console.error(`[DevScout] Could not parse post URL: ${postUrl}`);
+      return { comments: [], error: 'Invalid Reddit post URL' };
+    }
+
+    const postId = match[1];
+    console.log(`[DevScout] Extracted post ID: ${postId}`);
+
+    // Fetch the full post with all comments
+    // Using old.reddit.com as it has more reliable JSON API access
+    const apiUrl = `https://old.reddit.com/comments/${postId}.json?limit=500&depth=10`;
+    console.log(`[DevScout] Fetching from: ${apiUrl}`);
+
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'DevScout/1.0'
+      }
+    });
+
+    console.log(`[DevScout] Response status: ${response.status}`);
+
+    if (!response.ok) {
+      console.error(`[DevScout] Reddit API error: ${response.status} ${response.statusText}`);
+      return { comments: [], error: `Failed to fetch: ${response.status}` };
+    }
+
+    const data = await response.json();
+    console.log(`[DevScout] Got response data, array length: ${Array.isArray(data) ? data.length : 'not an array'}`);
+
+    // Debug: log the structure
+    if (Array.isArray(data) && data.length >= 2) {
+      console.log(`[DevScout] data[0] kind: ${data[0]?.kind}, data[1] kind: ${data[1]?.kind}`);
+      console.log(`[DevScout] data[1].data.children count: ${data[1]?.data?.children?.length || 0}`);
+    } else {
+      console.error(`[DevScout] Unexpected data structure:`, JSON.stringify(data).slice(0, 500));
+    }
+
+    const userComments = [];
+
+    console.log(`[DevScout] Searching for comments by u/${TARGET_USERNAME}...`);
+
+    // Recursively find all comments by target user
+    function findUserComments(comments, depth = 0) {
+      if (!comments || !Array.isArray(comments)) {
+        if (depth === 0) console.log(`[DevScout] No comments array at depth ${depth}`);
+        return;
+      }
+
+      for (const child of comments) {
+        if (child.kind !== 't1') continue;
+
+        const comment = child.data;
+        const author = comment.author || '[deleted]';
+
+        // Debug: log all authors at shallow depths
+        if (depth < 2) {
+          console.log(`[DevScout] Depth ${depth}: Comment by u/${author} (id: ${comment.id})`);
+        }
+
+        // Check if this comment is by our user (case-insensitive)
+        if (author.toLowerCase() === TARGET_USERNAME.toLowerCase()) {
+          console.log(`[DevScout] ✓ FOUND user comment! ID: ${comment.id}, Body: "${comment.body?.slice(0, 80)}..."`);
+
+          // Get direct replies to this comment
+          const replies = [];
+          if (comment.replies?.data?.children) {
+            console.log(`[DevScout] Checking ${comment.replies.data.children.length} replies to user's comment`);
+            for (const reply of comment.replies.data.children) {
+              if (reply.kind === 't1' && reply.data.author?.toLowerCase() !== TARGET_USERNAME.toLowerCase()) {
+                replies.push({
+                  id: reply.data.id,
+                  author: reply.data.author || '[deleted]',
+                  body: reply.data.body || '',
+                  created_utc: reply.data.created_utc,
+                  score: reply.data.score || 0,
+                  permalink: `https://reddit.com${reply.data.permalink}`,
+                  // Check if user has replied to this reply
+                  hasUserReply: checkForUserReply(reply.data.replies),
+                });
+              }
+            }
+          }
+
+          userComments.push({
+            id: comment.id,
+            body: comment.body || '',
+            created_utc: comment.created_utc,
+            score: comment.score || 0,
+            permalink: `https://reddit.com${comment.permalink}`,
+            replies: replies,
+            unrepliedCount: replies.filter(r => !r.hasUserReply).length,
+          });
+        }
+
+        // Recurse into nested comments
+        if (comment.replies?.data?.children) {
+          findUserComments(comment.replies.data.children, depth + 1);
+        }
+      }
+    }
+
+    // Check if user has replied within a comment tree
+    function checkForUserReply(replies) {
+      if (!replies?.data?.children) return false;
+
+      for (const child of replies.data.children) {
+        if (child.kind !== 't1') continue;
+        if (child.data.author?.toLowerCase() === TARGET_USERNAME.toLowerCase()) {
+          return true;
+        }
+        // Check nested replies
+        if (checkForUserReply(child.data.replies)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Start searching from the comment tree
+    if (data[1]?.data?.children) {
+      console.log(`[DevScout] Starting search through ${data[1].data.children.length} top-level comments`);
+      findUserComments(data[1].data.children);
+    } else {
+      console.error(`[DevScout] No comments found in response - data[1].data.children is missing`);
+    }
+
+    console.log(`[DevScout] Search complete. Found ${userComments.length} comments by u/${TARGET_USERNAME}`);
+    return { comments: userComments, error: null };
+  } catch (err) {
+    console.error(`[DevScout] Exception in scrapePostForUserComments:`, err);
+    return { comments: [], error: err.message };
+  }
+}
+
+// Scrape multiple posts for user's comments (for batch processing)
+export async function scrapeTrackedPostsForReplies(posts) {
+  const results = {};
+
+  for (const post of posts) {
+    const { comments, error } = await scrapePostForUserComments(post.url);
+    if (!error) {
+      results[post.id] = {
+        comments,
+        totalUnreplied: comments.reduce((sum, c) => sum + c.unrepliedCount, 0),
+      };
+    }
+    // Small delay to be nice to Reddit
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  return results;
+}
+
+// ============= COMMUNITY ENGAGEMENT =============
+
+// Engagement subreddits (where we can start discussions)
+export const ENGAGEMENT_SUBREDDITS = {
+  // Developer discussions
+  'programming': ['webdev', 'coding', 'softwareDevelopment', 'learnprogramming'],
+  'webdev': ['programming', 'frontend', 'webdevelopment', 'coding'],
+  'Python': ['learnpython', 'django', 'flask', 'coding'],
+  'javascript': ['reactjs', 'typescript', 'node', 'webdev'],
+  'reactjs': ['javascript', 'nextjs', 'webdev', 'frontend'],
+  'node': ['javascript', 'express', 'webdev', 'backend'],
+  'learnprogramming': ['programming', 'coding', 'cscareerquestions'],
+
+  // Automation & Tools
+  'automation': ['selfhosted', 'homelab', 'productivity'],
+  'selfhosted': ['homelab', 'automation', 'linux'],
+  'homelab': ['selfhosted', 'sysadmin', 'networking'],
+
+  // Business & Entrepreneurship
+  'Entrepreneur': ['startups', 'smallbusiness', 'SaaS', 'indiehackers'],
+  'startups': ['Entrepreneur', 'SaaS', 'microsaas'],
+  'smallbusiness': ['Entrepreneur', 'ecommerce', 'marketing'],
+  'SaaS': ['startups', 'microsaas', 'indiehackers'],
+  'indiehackers': ['SaaS', 'microsaas', 'startups'],
+
+  // Freelance
+  'freelance': ['WorkOnline', 'digitalnomad', 'consulting'],
+  'WorkOnline': ['freelance', 'remotework', 'sidehustle'],
+};
+
+// Post idea templates organized by category - EXPERT LEVEL (no novice content)
+export const ENGAGEMENT_TEMPLATES = {
+  deep_dives: [
+    { title: "The hidden complexity of {X} integrations that nobody talks about", tags: ['architecture', 'deep-dive'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "Why I stopped using {X} and built my own {Y}", tags: ['architecture', 'experience'], subreddits: ['programming', 'selfhosted', 'SaaS'] },
+    { title: "Patterns I've seen across 50+ API integrations", tags: ['patterns', 'api'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "The architecture behind {X} - a technical deep dive", tags: ['architecture', 'technical'], subreddits: ['programming', 'webdev', 'selfhosted'] },
+    { title: "What happens when {X} fails at scale - lessons from production", tags: ['scale', 'production'], subreddits: ['programming', 'devops', 'node'] },
+  ],
+  hard_lessons: [
+    { title: "When NOT to automate - lessons from over-engineering", tags: ['automation', 'lessons'], subreddits: ['programming', 'automation', 'Entrepreneur'] },
+    { title: "The real cost of technical debt in {X} - a postmortem", tags: ['technical-debt', 'postmortem'], subreddits: ['programming', 'webdev', 'startups'] },
+    { title: "Why your {X} integration is probably broken (and how to fix it)", tags: ['debugging', 'integration'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "Mistakes I made scaling {X} to {Y} users", tags: ['scale', 'lessons'], subreddits: ['programming', 'startups', 'SaaS'] },
+    { title: "The 3 integration antipatterns I see everywhere", tags: ['antipatterns', 'architecture'], subreddits: ['programming', 'webdev', 'node'] },
+  ],
+  technical_opinions: [
+    { title: "Unpopular opinion: {X} is overengineered for most use cases", tags: ['opinion', 'discussion'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "Why I prefer {X} over {Y} for production workloads", tags: ['opinion', 'comparison'], subreddits: ['programming', 'devops', 'selfhosted'] },
+    { title: "The case against {X} in {Y} environments", tags: ['opinion', 'technical'], subreddits: ['programming', 'webdev', 'devops'] },
+    { title: "Hot take: Most {X} problems are actually {Y} problems", tags: ['opinion', 'discussion'], subreddits: ['programming', 'webdev', 'Entrepreneur'] },
+  ],
+  how_i_debug: [
+    { title: "How I debug {X} integrations - my actual process", tags: ['debugging', 'process'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "The debugging technique that changed how I approach {X}", tags: ['debugging', 'tips'], subreddits: ['programming', 'webdev', 'devops'] },
+    { title: "Tracing a {X} bug through 5 services - a war story", tags: ['debugging', 'war-story'], subreddits: ['programming', 'devops', 'node'] },
+  ],
+  questions_discussions: [
+    { title: "How do you handle {X} at scale?", tags: ['scale', 'discussion'], subreddits: ['programming', 'webdev', 'devops'] },
+    { title: "What's your approach to {X} in distributed systems?", tags: ['distributed', 'discussion'], subreddits: ['programming', 'devops', 'node'] },
+    { title: "How are you handling {X} with the new {Y} changes?", tags: ['current', 'discussion'], subreddits: ['programming', 'webdev', 'devops'] },
+    { title: "What's your monitoring/alerting setup for {X}?", tags: ['monitoring', 'discussion'], subreddits: ['devops', 'selfhosted', 'programming'] },
+    { title: "How do you test {X} integrations in CI/CD?", tags: ['testing', 'cicd'], subreddits: ['programming', 'devops', 'webdev'] },
+  ],
+  war_stories: [
+    { title: "That time {X} took down our {Y} - and what we learned", tags: ['war-story', 'postmortem'], subreddits: ['programming', 'devops', 'startups'] },
+    { title: "The 3am incident that changed how we handle {X}", tags: ['war-story', 'oncall'], subreddits: ['devops', 'programming', 'sysadmin'] },
+    { title: "How a {X} edge case cost us {Y} - lessons learned", tags: ['war-story', 'lessons'], subreddits: ['programming', 'startups', 'Entrepreneur'] },
+  ],
+  industry_insights: [
+    { title: "Why {X} adoption is stalling - an insider perspective", tags: ['industry', 'analysis'], subreddits: ['programming', 'Entrepreneur', 'startups'] },
+    { title: "The real reason companies struggle with {X}", tags: ['industry', 'analysis'], subreddits: ['programming', 'Entrepreneur', 'SaaS'] },
+    { title: "What I learned consulting for {X} companies on {Y}", tags: ['consulting', 'insights'], subreddits: ['Entrepreneur', 'startups', 'programming'] },
+  ],
+  comparisons: [
+    { title: "After running {X} and {Y} in production for a year - honest comparison", tags: ['comparison', 'production'], subreddits: ['programming', 'webdev', 'selfhosted'] },
+    { title: "Tried both {X} and {Y} - here's my honest comparison", tags: ['comparison', 'review'], subreddits: ['programming', 'productivity', 'selfhosted'] },
+  ],
+};
+
+// Get all subreddits for engagement
+export function getEngagementSubreddits() {
+  return Object.keys(ENGAGEMENT_SUBREDDITS);
+}
+
+// Get related subreddits for a given subreddit
+export function getRelatedSubreddits(subreddit) {
+  return ENGAGEMENT_SUBREDDITS[subreddit] || [];
+}
+
+// Get post ideas for a category or all categories
+export function getPostIdeas(category = null) {
+  if (category) {
+    return ENGAGEMENT_TEMPLATES[category] || [];
+  }
+  // Return all ideas flattened
+  return Object.values(ENGAGEMENT_TEMPLATES).flat();
+}
+
+// Get category names
+export function getEngagementCategories() {
+  return Object.keys(ENGAGEMENT_TEMPLATES);
+}
+
+// Get a random subreddit from the engagement list
+export function getRandomEngagementSubreddit() {
+  const subreddits = Object.keys(ENGAGEMENT_SUBREDDITS);
+  return subreddits[Math.floor(Math.random() * subreddits.length)];
+}
+
+// Filter post ideas by subreddit compatibility
+export function getIdeasForSubreddit(subreddit) {
+  const allIdeas = Object.entries(ENGAGEMENT_TEMPLATES).flatMap(([category, ideas]) =>
+    ideas.filter(idea => idea.subreddits.includes(subreddit)).map(idea => ({ ...idea, category }))
+  );
+  return allIdeas;
+}
+
+// ============= PROSPECTS (Outreach) =============
+
+const PROSPECT_SEARCHES = [
+  // Direct hiring posts (GOLD)
+  { subreddit: 'forhire', query: '[Hiring]' },
+  { subreddit: 'slavelabour', query: '[TASK]' },
+  { subreddit: 'jobbit', query: '[Hiring]' },
+
+  // Non-tech founders seeking help
+  { subreddit: 'smallbusiness', query: 'spreadsheet OR excel OR automation' },
+  { subreddit: 'smallbusiness', query: 'developer OR programmer' },
+  { subreddit: 'smallbusiness', query: 'sync OR integrate OR workflow' },
+  { subreddit: 'Entrepreneur', query: 'need developer OR looking for developer' },
+  { subreddit: 'Entrepreneur', query: 'automation OR automate' },
+  { subreddit: 'Entrepreneur', query: 'scrape OR scraping OR data extraction' },
+  { subreddit: 'startups', query: 'looking for developer OR technical cofounder' },
+  { subreddit: 'startups', query: 'MVP OR prototype' },
+  { subreddit: 'indiehackers', query: 'developer OR cofounder OR build' },
+
+  // SaaS founders
+  { subreddit: 'SaaS', query: 'looking for developer OR need help building' },
+  { subreddit: 'SaaS', query: 'integration OR API OR webhook' },
+  { subreddit: 'microsaas', query: 'developer OR build' },
+  { subreddit: 'nocode', query: 'developer OR custom OR limitations' },
+  { subreddit: 'lowcode', query: 'developer OR custom code OR limitations' },
+
+  // Ecommerce
+  { subreddit: 'ecommerce', query: 'developer OR integration OR automation' },
+  { subreddit: 'shopify', query: 'developer OR custom OR help' },
+  { subreddit: 'shopify', query: 'automation OR workflow OR sync' },
+  { subreddit: 'woocommerce', query: 'developer OR custom OR integration' },
+  { subreddit: 'Etsy', query: 'automation OR bulk OR spreadsheet' },
+
+  // Real estate / Business services
+  { subreddit: 'realestateinvesting', query: 'spreadsheet OR automation OR software' },
+  { subreddit: 'realestate', query: 'automation OR CRM OR software development' },
+  { subreddit: 'Bookkeeping', query: 'automation OR integration OR sync' },
+  { subreddit: 'accounting', query: 'automation OR script OR integration' },
+
+  // Marketing / Sales
+  { subreddit: 'marketing', query: 'automation OR integration OR developer' },
+  { subreddit: 'digital_marketing', query: 'automation OR scraping OR API' },
+  { subreddit: 'hubspot', query: 'developer OR integration OR custom' },
+  { subreddit: 'Salesforce', query: 'developer OR integration OR automation' },
+
+  // Productivity / Tools
+  { subreddit: 'zapier', query: 'developer OR custom OR limitations' },
+  { subreddit: 'Notion', query: 'developer OR API OR integration' },
+  { subreddit: 'Airtable', query: 'developer OR automation OR script' },
+
+  // Operations / Data
+  { subreddit: 'dataengineering', query: 'freelance OR hire OR looking for' },
+  { subreddit: 'datascience', query: 'freelance OR hire OR looking for' },
+
+  // Freelance markets
+  { subreddit: 'freelance', query: 'looking for' },
+  { subreddit: 'remotework', query: 'looking for developer OR hiring' },
+];
+
+// Check if post is from a competitor offering services
+function isCompetitor(title) {
+  const lower = title.toLowerCase();
+  const patterns = [
+    '[for hire]', '[offer]', 'for hire',
+    'i will build', 'i will create', 'i will scrape',
+    'my services', 'hire me', 'available for',
+    'looking for clients', 'seeking clients'
+  ];
+  return patterns.some(p => lower.includes(p));
+}
+
+// Score a prospect
+function scoreProspect(post) {
+  if (isCompetitor(post.title)) return 0;
+
+  let score = 0;
+  const title = post.title.toLowerCase();
+  const text = (post.selftext || '').toLowerCase();
+  const combined = title + ' ' + text;
+
+  // [HIRING] tag is gold
+  if (title.includes('[hiring]')) score += 30;
+
+  // High-value keywords
+  const highValue = ['spreadsheet', 'automation', 'automate', 'manual', 'tedious',
+    'looking for developer', 'need developer', 'need a developer',
+    'hire developer', 'csv', 'excel', 'integration', 'api', 'script',
+    'non-technical', 'non technical'];
+  highValue.forEach(kw => { if (combined.includes(kw)) score += 10; });
+
+  // Medium-value keywords
+  const midValue = ['software', 'app', 'tool', 'help', 'build', 'create',
+    'cofounder', 'technical', 'programmer'];
+  midValue.forEach(kw => { if (combined.includes(kw)) score += 5; });
+
+  // Engagement signals
+  if (post.num_comments > 10) score += 5;
+  if (post.score > 20) score += 5;
+
+  // Recency bonus
+  const ageHours = (Date.now() / 1000 - post.created_utc) / 3600;
+  if (ageHours <= 24) score += 10;
+  else if (ageHours <= 72) score += 5;
+
+  return score;
+}
+
+// Search a subreddit
+async function searchSubreddit(subreddit, query) {
+  try {
+    const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&sort=new&t=week&limit=15`;
+    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    const posts = [];
+
+    for (const child of data?.data?.children || []) {
+      const post = child.data;
+      if (!post.is_self) continue; // Skip link posts
+
+      const prospectScore = scoreProspect(post);
+      if (prospectScore === 0) continue; // Skip competitors
+
+      posts.push({
+        id: post.id,
+        subreddit: subreddit,
+        title: post.title,
+        body: post.selftext?.slice(0, 2000) || null,
+        url: `https://reddit.com${post.permalink}`,
+        author: post.author || '[deleted]',
+        score: post.score,
+        num_comments: post.num_comments,
+        created_utc: post.created_utc,
+        prospect_score: prospectScore,
+        query: query,
+        is_hiring: post.title.toLowerCase().includes('[hiring]'),
+      });
+    }
+    return posts;
+  } catch (err) {
+    console.error(`Error searching r/${subreddit}:`, err);
+    return [];
+  }
+}
+
+// Fetch prospects from all searches
+export async function fetchProspects(onProgress = null) {
+  const allProspects = [];
+  const seenIds = new Set();
+  const total = PROSPECT_SEARCHES.length;
+
+  for (let i = 0; i < total; i++) {
+    const { subreddit, query } = PROSPECT_SEARCHES[i];
+    if (onProgress) onProgress(i + 1, total, `r/${subreddit}: ${query}`);
+
+    const posts = await searchSubreddit(subreddit, query);
+
+    for (const post of posts) {
+      if (!seenIds.has(post.id)) {
+        seenIds.add(post.id);
+        allProspects.push(post);
+      }
+    }
+
+    // Delay between requests
+    await new Promise(r => setTimeout(r, 400));
+  }
+
+  // Sort by prospect score
+  allProspects.sort((a, b) => b.prospect_score - a.prospect_score);
+  return allProspects;
 }

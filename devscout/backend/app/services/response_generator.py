@@ -1,6 +1,7 @@
 """AI response generator using OpenRouter."""
 
 import json
+import random
 from typing import Optional
 
 import httpx
@@ -9,40 +10,72 @@ from ..config import get_settings
 
 settings = get_settings()
 
-# System prompt for generating Reddit responses
-RESPONSE_PROMPT = """You're a friendly, experienced developer who mentors people on Reddit. You've been through the struggles yourself and genuinely want to help.
+# Opening style templates - one is randomly selected for each request
+# This forces variety by telling the model EXACTLY how to open
+OPENING_STYLES = [
+    {
+        "style": "direct_technical",
+        "instruction": "Start by jumping straight into the technical substance. Open with a direct statement about their approach, tool, or problem. Example: 'Semantic caching for prompts makes a lot of sense—especially with embeddings...'",
+    },
+    {
+        "style": "shared_experience",
+        "instruction": "Start by sharing your own related experience first. Open with something like 'Ran into this exact issue when...' or 'Built something similar for...' or 'Dealt with this in a client project...'",
+    },
+    {
+        "style": "genuine_question",
+        "instruction": "Start with a genuine, specific question about their implementation. Open with something like 'How are you handling the edge case where...' or 'Curious about your approach to...' or 'What's your cache invalidation strategy?'",
+    },
+    {
+        "style": "specific_callout",
+        "instruction": "Start by calling out ONE specific thing from their post that caught your attention. Open with something like 'The embeddings angle is clever because...' or 'That cost optimization point hits home—' or 'The part about detecting similar prompts is key.'",
+    },
+    {
+        "style": "practical_advice",
+        "instruction": "Start with actionable, practical advice or a tip. Open with something like 'One thing that helps with this is...' or 'The trick with semantic matching is...' or 'Pro tip for embedding-based caching:'",
+    },
+    {
+        "style": "acknowledgment_pivot",
+        "instruction": "Start by briefly acknowledging their point then immediately pivot to add something new. Open with 'Makes sense. The tricky part is usually...' or 'Valid approach. One thing to watch for is...' or 'Yeah, this is a real problem. What I found helps is...'",
+    },
+    {
+        "style": "observation",
+        "instruction": "Start with an observation or insight about the broader context. Open with 'Token costs are getting out of hand for a lot of devs...' or 'This is becoming more common now that...' or 'The whole prompt caching space is interesting because...'",
+    },
+    {
+        "style": "validation_plus",
+        "instruction": "Start by validating their problem then quickly add value. Open with 'Definitely a real pain point. I found that...' or 'Yeah, this adds up fast. One approach is...' or 'This is worth solving. The key challenge is usually...'",
+    },
+    {
+        "style": "mini_story",
+        "instruction": "Start with a very brief anecdote (1-2 sentences). Open with 'Had a client last year burning $X00/month on repeated prompts...' or 'When I was building [thing], caching saved us from...'",
+    },
+    {
+        "style": "contrarian_curious",
+        "instruction": "Start with gentle pushback or a different angle, framed as curiosity. Open with 'Have you considered the false-positive case where...' or 'One thing I'd push back on is...' or 'The semantic matching sounds good, but how do you handle...'",
+    },
+]
 
-TONE - Friendly Mentor:
-- Warm but not corporate. Like a senior dev helping a junior over coffee
-- Acknowledge their pain point empathetically ("super common issue", "this one's tricky")
-- Share personal experience naturally ("I've wrestled with this", "took me hours to figure out")
-- Be specific and technical, but explain the *why* not just the *what*
-- End with encouragement or offer to help more
+# Base system prompt (opening style is added dynamically)
+BASE_RESPONSE_PROMPT = """You're a friendly developer engaging authentically on Reddit.
 
-STRUCTURE:
-1. Quick empathetic hook acknowledging the problem
-2. Explain the likely cause (the "why" behind the issue)
-3. Give specific, actionable advice they can try right now
-4. Personal touch - share your experience, add warmth
-5. Friendly closing (optional offer to clarify, wish them luck)
+POST TYPES:
+1. HELP-SEEKING → Give specific, actionable advice with your experience
+2. SHARING/JOURNEY → Engage with their ideas, ask questions (NO unsolicited advice)
+3. DISCUSSION/OPINION → Add your perspective, build on their points
+4. SHOWCASE → Give genuine feedback, ask about technical choices
 
-GOOD EXAMPLE:
-"This is a super common pain point when working with Drive + media in n8n.
+TONE: Warm peer-to-peer, like a colleague at a meetup. Natural, conversational, not corporate.
 
-One thing to double-check is whether your Google Drive node is outputting binary data vs just file metadata. A lot of G-drive workflows look "connected" but never actually pass the binary forward, which breaks downstream video nodes.
+BANNED PHRASES (never use):
+- "Really interesting..." or "Interesting approach/take/idea..."
+- "Ah," or "Ah, [anything]"
+- "Great question!" or "Cool project!" or "Nice work!"
+- "This is a great..." or "This looks like..."
+- "I love this..." or "Love the idea..."
 
-A quick test: after the Drive node, open the execution data and confirm you see a binary object (not just JSON). If not, you'll want to use a Download operation before any video processing.
+{opening_instruction}
 
-Happy to clarify further if you want, I've wrestled with this exact setup before. It took me 4 hours to figure that one out. Good Luck!"
-
-AVOID:
-- "Great question!" as an opener (too generic)
-- Bullet point lists for everything
-- Overly formal or corporate language
-- Being preachy or condescending
-- Walls of text - keep it digestible
-
-You're building credibility by being genuinely helpful AND personable. People should think "this person really knows their stuff AND they're cool."
+Match response TYPE to post TYPE. Keep it concise (2-4 paragraphs max).
 
 Write ONLY the response. No JSON, no explanation."""
 
@@ -78,7 +111,14 @@ class ResponseGenerator:
             print("OpenRouter API key not configured")
             return None
 
-        # Build the prompt
+        # Randomly select an opening style to force variety
+        opening_style = random.choice(OPENING_STYLES)
+        opening_instruction = f"⚠️ REQUIRED OPENING STYLE: {opening_style['style'].upper()}\n{opening_style['instruction']}"
+
+        # Build the system prompt with the selected opening style
+        system_prompt = BASE_RESPONSE_PROMPT.format(opening_instruction=opening_instruction)
+
+        # Build the user prompt
         post_content = f"SUBREDDIT: r/{subreddit}\n\nTITLE: {title}"
         if body:
             post_content += f"\n\nBODY:\n{body[:1500]}"
@@ -97,10 +137,10 @@ class ResponseGenerator:
                     json={
                         "model": self.model,
                         "messages": [
-                            {"role": "system", "content": RESPONSE_PROMPT},
+                            {"role": "system", "content": system_prompt},
                             {"role": "user", "content": post_content},
                         ],
-                        "temperature": 0.7,  # Slightly creative for natural responses
+                        "temperature": 0.8,
                         "max_tokens": 500,
                     },
                     timeout=30.0,
@@ -115,6 +155,176 @@ class ResponseGenerator:
 
         except Exception as e:
             print(f"Error generating response: {e}")
+            return None
+
+
+    async def generate_reply(
+        self,
+        subreddit: str,
+        my_comment: str,
+        their_reply: str,
+    ) -> Optional[str]:
+        """
+        Generate a response to a reply to the user's comment.
+
+        Args:
+            subreddit: Subreddit name
+            my_comment: The user's original comment
+            their_reply: The reply they received
+
+        Returns:
+            Generated response text, or None on error
+        """
+        if not self.api_key:
+            print("OpenRouter API key not configured")
+            return None
+
+        reply_prompt = """You're a friendly, experienced developer continuing a conversation on Reddit. Someone replied to your comment and you want to respond naturally.
+
+GUIDELINES:
+- Continue the conversation naturally, as if talking to a peer
+- Reference specific things they said
+- Be helpful if they asked follow-up questions
+- Be appreciative if they agreed or added to your point
+- Be respectful if they disagreed - find common ground
+- Keep it conversational, not preachy or corporate
+- Match their energy - if they're casual, be casual; if technical, be technical
+
+TONE:
+- Warm and collegial
+- Like chatting with a fellow developer at a meetup
+- Personal, not generic
+
+AVOID:
+- Starting with "Thanks for your reply!" or similar corporate phrases
+- Being defensive if they challenged something
+- Over-explaining or lecturing
+- Being overly enthusiastic or fake
+
+Write ONLY the response. No JSON, no explanation. Just the natural reply."""
+
+        context = f"""SUBREDDIT: r/{subreddit}
+
+YOUR ORIGINAL COMMENT:
+{my_comment[:1000]}
+
+THEIR REPLY TO YOU:
+{their_reply[:1500]}"""
+
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    self.base_url,
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": self.model,
+                        "messages": [
+                            {"role": "system", "content": reply_prompt},
+                            {"role": "user", "content": context},
+                        ],
+                        "temperature": 0.7,
+                        "max_tokens": 400,
+                    },
+                    timeout=30.0,
+                )
+
+                if response.status_code != 200:
+                    print(f"OpenRouter error: {response.status_code} - {response.text}")
+                    return None
+
+                data = response.json()
+                return data["choices"][0]["message"]["content"].strip()
+
+        except Exception as e:
+            print(f"Error generating reply: {e}")
+            return None
+
+
+    async def generate_engage_post(
+        self,
+        subreddit: str,
+        idea_template: str,
+        category: str,
+    ) -> Optional[str]:
+        """
+        Generate an engagement post for starting a discussion on Reddit.
+
+        Args:
+            subreddit: Target subreddit
+            idea_template: The post idea template (e.g., "After {X} years of {Y}, here are my biggest lessons")
+            category: Post category (experience_sharing, questions_discussions, etc.)
+
+        Returns:
+            Generated post content (title and body), or None on error
+        """
+        if not self.api_key:
+            print("OpenRouter API key not configured")
+            return None
+
+        engage_prompt = """You're an experienced developer who specializes in automation and integrations. You want to start a genuine discussion on Reddit that will engage the community.
+
+BACKGROUND:
+- You're Jesse, a developer who builds automation tools, API integrations, and workflow solutions
+- You have experience with Python, JavaScript/TypeScript, FastAPI, React, and various APIs
+- You genuinely want to contribute to the community, not just self-promote
+- You enjoy helping other developers and sharing what you've learned
+
+GUIDELINES:
+- Write a genuine, engaging post that sparks discussion
+- Fill in the template with REAL examples from your experience (make them believable and specific)
+- Be conversational and authentic - like talking to peers
+- Include enough detail to be interesting but not overwhelming
+- End with something that invites responses (a question, request for experiences, etc.)
+- DO NOT mention that you're looking for clients or that you offer services
+- DO NOT be preachy or lecture-y
+- Keep it focused on sharing/learning, not selling
+
+FORMAT YOUR OUTPUT AS:
+**Title:** [Your post title here]
+
+**Body:**
+[Your post body here - can be multiple paragraphs]
+
+Write naturally, like you're having a conversation with fellow developers."""
+
+        context = f"""SUBREDDIT: r/{subreddit}
+POST CATEGORY: {category.replace('_', ' ')}
+POST IDEA TEMPLATE: {idea_template}
+
+Fill in this template with specific, believable examples from a developer's experience in automation and integrations. Make it genuine and engaging."""
+
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    self.base_url,
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": self.model,
+                        "messages": [
+                            {"role": "system", "content": engage_prompt},
+                            {"role": "user", "content": context},
+                        ],
+                        "temperature": 0.8,  # Higher creativity for unique posts
+                        "max_tokens": 800,
+                    },
+                    timeout=30.0,
+                )
+
+                if response.status_code != 200:
+                    print(f"OpenRouter error: {response.status_code} - {response.text}")
+                    return None
+
+                data = response.json()
+                return data["choices"][0]["message"]["content"].strip()
+
+        except Exception as e:
+            print(f"Error generating engage post: {e}")
             return None
 
 

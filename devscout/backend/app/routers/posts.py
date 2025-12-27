@@ -5,12 +5,13 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
 from ..models import Post
-from ..schemas import PostResponse, PostUpdate, GenerateResponseRequest, StatsResponse, ClientPostBatch
+from ..schemas import PostResponse, PostUpdate, GenerateResponseRequest, StatsResponse, ClientPostBatch, ReplyInfo
 from ..services import get_fetcher, get_generator
 
 router = APIRouter(prefix="/api/posts", tags=["posts"])
@@ -120,6 +121,9 @@ async def update_post(
     if update.suggested_response:
         post.suggested_response = update.suggested_response
 
+    if update.my_comment_url:
+        post.my_comment_url = update.my_comment_url
+
     await db.commit()
     await db.refresh(post)
     return post
@@ -154,6 +158,135 @@ async def generate_response(
     await db.commit()
 
     return {"response": response}
+
+
+class GenerateReplyRequest(BaseModel):
+    """Request to generate a reply response."""
+    subreddit: str
+    my_comment: str
+    their_reply: str
+
+
+@router.post("/generate-reply")
+async def generate_reply_response(request: GenerateReplyRequest):
+    """Generate an AI response to a reply to user's comment."""
+    generator = get_generator()
+
+    response = await generator.generate_reply(
+        subreddit=request.subreddit,
+        my_comment=request.my_comment,
+        their_reply=request.their_reply,
+    )
+
+    if not response:
+        raise HTTPException(status_code=500, detail="Failed to generate reply")
+
+    return {"response": response}
+
+
+class GenerateEngagePostRequest(BaseModel):
+    """Request to generate an engagement post."""
+    subreddit: str
+    idea_template: str
+    category: str
+
+
+@router.post("/generate-engage")
+async def generate_engage_post(request: GenerateEngagePostRequest):
+    """Generate an engagement post for starting a discussion on Reddit."""
+    generator = get_generator()
+
+    response = await generator.generate_engage_post(
+        subreddit=request.subreddit,
+        idea_template=request.idea_template,
+        category=request.category,
+    )
+
+    if not response:
+        raise HTTPException(status_code=500, detail="Failed to generate engage post")
+
+    return {"response": response}
+
+
+class GenerateNewsResponseRequest(BaseModel):
+    """Request to generate a response for a news post."""
+    title: str
+    body: Optional[str] = None
+    source: str  # e.g., "HN:Ask", "Lobsters:programming", "DEV:webdev"
+
+
+@router.post("/generate-news")
+async def generate_news_response(request: GenerateNewsResponseRequest):
+    """Generate an AI response for a news post (HN, Lobsters, Dev.to, etc)."""
+    generator = get_generator()
+
+    response = await generator.generate(
+        title=request.title,
+        body=request.body,
+        subreddit=request.source,  # Uses source as subreddit for context
+    )
+
+    if not response:
+        raise HTTPException(status_code=500, detail="Failed to generate response")
+
+    return {"response": response}
+
+
+@router.delete("/clear/stale")
+async def clear_stale_posts(db: AsyncSession = Depends(get_db)):
+    """Delete all non-responded posts to start fresh."""
+    from sqlalchemy import delete
+
+    result = await db.execute(
+        delete(Post).where(Post.status != "responded")
+    )
+    await db.commit()
+    return {"deleted": result.rowcount}
+
+
+@router.get("/tracked", response_model=list[PostResponse])
+async def get_tracked_posts(db: AsyncSession = Depends(get_db)):
+    """Get all posts with tracked comment URLs for reply checking."""
+    query = (
+        select(Post)
+        .where(Post.my_comment_url.isnot(None))
+        .order_by(Post.responded_at.desc())
+    )
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.post("/{post_id}/update-replies")
+async def update_reply_count(
+    post_id: int,
+    count: int = Query(..., description="Number of unread replies"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update the unread reply count for a post (called after client-side check)."""
+    post = await db.get(Post, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    post.unread_replies = count
+    post.last_reply_check = datetime.utcnow()
+    await db.commit()
+    return {"updated": True, "unread_replies": count}
+
+
+@router.post("/{post_id}/mark-read")
+async def mark_replies_read(
+    post_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """Mark all replies as read for a post."""
+    post = await db.get(Post, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    post.unread_replies = 0
+    post.last_reply_check = datetime.utcnow()
+    await db.commit()
+    return {"updated": True}
 
 
 @router.delete("/{post_id}")
