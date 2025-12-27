@@ -1,4 +1,7 @@
-# Project Instructions (Gemini)
+# Project Agent Instructions (Gemini)
+
+This file provides project-specific guidance to Gemini.
+
 ## Project Overview
 
 DevScout is a credibility-building tool for developers. It finds relevant posts across Reddit, Hacker News, Lobsters, Dev.to, Hashnode, and GitHub where you can provide helpful responses or make contributions.
@@ -153,6 +156,20 @@ ssh junipr-vps "sudo journalctl -u devscout -f"
 - Added button colors (purple Regenerate, gray Skip) with hover animations
 - Reply on Reddit now scrolls to comments (#comments anchor)
 - Fixed CORS issue with auto-mark by using fallback proxies (corsproxy.io, allorigins.win)
+- Fixed auto-mark speed: parallel batch checking (5 at a time) instead of sequential
+- Added localStorage persistence for checked posts (survives page reload)
+- Added Indie Hackers and Tildes to News tab (now 6 sources)
+- Expanded Prospects with 100+ subreddit/keyword searches
+- Enhanced prospect scoring with tiered keywords (gold +15, high +10, medium +5)
+- Dynamic Gemini response length based on post complexity (200-450 tokens)
+- Full mobile-responsive CSS (768px breakpoint + 380px extra small)
+- Horizontal scroll mode toggle on mobile
+- Touch-friendly buttons (44px min targets)
+- localStorage persistence for Prospects and News (survives reload)
+- Resume button for interrupted Prospects fetch
+- Clear All buttons for Prospects and News
+- Enhanced auto-mark debugging logs
 
 ### Next Up
 - Add Dismiss button for replies (clear notifications without responding)
+- Investigate auto-mark not updating posts (check console logs for updatePost errors)

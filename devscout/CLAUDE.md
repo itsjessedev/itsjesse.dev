@@ -160,6 +160,14 @@ ssh junipr-vps "sudo journalctl -u devscout -f"
 - Expanded Prospects with 100+ subreddit/keyword searches
 - Enhanced prospect scoring with tiered keywords (gold +15, high +10, medium +5)
 - Dynamic Gemini response length based on post complexity (200-450 tokens)
+- Full mobile-responsive CSS (768px breakpoint + 380px extra small)
+- Horizontal scroll mode toggle on mobile
+- Touch-friendly buttons (44px min targets)
+- localStorage persistence for Prospects and News (survives reload)
+- Resume button for interrupted Prospects fetch
+- Clear All buttons for Prospects and News
+- Enhanced auto-mark debugging logs
 
 ### Next Up
 - Add Dismiss button for replies (clear notifications without responding)
+- Investigate auto-mark not updating posts (check console logs for updatePost errors)
