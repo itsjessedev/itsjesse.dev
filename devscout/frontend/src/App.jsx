@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, generateNewsResponse, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES } from './services/api';
+import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, generateNewsResponse, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, getProspectSearchCount, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES } from './services/api';
 
 const styles = {
   container: {
@@ -557,6 +557,274 @@ const injectStyles = () => {
     button[data-btn="danger"]:hover:not(:disabled) {
       background: #dc2626 !important;
     }
+
+    /* ============= MOBILE RESPONSIVE STYLES ============= */
+
+    /* Viewport meta - ensure proper scaling */
+    @viewport {
+      width: device-width;
+      initial-scale: 1;
+    }
+
+    /* Mobile-first responsive design */
+    @media (max-width: 768px) {
+      /* Container */
+      .devscout-container {
+        padding: 12px !important;
+      }
+
+      /* Header - stack vertically */
+      .devscout-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+      }
+
+      .devscout-title {
+        font-size: 20px !important;
+      }
+
+      .devscout-stats {
+        gap: 16px !important;
+        width: 100% !important;
+        justify-content: flex-start !important;
+      }
+
+      .devscout-stat-value {
+        font-size: 20px !important;
+      }
+
+      /* Mode toggle - horizontal scroll */
+      .devscout-mode-toggle {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        padding-bottom: 4px !important;
+      }
+
+      .devscout-mode-toggle::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      .devscout-mode-btn {
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+
+      /* Controls - wrap and full width buttons */
+      .devscout-controls {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+
+      .devscout-controls button {
+        flex: 1 1 auto !important;
+        min-width: 120px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+      }
+
+      /* Post cards */
+      .devscout-post {
+        padding: 14px !important;
+        border-radius: 10px !important;
+      }
+
+      .devscout-post-header {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+
+      .devscout-post-title {
+        font-size: 15px !important;
+        line-height: 1.4 !important;
+      }
+
+      .devscout-post-body {
+        font-size: 13px !important;
+        padding: 10px !important;
+        max-height: 150px !important;
+      }
+
+      .devscout-post-meta {
+        font-size: 12px !important;
+      }
+
+      /* Actions - stack or wrap */
+      .devscout-actions {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+
+      .devscout-actions button {
+        flex: 1 1 auto !important;
+        min-width: 100px !important;
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+      }
+
+      /* Response textarea */
+      .devscout-response-textarea {
+        font-size: 14px !important;
+        min-height: 120px !important;
+      }
+
+      /* Keywords */
+      .devscout-keywords {
+        gap: 4px !important;
+      }
+
+      .devscout-keyword {
+        font-size: 11px !important;
+        padding: 2px 6px !important;
+      }
+
+      /* Badges */
+      .devscout-subreddit,
+      .devscout-score {
+        font-size: 11px !important;
+        padding: 3px 8px !important;
+      }
+
+      /* Collapsible headers */
+      .devscout-collapsible-header {
+        padding: 12px !important;
+      }
+
+      .devscout-collapsible-content {
+        padding: 12px !important;
+      }
+
+      /* Reply cards */
+      .devscout-reply-card {
+        padding: 10px !important;
+        margin-left: 8px !important;
+      }
+
+      /* Input fields */
+      .devscout-input {
+        font-size: 16px !important; /* Prevents iOS zoom */
+        padding: 12px !important;
+      }
+
+      /* Select dropdowns */
+      .devscout-select {
+        font-size: 16px !important;
+        padding: 12px !important;
+      }
+
+      /* Engage tab specific */
+      .devscout-engage-controls {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+
+      .devscout-engage-controls select {
+        width: 100% !important;
+      }
+
+      /* Empty state */
+      .devscout-empty {
+        padding: 40px 20px !important;
+        font-size: 14px !important;
+      }
+
+      /* Notification badge */
+      .devscout-notification-badge {
+        font-size: 10px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        top: -6px !important;
+        right: -6px !important;
+      }
+
+      /* Custom URL input row */
+      .devscout-url-input-row {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+
+      .devscout-url-input-row input {
+        width: 100% !important;
+      }
+
+      .devscout-url-input-row button {
+        width: 100% !important;
+      }
+
+      /* Filter tabs */
+      .devscout-filter-tabs {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 4px !important;
+      }
+
+      .devscout-filter-tabs::-webkit-scrollbar {
+        display: none !important;
+      }
+
+      .devscout-filter-tab {
+        padding: 6px 12px !important;
+        font-size: 13px !important;
+        white-space: nowrap !important;
+      }
+
+      /* Idea cards in Engage */
+      .devscout-idea-card {
+        padding: 12px !important;
+      }
+
+      .devscout-idea-title {
+        font-size: 14px !important;
+      }
+
+      /* Thread structure in Replies */
+      .devscout-thread {
+        margin-left: 0 !important;
+        padding-left: 8px !important;
+        border-left-width: 2px !important;
+      }
+
+      /* Disable hover effects on touch */
+      @media (hover: none) {
+        button:hover:not(:disabled), a.btn-hover:hover {
+          transform: none !important;
+          box-shadow: none !important;
+          filter: none !important;
+        }
+      }
+    }
+
+    /* Extra small devices */
+    @media (max-width: 380px) {
+      .devscout-container {
+        padding: 8px !important;
+      }
+
+      .devscout-mode-btn {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+      }
+
+      .devscout-post {
+        padding: 12px !important;
+      }
+
+      .devscout-actions button {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+        min-width: 80px !important;
+      }
+
+      .devscout-controls button {
+        min-width: 100px !important;
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+      }
+    }
   `;
   document.head.appendChild(style);
 };
@@ -574,10 +842,23 @@ function App() {
   const [githubIssues, setGithubIssues] = useState([]);
   const [githubFetching, setGithubFetching] = useState(false);
   const [githubProgress, setGithubProgress] = useState(null);
-  const [prospects, setProspects] = useState([]);
+  // Load persisted data from localStorage
+  const loadPersistedData = (key, defaultValue = []) => {
+    try {
+      const stored = localStorage.getItem(`devscout_${key}`);
+      return stored ? JSON.parse(stored) : defaultValue;
+    } catch { return defaultValue; }
+  };
+  const savePersistedData = (key, data) => {
+    try {
+      localStorage.setItem(`devscout_${key}`, JSON.stringify(data));
+    } catch {}
+  };
+
+  const [prospects, setProspects] = useState(() => loadPersistedData('prospects'));
   const [prospectsFetching, setProspectsFetching] = useState(false);
   const [prospectsProgress, setProspectsProgress] = useState(null);
-  const [news, setNews] = useState([]);
+  const [news, setNews] = useState(() => loadPersistedData('news'));
   const [newsFetching, setNewsFetching] = useState(false);
   const [newsProgress, setNewsProgress] = useState(null);
   const [newsResponses, setNewsResponses] = useState({}); // newsId -> response text
@@ -623,83 +904,120 @@ function App() {
     loadData();
   }, [loadData]);
 
+  // Refs for auto-mark functionality
+  const isCheckingPosts = useRef(false);
+
+  // Load checked posts from localStorage (survives page reload)
+  const getCheckedPosts = () => {
+    try {
+      const stored = localStorage.getItem('devscout_checked_posts');
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  };
+  const saveCheckedPosts = (ids) => {
+    try {
+      // Keep only last 200 to avoid bloat
+      const arr = [...ids].slice(-200);
+      localStorage.setItem('devscout_checked_posts', JSON.stringify(arr));
+    } catch {}
+  };
+
   // Auto-detect if user has commented on "new" posts and mark them as responded
   const checkPostsForUserComments = useCallback(async (postsToCheck) => {
-    const newPosts = postsToCheck.filter(p => p.status === 'new');
+    // Prevent concurrent runs
+    if (isCheckingPosts.current) {
+      console.log(`[DevScout] Auto-mark already in progress, skipping`);
+      return;
+    }
+    isCheckingPosts.current = true;
+
+    const checkedPosts = getCheckedPosts();
+    const newPosts = postsToCheck.filter(p => p.status === 'new' && !checkedPosts.has(p.id));
     if (newPosts.length === 0) {
-      console.log(`[DevScout] No new posts to check`);
+      console.log(`[DevScout] No unchecked new posts`);
+      isCheckingPosts.current = false;
+      setAutoMarkStatus(null);
       return;
     }
 
-    console.log(`[DevScout] Checking ${newPosts.length} new posts for user comments...`);
+    console.log(`[DevScout] Checking ${newPosts.length} new posts for user comments (parallel)...`);
     setAutoMarkStatus(`Checking ${newPosts.length} posts...`);
 
     let markedCount = 0;
-    for (let i = 0; i < newPosts.length; i++) {
-      const post = newPosts[i];
-      setAutoMarkStatus(`Checking post ${i + 1}/${newPosts.length}...`);
-      try {
-        console.log(`[DevScout] Checking post: ${post.url}`);
-        const { comments, error } = await scrapePostForUserComments(post.url);
-        if (error) {
-          console.error(`[DevScout] Error scraping post ${post.id}: ${error}`);
+    const BATCH_SIZE = 5; // Check 5 posts in parallel
+
+    for (let i = 0; i < newPosts.length; i += BATCH_SIZE) {
+      const batch = newPosts.slice(i, i + BATCH_SIZE);
+      setAutoMarkStatus(`Checking posts ${i + 1}-${Math.min(i + BATCH_SIZE, newPosts.length)}/${newPosts.length}...`);
+
+      // Check batch in parallel
+      const results = await Promise.all(batch.map(async (post) => {
+        try {
+          console.log(`[DevScout] Checking post ${post.id}: ${post.url}`);
+          const { comments, error } = await scrapePostForUserComments(post.url);
+          checkedPosts.add(post.id);
+
+          console.log(`[DevScout] Post ${post.id} result: error=${error}, comments=${comments?.length || 0}`);
+
+          if (!error && comments && comments.length > 0) {
+            console.log(`[DevScout] ✓ Found user comment on post ${post.id}, calling updatePost...`);
+            try {
+              const updateResult = await updatePost(post.id, { status: 'responded' });
+              console.log(`[DevScout] ✓ updatePost succeeded for ${post.id}:`, updateResult);
+              return true;
+            } catch (updateErr) {
+              console.error(`[DevScout] ✗ updatePost FAILED for ${post.id}:`, updateErr);
+              return false;
+            }
+          }
+          return false;
+        } catch (err) {
+          console.error(`[DevScout] Error checking post ${post.id}:`, err);
+          return false;
         }
-        if (comments && comments.length > 0) {
-          console.log(`[DevScout] ✓ Found user comment on post ${post.id}, auto-marking as responded`);
-          setAutoMarkStatus(`Found comment! Marking post ${i + 1}...`);
-          await updatePost(post.id, { status: 'responded' });
-          markedCount++;
-        } else {
-          console.log(`[DevScout] No user comments found on post ${post.id}`);
-        }
-        // Small delay between checks
-        await new Promise(r => setTimeout(r, 300));
-      } catch (err) {
-        console.error(`[DevScout] Error checking post ${post.id}:`, err);
+      }));
+
+      markedCount += results.filter(Boolean).length;
+      saveCheckedPosts(checkedPosts);
+
+      // Brief pause between batches to avoid rate limiting
+      if (i + BATCH_SIZE < newPosts.length) {
+        await new Promise(r => setTimeout(r, 100));
       }
     }
 
     if (markedCount > 0) {
       setAutoMarkStatus(`Marked ${markedCount} post(s) as responded!`);
-      // Reload data if any posts were marked
       loadData();
     } else {
       setAutoMarkStatus(null);
     }
 
-    // Clear status after a delay
     setTimeout(() => setAutoMarkStatus(null), 3000);
+    isCheckingPosts.current = false;
   }, [loadData]);
 
-  // Check for user comments on initial load
-  const hasCheckedPosts = useRef(new Set());
+  // Check for user comments on initial load (uses localStorage to persist across reloads)
   useEffect(() => {
     if (mode !== 'posts') return;
-
-    const uncheckedPosts = posts.filter(p =>
-      p.status === 'new' && !hasCheckedPosts.current.has(p.id)
-    );
-
-    if (uncheckedPosts.length > 0) {
-      // Mark as checked to avoid re-checking this cycle
-      uncheckedPosts.forEach(p => hasCheckedPosts.current.add(p.id));
-      checkPostsForUserComments(uncheckedPosts);
-    }
+    // Trigger check when posts change - the function handles deduplication via localStorage
+    checkPostsForUserComments(posts);
   }, [posts, mode, checkPostsForUserComments]);
 
   // Periodic re-check for auto-marking responded (every 60s when on Posts tab)
+  // This clears the localStorage cache to force re-check of all posts
   useEffect(() => {
     if (mode !== 'posts') return;
 
     const interval = setInterval(() => {
       const newPosts = posts.filter(p => p.status === 'new');
       if (newPosts.length > 0) {
-        console.log(`[DevScout] Periodic check: scanning ${newPosts.length} new posts for user comments`);
-        // Clear the cache so posts get re-checked
-        hasCheckedPosts.current.clear();
+        console.log(`[DevScout] Periodic check: clearing cache and re-checking ${newPosts.length} posts`);
+        // Clear localStorage cache so all posts get re-checked
+        localStorage.removeItem('devscout_checked_posts');
         checkPostsForUserComments(newPosts);
       }
-    }, 10000); // Check every 10 seconds (debug mode)
+    }, 60000); // Check every 60 seconds
 
     return () => clearInterval(interval);
   }, [mode, posts, checkPostsForUserComments]);
@@ -816,14 +1134,38 @@ function App() {
     setGithubIssues((prev) => prev.filter((issue) => issue.id !== issueId));
   };
 
-  const handleFetchProspects = async () => {
+  const handleFetchProspects = async (resume = false) => {
     setProspectsFetching(true);
-    setProspectsProgress({ current: 0, total: 0, search: 'Starting...' });
+
+    // Check for resume capability
+    const savedProgress = loadPersistedData('prospects_progress', null);
+    const startIndex = resume && savedProgress ? savedProgress.completedSearches : 0;
+
+    if (startIndex > 0 && resume) {
+      console.log(`[DevScout] Resuming prospects fetch from search ${startIndex + 1}`);
+    }
+
+    setProspectsProgress({ current: startIndex, total: getProspectSearchCount(), search: 'Starting...' });
+
     try {
-      const prospectData = await fetchProspects((current, total, search) => {
-        setProspectsProgress({ current, total, search });
-      });
+      const prospectData = await fetchProspects(
+        // Progress callback
+        (current, total, search) => {
+          setProspectsProgress({ current, total, search });
+        },
+        // Partial results callback - save incrementally
+        (partialResults, completedSearches) => {
+          setProspects(partialResults);
+          savePersistedData('prospects', partialResults);
+          savePersistedData('prospects_progress', { completedSearches, total: getProspectSearchCount() });
+        },
+        // Start from index (for resume)
+        startIndex
+      );
       setProspects(prospectData);
+      savePersistedData('prospects', prospectData);
+      // Clear progress on completion
+      localStorage.removeItem('devscout_prospects_progress');
     } catch (err) {
       console.error('Failed to fetch prospects:', err);
     } finally {
@@ -832,24 +1174,49 @@ function App() {
     }
   };
 
+  // Check if prospects fetch can be resumed
+  const getProspectsResumeInfo = () => {
+    const savedProgress = loadPersistedData('prospects_progress', null);
+    if (savedProgress && savedProgress.completedSearches < savedProgress.total) {
+      return savedProgress;
+    }
+    return null;
+  };
+
   const handleDismissProspect = (prospectId) => {
-    setProspects((prev) => prev.filter((p) => p.id !== prospectId));
+    setProspects((prev) => {
+      const updated = prev.filter((p) => p.id !== prospectId);
+      savePersistedData('prospects', updated);
+      return updated;
+    });
+  };
+
+  const handleClearProspects = () => {
+    setProspects([]);
+    localStorage.removeItem('devscout_prospects');
+    localStorage.removeItem('devscout_prospects_progress');
   };
 
   const handleFetchNews = async () => {
     setNewsFetching(true);
-    setNewsProgress({ current: 0, total: 4, source: 'Starting...' });
+    setNewsProgress({ current: 0, total: 6, source: 'Starting...' });
     try {
       const newsData = await fetchNews((current, total, source) => {
         setNewsProgress({ current, total, source });
       });
       setNews(newsData);
+      savePersistedData('news', newsData);
     } catch (err) {
       console.error('Failed to fetch news:', err);
     } finally {
       setNewsFetching(false);
       setNewsProgress(null);
     }
+  };
+
+  const handleClearNews = () => {
+    setNews([]);
+    localStorage.removeItem('devscout_news');
   };
 
   const handleGenerateNewsResponse = async (newsItem) => {
@@ -1141,80 +1508,81 @@ function App() {
   }
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="devscout-container">
       {/* Global Notification Badge - visible on all pages */}
       {getTotalUnreadReplies() > 0 && mode !== 'replies' && (
         <div
           style={styles.globalNotification}
           onClick={handleNotificationClick}
+          className="devscout-notification-badge"
         >
           <div style={styles.notificationDot}></div>
           <span>{getTotalUnreadReplies()} new {getTotalUnreadReplies() === 1 ? 'reply' : 'replies'} to your comments</span>
         </div>
       )}
 
-      <div style={styles.header}>
-        <h1 style={styles.title}>DevScout</h1>
+      <div style={styles.header} className="devscout-header">
+        <h1 style={styles.title} className="devscout-title">DevScout</h1>
         {mode === 'posts' && stats && (
-          <div style={styles.stats}>
+          <div style={styles.stats} className="devscout-stats">
             <div style={styles.stat}>
-              <div style={styles.statValue}>{stats.new_posts}</div>
+              <div style={styles.statValue} className="devscout-stat-value">{stats.new_posts}</div>
               <div style={styles.statLabel}>New</div>
             </div>
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#3b82f6' }}>{stats.responded_posts}</div>
+              <div style={{ ...styles.statValue, color: '#3b82f6' }} className="devscout-stat-value">{stats.responded_posts}</div>
               <div style={styles.statLabel}>Responded</div>
             </div>
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#666' }}>{stats.total_posts}</div>
+              <div style={{ ...styles.statValue, color: '#666' }} className="devscout-stat-value">{stats.total_posts}</div>
               <div style={styles.statLabel}>Total</div>
             </div>
           </div>
         )}
         {mode === 'news' && (
-          <div style={styles.stats}>
+          <div style={styles.stats} className="devscout-stats">
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#f97316' }}>{news.length}</div>
+              <div style={{ ...styles.statValue, color: '#f97316' }} className="devscout-stat-value">{news.length}</div>
               <div style={styles.statLabel}>Posts</div>
             </div>
           </div>
         )}
         {mode === 'github' && (
-          <div style={styles.stats}>
+          <div style={styles.stats} className="devscout-stats">
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#a78bfa' }}>{githubIssues.length}</div>
+              <div style={{ ...styles.statValue, color: '#a78bfa' }} className="devscout-stat-value">{githubIssues.length}</div>
               <div style={styles.statLabel}>Issues</div>
             </div>
           </div>
         )}
         {mode === 'prospects' && (
-          <div style={styles.stats}>
+          <div style={styles.stats} className="devscout-stats">
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#ef4444' }}>
+              <div style={{ ...styles.statValue, color: '#ef4444' }} className="devscout-stat-value">
                 {prospects.filter(p => p.score >= 40).length}
               </div>
               <div style={styles.statLabel}>Hot</div>
             </div>
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#f59e0b' }}>
+              <div style={{ ...styles.statValue, color: '#f59e0b' }} className="devscout-stat-value">
                 {prospects.filter(p => p.score >= 20 && p.score < 40).length}
               </div>
               <div style={styles.statLabel}>Warm</div>
             </div>
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#666' }}>{prospects.length}</div>
+              <div style={{ ...styles.statValue, color: '#666' }} className="devscout-stat-value">{prospects.length}</div>
               <div style={styles.statLabel}>Total</div>
             </div>
           </div>
         )}
         {mode === 'replies' && (
-          <div style={styles.stats}>
+          <div style={styles.stats} className="devscout-stats">
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#ef4444' }}>{getTotalUnreadReplies()}</div>
+              <div style={{ ...styles.statValue, color: '#ef4444' }} className="devscout-stat-value">{getTotalUnreadReplies()}</div>
               <div style={styles.statLabel}>Unread</div>
             </div>
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#666' }}>{respondedPosts.length}</div>
+              <div style={{ ...styles.statValue, color: '#666' }} className="devscout-stat-value">{respondedPosts.length}</div>
               <div style={styles.statLabel}>Tracked</div>
             </div>
           </div>
@@ -1222,38 +1590,44 @@ function App() {
       </div>
 
       {/* Mode Toggle */}
-      <div style={styles.modeToggle}>
+      <div style={styles.modeToggle} className="devscout-mode-toggle">
         <button
+          className="devscout-mode-btn"
           style={{ ...styles.modeBtn, ...(mode === 'engage' ? styles.modeBtnActive : {}), background: mode === 'engage' ? '#22c55e' : 'transparent' }}
           onClick={() => setMode('engage')}
         >
           Engage
         </button>
         <button
+          className="devscout-mode-btn"
           style={{ ...styles.modeBtn, ...(mode === 'posts' ? styles.modeBtnActive : {}) }}
           onClick={() => setMode('posts')}
         >
           Posts
         </button>
         <button
+          className="devscout-mode-btn"
           style={{ ...styles.modeBtn, ...(mode === 'replies' ? styles.modeBtnActive : {}) }}
           onClick={() => setMode('replies')}
         >
           Replies {getTotalUnreadReplies() > 0 && <span style={{ background: '#ef4444', color: '#fff', padding: '2px 6px', borderRadius: '10px', fontSize: '11px', marginLeft: '4px' }}>{getTotalUnreadReplies()}</span>}
         </button>
         <button
+          className="devscout-mode-btn"
           style={{ ...styles.modeBtn, ...(mode === 'news' ? styles.modeBtnActive : {}) }}
           onClick={() => setMode('news')}
         >
           News
         </button>
         <button
+          className="devscout-mode-btn"
           style={{ ...styles.modeBtn, ...(mode === 'github' ? styles.modeBtnActive : {}) }}
           onClick={() => setMode('github')}
         >
           GitHub
         </button>
         <button
+          className="devscout-mode-btn"
           style={{ ...styles.modeBtn, ...(mode === 'prospects' ? styles.modeBtnActive : {}) }}
           onClick={() => setMode('prospects')}
         >
@@ -1264,9 +1638,10 @@ function App() {
       {mode === 'posts' && (
         <>
           {/* Custom URL Input - add posts scraper missed */}
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+          <div className="devscout-url-input-row" style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
             <input
               type="text"
+              className="devscout-input"
               value={customUrlInput}
               onChange={(e) => setCustomUrlInput(e.target.value)}
               placeholder="Add Reddit post URL manually..."
@@ -1290,7 +1665,7 @@ function App() {
             </button>
           </div>
 
-          <div style={styles.controls}>
+          <div style={styles.controls} className="devscout-controls">
             <button
               data-btn="primary"
               style={{ ...styles.btn, ...styles.btnPrimary }}
@@ -1310,10 +1685,11 @@ function App() {
             )}
           </div>
 
-          <div style={styles.tabs}>
+          <div style={styles.tabs} className="devscout-filter-tabs">
             {['new', 'skipped', 'all'].map((tab) => (
               <button
                 key={tab}
+                className="devscout-filter-tab"
                 style={{ ...styles.tab, ...(filter === tab ? styles.tabActive : {}) }}
                 onClick={() => setFilter(tab)}
               >
@@ -1325,7 +1701,7 @@ function App() {
       )}
 
       {mode === 'news' && (
-        <div style={styles.controls}>
+        <div style={styles.controls} className="devscout-controls">
           <button
             style={{ ...styles.btn, ...styles.btnPrimary }}
             onClick={handleFetchNews}
@@ -1337,11 +1713,19 @@ function App() {
                 : 'Fetching...'
               : 'Fetch Tech News'}
           </button>
+          {news.length > 0 && !newsFetching && (
+            <button
+              style={{ ...styles.btn, ...styles.btnSecondary }}
+              onClick={handleClearNews}
+            >
+              Clear All
+            </button>
+          )}
         </div>
       )}
 
       {mode === 'github' && (
-        <div style={styles.controls}>
+        <div style={styles.controls} className="devscout-controls">
           <button
             style={{ ...styles.btn, ...styles.btnPrimary }}
             onClick={handleFetchGitHub}
@@ -1360,18 +1744,18 @@ function App() {
       {mode === 'posts' && (
         <div style={styles.postList}>
           {posts.length === 0 ? (
-            <div style={styles.empty}>
+            <div style={styles.empty} className="devscout-empty">
               No posts found. Click "Fetch New Posts" to scan Reddit.
             </div>
           ) : (
             posts.map((post) => (
-              <div key={post.id} style={styles.post}>
-                <div style={styles.postHeader}>
+              <div key={post.id} style={styles.post} className="devscout-post">
+                <div style={styles.postHeader} className="devscout-post-header">
                   <a href={`https://reddit.com/r/${post.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }}>r/{post.subreddit}</a>
                   <span style={styles.score}>Score: {Math.round(post.relevance_score)}</span>
                 </div>
 
-                <h3 style={styles.postTitle}>
+                <h3 style={styles.postTitle} className="devscout-post-title">
                   <a
                     href={post.url}
                     target="_blank"
@@ -1387,10 +1771,10 @@ function App() {
                 </div>
 
                 {post.body && (
-                  <div style={styles.postBody}>{post.body}</div>
+                  <div style={styles.postBody} className="devscout-post-body">{post.body}</div>
                 )}
 
-                <div style={styles.keywords}>
+                <div style={styles.keywords} className="devscout-keywords">
                   {parseKeywords(post.keywords_matched).map((kw, i) => (
                     <span key={i} style={styles.keyword}>{kw}</span>
                   ))}
@@ -1400,7 +1784,7 @@ function App() {
                   <div style={styles.responseSection}>
                     <div style={styles.responseLabel}>Suggested Response</div>
                     <div style={styles.response}>{post.suggested_response}</div>
-                    <div style={styles.actions}>
+                    <div style={styles.actions} className="devscout-actions">
                       <button
                         data-btn="reddit"
                         style={{ ...styles.btn, ...styles.btnReddit, display: 'flex', alignItems: 'center', gap: '6px' }}
@@ -1441,7 +1825,7 @@ function App() {
                     </div>
                   </div>
                 ) : (
-                  <div style={styles.actions}>
+                  <div style={styles.actions} className="devscout-actions">
                     <button
                       data-btn="primary"
                       style={{ ...styles.btn, ...styles.btnPrimary }}
@@ -1469,18 +1853,18 @@ function App() {
       {mode === 'news' && (
         <div style={styles.postList}>
           {news.length === 0 ? (
-            <div style={styles.empty}>
+            <div style={styles.empty} className="devscout-empty">
               No news loaded. Click "Fetch Tech News" to scan HN, Lobsters, Dev.to & Hashnode.
             </div>
           ) : (
             news.map((item) => (
-              <div key={item.reddit_id} style={styles.post}>
-                <div style={styles.postHeader}>
+              <div key={item.reddit_id} style={styles.post} className="devscout-post">
+                <div style={styles.postHeader} className="devscout-post-header">
                   <span style={{ ...styles.subreddit, color: '#f97316' }}>{item.subreddit}</span>
                   <span style={styles.score}>Score: {Math.round(item.relevance_score)}</span>
                 </div>
 
-                <h3 style={styles.postTitle}>
+                <h3 style={styles.postTitle} className="devscout-post-title">
                   <a
                     href={item.url}
                     target="_blank"
@@ -1496,10 +1880,10 @@ function App() {
                 </div>
 
                 {item.body && (
-                  <div style={styles.postBody}>{item.body}</div>
+                  <div style={styles.postBody} className="devscout-post-body">{item.body}</div>
                 )}
 
-                <div style={styles.keywords}>
+                <div style={styles.keywords} className="devscout-keywords">
                   {item.keywords_matched?.map((kw, i) => (
                     <span key={i} style={styles.keyword}>{kw}</span>
                   ))}
@@ -1525,7 +1909,7 @@ function App() {
                         marginBottom: '8px',
                       }}
                     />
-                    <div style={styles.actions}>
+                    <div style={styles.actions} className="devscout-actions">
                       <button
                         data-btn="primary"
                         style={{ ...styles.btn, ...styles.btnPrimary, display: 'flex', alignItems: 'center', gap: '6px' }}
@@ -1556,7 +1940,7 @@ function App() {
                     </div>
                   </div>
                 ) : (
-                  <div style={styles.actions}>
+                  <div style={styles.actions} className="devscout-actions">
                     <button
                       data-btn="primary"
                       style={{ ...styles.btn, ...styles.btnPrimary }}
@@ -1593,13 +1977,13 @@ function App() {
       {mode === 'github' && (
         <div style={styles.postList}>
           {githubIssues.length === 0 ? (
-            <div style={styles.empty}>
+            <div style={styles.empty} className="devscout-empty">
               No issues loaded. Click "Find Contribution Opportunities" to search GitHub.
             </div>
           ) : (
             githubIssues.map((issue) => (
-              <div key={issue.id} style={styles.post}>
-                <div style={styles.postHeader}>
+              <div key={issue.id} style={styles.post} className="devscout-post">
+                <div style={styles.postHeader} className="devscout-post-header">
                   <a
                     href={issue.repoUrl}
                     target="_blank"
@@ -1611,7 +1995,7 @@ function App() {
                   <span style={styles.score}>Score: {Math.round(issue.relevance_score)}</span>
                 </div>
 
-                <h3 style={styles.postTitle}>
+                <h3 style={styles.postTitle} className="devscout-post-title">
                   <a
                     href={issue.url}
                     target="_blank"
@@ -1633,10 +2017,10 @@ function App() {
                 </div>
 
                 {issue.body && (
-                  <div style={styles.postBody}>{issue.body}</div>
+                  <div style={styles.postBody} className="devscout-post-body">{issue.body}</div>
                 )}
 
-                <div style={styles.actions}>
+                <div style={styles.actions} className="devscout-actions">
                   <button
                     style={{ ...styles.btn, ...styles.btnClaude }}
                     onClick={() => handleCopyForClaude(issue)}
@@ -1666,10 +2050,10 @@ function App() {
 
       {/* Prospects Controls */}
       {mode === 'prospects' && (
-        <div style={styles.controls}>
+        <div style={styles.controls} className="devscout-controls">
           <button
             style={{ ...styles.btn, ...styles.btnPrimary }}
-            onClick={handleFetchProspects}
+            onClick={() => handleFetchProspects(false)}
             disabled={prospectsFetching}
           >
             {prospectsFetching
@@ -1678,6 +2062,22 @@ function App() {
                 : 'Fetching...'
               : 'Find Hot Prospects'}
           </button>
+          {!prospectsFetching && getProspectsResumeInfo() && (
+            <button
+              style={{ ...styles.btn, ...styles.btnSuccess }}
+              onClick={() => handleFetchProspects(true)}
+            >
+              Resume ({getProspectsResumeInfo().completedSearches}/{getProspectsResumeInfo().total})
+            </button>
+          )}
+          {prospects.length > 0 && !prospectsFetching && (
+            <button
+              style={{ ...styles.btn, ...styles.btnSecondary }}
+              onClick={handleClearProspects}
+            >
+              Clear All
+            </button>
+          )}
         </div>
       )}
 
@@ -1685,15 +2085,15 @@ function App() {
       {mode === 'prospects' && (
         <div style={styles.postList}>
           {prospects.length === 0 ? (
-            <div style={styles.empty}>
+            <div style={styles.empty} className="devscout-empty">
               No prospects loaded. Click "Find Hot Prospects" to search Reddit for leads.
             </div>
           ) : (
             [...prospects].sort((a, b) => b.score - a.score).map((prospect) => {
               const category = getProspectCategory(prospect.score);
               return (
-                <div key={prospect.id} style={styles.post}>
-                  <div style={styles.postHeader}>
+                <div key={prospect.id} style={styles.post} className="devscout-post">
+                  <div style={styles.postHeader} className="devscout-post-header">
                     <a href={`https://reddit.com/r/${prospect.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }}>r/{prospect.subreddit}</a>
                     <span style={{
                       ...styles.score,
@@ -1704,7 +2104,7 @@ function App() {
                     </span>
                   </div>
 
-                  <h3 style={styles.postTitle}>
+                  <h3 style={styles.postTitle} className="devscout-post-title">
                     <a
                       href={prospect.url}
                       target="_blank"
@@ -1720,18 +2120,18 @@ function App() {
                   </div>
 
                   {prospect.body && (
-                    <div style={styles.postBody}>{prospect.body}</div>
+                    <div style={styles.postBody} className="devscout-post-body">{prospect.body}</div>
                   )}
 
                   {prospect.matchedKeywords && prospect.matchedKeywords.length > 0 && (
-                    <div style={styles.keywords}>
+                    <div style={styles.keywords} className="devscout-keywords">
                       {prospect.matchedKeywords.map((kw, i) => (
                         <span key={i} style={styles.keyword}>{kw}</span>
                       ))}
                     </div>
                   )}
 
-                  <div style={styles.actions}>
+                  <div style={styles.actions} className="devscout-actions">
                     <a
                       href={prospect.url}
                       target="_blank"
@@ -1777,7 +2177,7 @@ function App() {
       {mode === 'replies' && (
         <div style={styles.postList}>
           {respondedPosts.length === 0 ? (
-            <div style={styles.empty}>
+            <div style={styles.empty} className="devscout-empty">
               No responded posts yet. Posts you mark as "Responded" will appear here for reply tracking.
             </div>
           ) : (
@@ -2089,7 +2489,7 @@ function App() {
 
               if (ideas.length === 0) {
                 return (
-                  <div style={styles.empty}>
+                  <div style={styles.empty} className="devscout-empty">
                     No ideas found for this combination. Try a different subreddit or category.
                   </div>
                 );
@@ -2169,7 +2569,7 @@ function App() {
                         </div>
                       </div>
                     ) : (
-                      <div style={styles.actions}>
+                      <div style={styles.actions} className="devscout-actions">
                         <button
                           data-btn="primary"
                           style={{ ...styles.btn, ...styles.btnPrimary }}

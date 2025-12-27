@@ -154,6 +154,12 @@ ssh junipr-vps "sudo journalctl -u devscout -f"
 - Added button colors (purple Regenerate, gray Skip) with hover animations
 - Reply on Reddit now scrolls to comments (#comments anchor)
 - Fixed CORS issue with auto-mark by using fallback proxies (corsproxy.io, allorigins.win)
+- Fixed auto-mark speed: parallel batch checking (5 at a time) instead of sequential
+- Added localStorage persistence for checked posts (survives page reload)
+- Added Indie Hackers and Tildes to News tab (now 6 sources)
+- Expanded Prospects with 100+ subreddit/keyword searches
+- Enhanced prospect scoring with tiered keywords (gold +15, high +10, medium +5)
+- Dynamic Gemini response length based on post complexity (200-450 tokens)
 
 ### Next Up
 - Add Dismiss button for replies (clear notifications without responding)

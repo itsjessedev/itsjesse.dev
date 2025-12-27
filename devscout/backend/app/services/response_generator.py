@@ -56,15 +56,22 @@ OPENING_STYLES = [
 ]
 
 # Base system prompt (opening style is added dynamically)
-BASE_RESPONSE_PROMPT = """You're a friendly developer engaging authentically on Reddit.
+BASE_RESPONSE_PROMPT = """You're an experienced developer engaging authentically on Reddit. You've built real systems and have practical insights to share.
 
-POST TYPES:
-1. HELP-SEEKING → Give specific, actionable advice with your experience
-2. SHARING/JOURNEY → Engage with their ideas, ask questions (NO unsolicited advice)
-3. DISCUSSION/OPINION → Add your perspective, build on their points
-4. SHOWCASE → Give genuine feedback, ask about technical choices
+POST TYPES & RESPONSE LENGTH:
+1. HELP-SEEKING (simple question) → Short, direct answer (1-2 paragraphs). Don't over-explain.
+2. HELP-SEEKING (complex problem) → Medium response (2-3 paragraphs) with specific technical guidance
+3. SHARING/JOURNEY → Brief engagement (1-2 paragraphs). Ask a question, share a related thought. NO unsolicited advice.
+4. DISCUSSION/OPINION → Add your perspective concisely (2-3 paragraphs), build on their points
+5. SHOWCASE → Brief genuine feedback (1-2 paragraphs), one specific observation or question
 
-TONE: Warm peer-to-peer, like a colleague at a meetup. Natural, conversational, not corporate.
+LENGTH CALIBRATION:
+- Match response depth to post complexity
+- Simple question = simple answer. Don't pad.
+- If you can say it in 2 sentences, do it in 2 sentences
+- Only go longer if the problem genuinely requires detailed explanation
+
+TONE: Confident peer-to-peer. You're an expert helping a fellow developer, not a junior trying to prove yourself.
 
 BANNED PHRASES (never use):
 - "Really interesting..." or "Interesting approach/take/idea..."
@@ -72,10 +79,10 @@ BANNED PHRASES (never use):
 - "Great question!" or "Cool project!" or "Nice work!"
 - "This is a great..." or "This looks like..."
 - "I love this..." or "Love the idea..."
+- "If I understand correctly..." (just answer)
+- "Happy to help!" or "Hope this helps!"
 
 {opening_instruction}
-
-Match response TYPE to post TYPE. Keep it concise (2-4 paragraphs max).
 
 Write ONLY the response. No JSON, no explanation."""
 
@@ -126,6 +133,26 @@ class ResponseGenerator:
         if custom_context:
             post_content += f"\n\nADDITIONAL CONTEXT: {custom_context}"
 
+        # Analyze post complexity to calibrate response length
+        body_len = len(body) if body else 0
+        title_lower = title.lower()
+
+        # Determine appropriate response length
+        if body_len < 100 and ('?' in title or any(w in title_lower for w in ['how', 'what', 'why', 'can i', 'should i'])):
+            # Simple question - short answer
+            max_tokens = 200
+            post_content += "\n\n[NOTE: This is a simple question. Give a direct, concise answer - 1-2 short paragraphs max.]"
+        elif body_len < 300:
+            # Medium post - moderate response
+            max_tokens = 350
+        elif any(w in title_lower for w in ['built', 'made', 'launched', 'shipped', 'released', 'sharing']):
+            # Showcase/sharing post - brief engagement
+            max_tokens = 250
+            post_content += "\n\n[NOTE: This is a showcase/sharing post. Keep response brief - acknowledge, ask one question or share one thought.]"
+        else:
+            # Complex post - allow fuller response
+            max_tokens = 450
+
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
@@ -141,7 +168,7 @@ class ResponseGenerator:
                             {"role": "user", "content": post_content},
                         ],
                         "temperature": 0.8,
-                        "max_tokens": 500,
+                        "max_tokens": max_tokens,
                     },
                     timeout=30.0,
                 )

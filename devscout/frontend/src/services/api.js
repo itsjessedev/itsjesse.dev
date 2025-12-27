@@ -421,10 +421,123 @@ async function fetchHashnode() {
   return posts;
 }
 
-// Fetch from HN, Lobsters, Dev.to, and Hashnode (client-side)
+// Fetch from Indie Hackers
+async function fetchIndieHackers() {
+  const posts = [];
+  const cutoffTime = Date.now() / 1000 - (MAX_POST_AGE_HOURS * 3600);
+
+  try {
+    // Indie Hackers posts API
+    const response = await fetch('https://www.indiehackers.com/api/posts?sort=new&limit=50');
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    const postList = data.posts || [];
+
+    for (const post of postList) {
+      const createdAt = new Date(post.createdAt).getTime() / 1000;
+
+      // Skip old posts
+      if (createdAt < cutoffTime) continue;
+
+      // Skip posts with too many comments
+      if (post.commentCount > MAX_COMMENTS * 2) continue;
+
+      const fullText = `${post.title} ${post.body || ''} ${post.tagline || ''}`;
+      const matched = matchesKeywords(fullText);
+
+      if (matched.length > 0) {
+        const relevance = calculateRelevance({
+          title: post.title,
+          num_comments: post.commentCount || 0,
+          created_utc: createdAt,
+        }, matched);
+
+        posts.push({
+          reddit_id: `ih_${post.id}`,
+          subreddit: `IH:${post.group?.name || 'general'}`,
+          title: post.title,
+          body: post.body?.slice(0, 2000) || post.tagline || null,
+          url: `https://www.indiehackers.com/post/${post.slug || post.id}`,
+          author: post.user?.username || '[deleted]',
+          score: post.voteCount || 0,
+          num_comments: post.commentCount || 0,
+          created_utc: createdAt,
+          relevance_score: relevance,
+          keywords_matched: matched,
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching Indie Hackers:', err);
+  }
+
+  return posts;
+}
+
+// Fetch from Tildes (HN-like community)
+async function fetchTildes() {
+  const posts = [];
+  const cutoffTime = Date.now() / 1000 - (MAX_POST_AGE_HOURS * 3600);
+
+  try {
+    // Tildes doesn't have a public API, but we can try to parse their RSS/Atom
+    const response = await fetch('https://tildes.net/~tech.rss');
+    if (!response.ok) return [];
+
+    const text = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/xml');
+    const items = doc.querySelectorAll('item');
+
+    for (const item of items) {
+      const title = item.querySelector('title')?.textContent || '';
+      const link = item.querySelector('link')?.textContent || '';
+      const pubDate = item.querySelector('pubDate')?.textContent;
+      const description = item.querySelector('description')?.textContent || '';
+
+      if (!pubDate) continue;
+      const createdAt = new Date(pubDate).getTime() / 1000;
+
+      // Skip old posts
+      if (createdAt < cutoffTime) continue;
+
+      const fullText = `${title} ${description}`;
+      const matched = matchesKeywords(fullText);
+
+      if (matched.length > 0) {
+        const relevance = calculateRelevance({
+          title,
+          num_comments: 0,
+          created_utc: createdAt,
+        }, matched);
+
+        posts.push({
+          reddit_id: `tildes_${btoa(link).slice(0, 20)}`,
+          subreddit: 'Tildes:tech',
+          title,
+          body: description?.slice(0, 2000) || null,
+          url: link,
+          author: '[tildes]',
+          score: 0,
+          num_comments: 0,
+          created_utc: createdAt,
+          relevance_score: relevance,
+          keywords_matched: matched,
+        });
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching Tildes:', err);
+  }
+
+  return posts;
+}
+
+// Fetch from HN, Lobsters, Dev.to, Hashnode, Indie Hackers, and Tildes (client-side)
 export async function fetchNews(onProgress = null) {
   const allPosts = [];
-  const totalSources = 4;
+  const totalSources = 6;
 
   // Fetch from Hacker News
   if (onProgress) onProgress(1, totalSources, 'Hacker News');
@@ -445,6 +558,16 @@ export async function fetchNews(onProgress = null) {
   if (onProgress) onProgress(4, totalSources, 'Hashnode');
   const hashnodePosts = await fetchHashnode();
   allPosts.push(...hashnodePosts);
+
+  // Fetch from Indie Hackers
+  if (onProgress) onProgress(5, totalSources, 'Indie Hackers');
+  const ihPosts = await fetchIndieHackers();
+  allPosts.push(...ihPosts);
+
+  // Fetch from Tildes
+  if (onProgress) onProgress(6, totalSources, 'Tildes');
+  const tildesPosts = await fetchTildes();
+  allPosts.push(...tildesPosts);
 
   // Sort by relevance
   allPosts.sort((a, b) => b.relevance_score - a.relevance_score);
@@ -976,51 +1099,66 @@ export const ENGAGEMENT_SUBREDDITS = {
 
 // Post idea templates organized by category - EXPERT LEVEL (no novice content)
 export const ENGAGEMENT_TEMPLATES = {
-  deep_dives: [
+  architecture_deep_dives: [
     { title: "The hidden complexity of {X} integrations that nobody talks about", tags: ['architecture', 'deep-dive'], subreddits: ['programming', 'webdev', 'node'] },
     { title: "Why I stopped using {X} and built my own {Y}", tags: ['architecture', 'experience'], subreddits: ['programming', 'selfhosted', 'SaaS'] },
     { title: "Patterns I've seen across 50+ API integrations", tags: ['patterns', 'api'], subreddits: ['programming', 'webdev', 'node'] },
-    { title: "The architecture behind {X} - a technical deep dive", tags: ['architecture', 'technical'], subreddits: ['programming', 'webdev', 'selfhosted'] },
     { title: "What happens when {X} fails at scale - lessons from production", tags: ['scale', 'production'], subreddits: ['programming', 'devops', 'node'] },
+    { title: "The architecture decisions that saved us from {X} disaster", tags: ['architecture', 'lessons'], subreddits: ['programming', 'devops', 'webdev'] },
+    { title: "How I structure {X} integrations to avoid vendor lock-in", tags: ['architecture', 'strategy'], subreddits: ['programming', 'webdev', 'SaaS'] },
+    { title: "The abstraction layer that made {X} integrations maintainable", tags: ['architecture', 'patterns'], subreddits: ['programming', 'webdev', 'node'] },
+  ],
+  production_war_stories: [
+    { title: "That time {X} took down our {Y} - and what we learned", tags: ['war-story', 'postmortem'], subreddits: ['programming', 'devops', 'startups'] },
+    { title: "The 3am incident that changed how we handle {X}", tags: ['war-story', 'oncall'], subreddits: ['devops', 'programming', 'sysadmin'] },
+    { title: "How a {X} edge case cost us {Y} - lessons learned", tags: ['war-story', 'lessons'], subreddits: ['programming', 'startups', 'Entrepreneur'] },
+    { title: "The silent failure that went unnoticed for 3 months", tags: ['war-story', 'monitoring'], subreddits: ['devops', 'programming', 'sysadmin'] },
+    { title: "When {X} rate limits hit and we had to rewrite everything in 48 hours", tags: ['war-story', 'api'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "The $X,000 mistake that taught me about {Y}", tags: ['war-story', 'lessons'], subreddits: ['programming', 'startups', 'Entrepreneur'] },
   ],
   hard_lessons: [
     { title: "When NOT to automate - lessons from over-engineering", tags: ['automation', 'lessons'], subreddits: ['programming', 'automation', 'Entrepreneur'] },
     { title: "The real cost of technical debt in {X} - a postmortem", tags: ['technical-debt', 'postmortem'], subreddits: ['programming', 'webdev', 'startups'] },
     { title: "Why your {X} integration is probably broken (and how to fix it)", tags: ['debugging', 'integration'], subreddits: ['programming', 'webdev', 'node'] },
-    { title: "Mistakes I made scaling {X} to {Y} users", tags: ['scale', 'lessons'], subreddits: ['programming', 'startups', 'SaaS'] },
     { title: "The 3 integration antipatterns I see everywhere", tags: ['antipatterns', 'architecture'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "What I wish I knew before building {X} integrations at scale", tags: ['lessons', 'scale'], subreddits: ['programming', 'webdev', 'devops'] },
+    { title: "The abstractions that seemed clever until production", tags: ['lessons', 'architecture'], subreddits: ['programming', 'webdev', 'node'] },
   ],
   technical_opinions: [
     { title: "Unpopular opinion: {X} is overengineered for most use cases", tags: ['opinion', 'discussion'], subreddits: ['programming', 'webdev', 'node'] },
     { title: "Why I prefer {X} over {Y} for production workloads", tags: ['opinion', 'comparison'], subreddits: ['programming', 'devops', 'selfhosted'] },
     { title: "The case against {X} in {Y} environments", tags: ['opinion', 'technical'], subreddits: ['programming', 'webdev', 'devops'] },
     { title: "Hot take: Most {X} problems are actually {Y} problems", tags: ['opinion', 'discussion'], subreddits: ['programming', 'webdev', 'Entrepreneur'] },
+    { title: "Why the {X} ecosystem is heading in the wrong direction", tags: ['opinion', 'industry'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "The uncomfortable truth about {X} that vendors won't tell you", tags: ['opinion', 'industry'], subreddits: ['programming', 'devops', 'SaaS'] },
   ],
-  how_i_debug: [
+  debugging_and_process: [
     { title: "How I debug {X} integrations - my actual process", tags: ['debugging', 'process'], subreddits: ['programming', 'webdev', 'node'] },
     { title: "The debugging technique that changed how I approach {X}", tags: ['debugging', 'tips'], subreddits: ['programming', 'webdev', 'devops'] },
     { title: "Tracing a {X} bug through 5 services - a war story", tags: ['debugging', 'war-story'], subreddits: ['programming', 'devops', 'node'] },
+    { title: "My toolkit for debugging distributed {X} systems", tags: ['debugging', 'tools'], subreddits: ['programming', 'devops', 'node'] },
+    { title: "The observability setup that makes debugging {X} actually possible", tags: ['debugging', 'monitoring'], subreddits: ['devops', 'programming', 'sysadmin'] },
   ],
-  questions_discussions: [
+  expert_discussions: [
     { title: "How do you handle {X} at scale?", tags: ['scale', 'discussion'], subreddits: ['programming', 'webdev', 'devops'] },
     { title: "What's your approach to {X} in distributed systems?", tags: ['distributed', 'discussion'], subreddits: ['programming', 'devops', 'node'] },
-    { title: "How are you handling {X} with the new {Y} changes?", tags: ['current', 'discussion'], subreddits: ['programming', 'webdev', 'devops'] },
     { title: "What's your monitoring/alerting setup for {X}?", tags: ['monitoring', 'discussion'], subreddits: ['devops', 'selfhosted', 'programming'] },
     { title: "How do you test {X} integrations in CI/CD?", tags: ['testing', 'cicd'], subreddits: ['programming', 'devops', 'webdev'] },
-  ],
-  war_stories: [
-    { title: "That time {X} took down our {Y} - and what we learned", tags: ['war-story', 'postmortem'], subreddits: ['programming', 'devops', 'startups'] },
-    { title: "The 3am incident that changed how we handle {X}", tags: ['war-story', 'oncall'], subreddits: ['devops', 'programming', 'sysadmin'] },
-    { title: "How a {X} edge case cost us {Y} - lessons learned", tags: ['war-story', 'lessons'], subreddits: ['programming', 'startups', 'Entrepreneur'] },
+    { title: "What's your strategy for API versioning in production?", tags: ['api', 'discussion'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "How are you handling secrets management for {X}?", tags: ['security', 'discussion'], subreddits: ['devops', 'programming', 'sysadmin'] },
   ],
   industry_insights: [
     { title: "Why {X} adoption is stalling - an insider perspective", tags: ['industry', 'analysis'], subreddits: ['programming', 'Entrepreneur', 'startups'] },
     { title: "The real reason companies struggle with {X}", tags: ['industry', 'analysis'], subreddits: ['programming', 'Entrepreneur', 'SaaS'] },
     { title: "What I learned consulting for {X} companies on {Y}", tags: ['consulting', 'insights'], subreddits: ['Entrepreneur', 'startups', 'programming'] },
+    { title: "The hidden costs of {X} that nobody talks about", tags: ['industry', 'analysis'], subreddits: ['programming', 'SaaS', 'Entrepreneur'] },
+    { title: "Why enterprises are moving away from {X} (and what they're using instead)", tags: ['industry', 'trends'], subreddits: ['programming', 'devops', 'SaaS'] },
   ],
-  comparisons: [
+  production_comparisons: [
     { title: "After running {X} and {Y} in production for a year - honest comparison", tags: ['comparison', 'production'], subreddits: ['programming', 'webdev', 'selfhosted'] },
-    { title: "Tried both {X} and {Y} - here's my honest comparison", tags: ['comparison', 'review'], subreddits: ['programming', 'productivity', 'selfhosted'] },
+    { title: "Why we migrated from {X} to {Y} after 2 years", tags: ['comparison', 'migration'], subreddits: ['programming', 'devops', 'webdev'] },
+    { title: "The performance difference between {X} and {Y} in real workloads", tags: ['comparison', 'performance'], subreddits: ['programming', 'webdev', 'node'] },
+    { title: "{X} vs {Y} for {Z} workloads - what the benchmarks don't show", tags: ['comparison', 'production'], subreddits: ['programming', 'devops', 'webdev'] },
   ],
 };
 
@@ -1065,60 +1203,161 @@ export function getIdeasForSubreddit(subreddit) {
 // ============= PROSPECTS (Outreach) =============
 
 const PROSPECT_SEARCHES = [
-  // Direct hiring posts (GOLD)
+  // ============= DIRECT HIRING (GOLD) =============
   { subreddit: 'forhire', query: '[Hiring]' },
   { subreddit: 'slavelabour', query: '[TASK]' },
   { subreddit: 'jobbit', query: '[Hiring]' },
+  { subreddit: 'Jobs4Bitcoins', query: '[Hiring]' },
+  { subreddit: 'remotejs', query: 'hiring OR contract' },
+  { subreddit: 'remotepython', query: 'hiring OR contract' },
+  { subreddit: 'WorkOnline', query: 'looking for OR need someone' },
+  { subreddit: 'freelance_forhire', query: 'developer OR automation' },
 
-  // Non-tech founders seeking help
+  // ============= NON-TECH FOUNDERS =============
   { subreddit: 'smallbusiness', query: 'spreadsheet OR excel OR automation' },
   { subreddit: 'smallbusiness', query: 'developer OR programmer' },
   { subreddit: 'smallbusiness', query: 'sync OR integrate OR workflow' },
+  { subreddit: 'smallbusiness', query: 'manual data entry OR copy paste' },
+  { subreddit: 'smallbusiness', query: 'time consuming OR hours per week' },
   { subreddit: 'Entrepreneur', query: 'need developer OR looking for developer' },
   { subreddit: 'Entrepreneur', query: 'automation OR automate' },
   { subreddit: 'Entrepreneur', query: 'scrape OR scraping OR data extraction' },
+  { subreddit: 'Entrepreneur', query: 'technical cofounder OR tech partner' },
+  { subreddit: 'Entrepreneur', query: 'bottleneck OR broken process' },
   { subreddit: 'startups', query: 'looking for developer OR technical cofounder' },
   { subreddit: 'startups', query: 'MVP OR prototype' },
+  { subreddit: 'startups', query: 'hire freelancer OR contractor' },
   { subreddit: 'indiehackers', query: 'developer OR cofounder OR build' },
+  { subreddit: 'EntrepreneurRideAlong', query: 'automation OR developer' },
+  { subreddit: 'sweatystartup', query: 'software OR automation OR app' },
 
-  // SaaS founders
+  // ============= SAAS / TECH PRODUCTS =============
   { subreddit: 'SaaS', query: 'looking for developer OR need help building' },
   { subreddit: 'SaaS', query: 'integration OR API OR webhook' },
-  { subreddit: 'microsaas', query: 'developer OR build' },
-  { subreddit: 'nocode', query: 'developer OR custom OR limitations' },
-  { subreddit: 'lowcode', query: 'developer OR custom code OR limitations' },
+  { subreddit: 'SaaS', query: 'freelancer OR contractor' },
+  { subreddit: 'microsaas', query: 'developer OR build OR integration' },
+  { subreddit: 'sideproject', query: 'developer OR help OR automation' },
+  { subreddit: 'juststart', query: 'automation OR scraping OR developer' },
 
-  // Ecommerce
+  // ============= NO-CODE / LOW-CODE (hitting limits) =============
+  { subreddit: 'nocode', query: 'developer OR custom OR limitations' },
+  { subreddit: 'nocode', query: 'can\'t do OR impossible OR workaround' },
+  { subreddit: 'lowcode', query: 'developer OR custom code OR limitations' },
+  { subreddit: 'bubble', query: 'developer OR limitations OR custom' },
+  { subreddit: 'webflow', query: 'developer OR custom code OR limitations' },
+  { subreddit: 'retool', query: 'developer OR custom OR integration' },
+  { subreddit: 'AppSheet', query: 'developer OR limitations OR complex' },
+  { subreddit: 'OutSystems', query: 'developer OR freelance' },
+
+  // ============= AUTOMATION TOOLS =============
+  { subreddit: 'zapier', query: 'developer OR custom OR limitations' },
+  { subreddit: 'zapier', query: 'alternative OR expensive OR rate limit' },
+  { subreddit: 'n8n', query: 'developer OR help OR complex' },
+  { subreddit: 'make', query: 'developer OR limitations OR custom' },
+  { subreddit: 'IFTTT', query: 'developer OR alternative OR limitations' },
+  { subreddit: 'GoogleAppsScript', query: 'developer OR freelance OR help' },
+  { subreddit: 'MicrosoftFlow', query: 'developer OR custom OR limitations' },
+
+  // ============= PRODUCTIVITY TOOLS =============
+  { subreddit: 'Notion', query: 'developer OR API OR integration' },
+  { subreddit: 'Notion', query: 'automation OR sync OR connect' },
+  { subreddit: 'Airtable', query: 'developer OR automation OR script' },
+  { subreddit: 'Airtable', query: 'limitations OR slow OR integration' },
+  { subreddit: 'clickup', query: 'developer OR API OR integration' },
+  { subreddit: 'asana', query: 'developer OR integration OR automation' },
+  { subreddit: 'Trello', query: 'developer OR automation OR powerup' },
+  { subreddit: 'Monday', query: 'developer OR integration OR automation' },
+
+  // ============= ECOMMERCE =============
   { subreddit: 'ecommerce', query: 'developer OR integration OR automation' },
+  { subreddit: 'ecommerce', query: 'sync inventory OR spreadsheet OR manual' },
   { subreddit: 'shopify', query: 'developer OR custom OR help' },
   { subreddit: 'shopify', query: 'automation OR workflow OR sync' },
+  { subreddit: 'shopify', query: 'integration OR connect OR API' },
   { subreddit: 'woocommerce', query: 'developer OR custom OR integration' },
   { subreddit: 'Etsy', query: 'automation OR bulk OR spreadsheet' },
+  { subreddit: 'Etsy', query: 'sync OR integration OR tool' },
+  { subreddit: 'FulfillmentByAmazon', query: 'automation OR software OR spreadsheet' },
+  { subreddit: 'FulfillmentByAmazon', query: 'developer OR integration OR API' },
+  { subreddit: 'AmazonSeller', query: 'automation OR software OR tool' },
+  { subreddit: 'AmazonSeller', query: 'developer OR integration' },
+  { subreddit: 'dropship', query: 'automation OR software OR developer' },
+  { subreddit: 'Flipping', query: 'automation OR spreadsheet OR software' },
+  { subreddit: 'Reselling', query: 'automation OR tool OR software' },
+  { subreddit: 'printOnDemand', query: 'automation OR integration OR developer' },
+  { subreddit: 'merchbyamazon', query: 'automation OR tool OR software' },
 
-  // Real estate / Business services
-  { subreddit: 'realestateinvesting', query: 'spreadsheet OR automation OR software' },
-  { subreddit: 'realestate', query: 'automation OR CRM OR software development' },
-  { subreddit: 'Bookkeeping', query: 'automation OR integration OR sync' },
-  { subreddit: 'accounting', query: 'automation OR script OR integration' },
-
-  // Marketing / Sales
-  { subreddit: 'marketing', query: 'automation OR integration OR developer' },
-  { subreddit: 'digital_marketing', query: 'automation OR scraping OR API' },
+  // ============= CRM / MARKETING / SALES =============
+  { subreddit: 'CRM', query: 'developer OR integration OR automation' },
   { subreddit: 'hubspot', query: 'developer OR integration OR custom' },
+  { subreddit: 'hubspot', query: 'automation OR workflow OR API' },
   { subreddit: 'Salesforce', query: 'developer OR integration OR automation' },
+  { subreddit: 'Salesforce', query: 'freelance OR contractor OR hire' },
+  { subreddit: 'pipedrive', query: 'developer OR integration OR automation' },
+  { subreddit: 'activecampaign', query: 'developer OR integration' },
+  { subreddit: 'marketing', query: 'automation OR integration OR developer' },
+  { subreddit: 'marketing', query: 'scrape OR data OR leads' },
+  { subreddit: 'digital_marketing', query: 'automation OR scraping OR API' },
+  { subreddit: 'emailmarketing', query: 'automation OR integration OR API' },
+  { subreddit: 'leadgeneration', query: 'automation OR scrape OR software' },
+  { subreddit: 'socialmediamarketing', query: 'automation OR tool OR API' },
+  { subreddit: 'PPC', query: 'automation OR script OR integration' },
+  { subreddit: 'klaviyo', query: 'developer OR integration OR automation' },
+  { subreddit: 'mailchimp', query: 'developer OR API OR integration' },
 
-  // Productivity / Tools
-  { subreddit: 'zapier', query: 'developer OR custom OR limitations' },
-  { subreddit: 'Notion', query: 'developer OR API OR integration' },
-  { subreddit: 'Airtable', query: 'developer OR automation OR script' },
+  // ============= REAL ESTATE / PROPERTY =============
+  { subreddit: 'realestateinvesting', query: 'spreadsheet OR automation OR software' },
+  { subreddit: 'realestateinvesting', query: 'developer OR tool OR system' },
+  { subreddit: 'realestate', query: 'automation OR CRM OR software development' },
+  { subreddit: 'realestate', query: 'lead OR integration OR developer' },
+  { subreddit: 'realtors', query: 'automation OR software OR integration' },
+  { subreddit: 'PropertyManagement', query: 'automation OR software OR developer' },
 
-  // Operations / Data
+  // ============= FINANCE / ACCOUNTING =============
+  { subreddit: 'Bookkeeping', query: 'automation OR integration OR sync' },
+  { subreddit: 'Bookkeeping', query: 'developer OR software OR tool' },
+  { subreddit: 'accounting', query: 'automation OR script OR integration' },
+  { subreddit: 'accounting', query: 'developer OR software OR tool' },
+  { subreddit: 'QuickBooks', query: 'developer OR integration OR automation' },
+  { subreddit: 'xero', query: 'developer OR integration OR automation' },
+
+  // ============= HEALTHCARE / LEGAL =============
+  { subreddit: 'HealthIT', query: 'developer OR integration OR automation' },
+  { subreddit: 'healthcare', query: 'automation OR integration OR software' },
+  { subreddit: 'LawFirm', query: 'automation OR software OR integration' },
+
+  // ============= DATA / ANALYTICS =============
   { subreddit: 'dataengineering', query: 'freelance OR hire OR looking for' },
   { subreddit: 'datascience', query: 'freelance OR hire OR looking for' },
+  { subreddit: 'analytics', query: 'developer OR integration OR automation' },
+  { subreddit: 'PowerBI', query: 'developer OR integration OR custom' },
+  { subreddit: 'Tableau', query: 'developer OR integration OR automation' },
+  { subreddit: 'excel', query: 'developer OR automation OR VBA' },
+  { subreddit: 'excel', query: 'API OR integration OR python' },
+  { subreddit: 'googlesheets', query: 'developer OR automation OR script' },
+  { subreddit: 'SQL', query: 'freelance OR hire OR automation' },
 
-  // Freelance markets
+  // ============= OPERATIONS / PRODUCTIVITY =============
+  { subreddit: 'productivity', query: 'developer OR automation OR integration' },
+  { subreddit: 'selfhosted', query: 'developer OR integration OR automation' },
+  { subreddit: 'sysadmin', query: 'automation OR integration OR developer' },
+  { subreddit: 'devops', query: 'freelance OR contractor OR automation' },
+
+  // ============= FREELANCE / REMOTE WORK =============
   { subreddit: 'freelance', query: 'looking for' },
+  { subreddit: 'freelance', query: 'developer OR automation' },
   { subreddit: 'remotework', query: 'looking for developer OR hiring' },
+  { subreddit: 'digitalnomad', query: 'looking for developer OR freelancer' },
+  { subreddit: 'beermoney', query: 'automation OR script OR bot' },
+  { subreddit: 'passive_income', query: 'automation OR software OR developer' },
+  { subreddit: 'thesidehustle', query: 'automation OR software OR developer' },
+
+  // ============= PAIN POINT KEYWORDS =============
+  { subreddit: 'smallbusiness', query: 'outsource OR virtual assistant OR VA' },
+  { subreddit: 'Entrepreneur', query: 'outsource OR virtual assistant OR VA' },
+  { subreddit: 'startups', query: 'legacy system OR migrate OR switch from' },
+  { subreddit: 'SaaS', query: 'Zapier alternative OR make alternative' },
+  { subreddit: 'ecommerce', query: 'manual OR tedious OR repetitive' },
 ];
 
 // Check if post is from a competitor offering services
@@ -1142,20 +1381,45 @@ function scoreProspect(post) {
   const text = (post.selftext || '').toLowerCase();
   const combined = title + ' ' + text;
 
-  // [HIRING] tag is gold
-  if (title.includes('[hiring]')) score += 30;
+  // [HIRING] or [TASK] tags are gold
+  if (title.includes('[hiring]') || title.includes('[task]')) score += 30;
 
-  // High-value keywords
-  const highValue = ['spreadsheet', 'automation', 'automate', 'manual', 'tedious',
-    'looking for developer', 'need developer', 'need a developer',
-    'hire developer', 'csv', 'excel', 'integration', 'api', 'script',
-    'non-technical', 'non technical'];
+  // HIGHEST value - explicit hiring intent
+  const goldKeywords = [
+    'looking for developer', 'need developer', 'need a developer', 'hire developer',
+    'looking for freelancer', 'need freelancer', 'hire freelancer',
+    'looking for contractor', 'need contractor',
+    'technical cofounder', 'tech cofounder', 'tech partner',
+    'looking for programmer', 'need programmer',
+  ];
+  goldKeywords.forEach(kw => { if (combined.includes(kw)) score += 15; });
+
+  // High-value - pain points and automation needs
+  const highValue = [
+    'spreadsheet', 'automation', 'automate', 'manual data', 'manual entry',
+    'tedious', 'repetitive', 'time consuming', 'hours per week',
+    'csv', 'excel', 'integration', 'api', 'webhook', 'script',
+    'non-technical', 'non technical', 'bottleneck', 'broken process',
+    'copy paste', 'data entry', 'sync data', 'sync inventory',
+    'scrape', 'scraping', 'data extraction',
+  ];
   highValue.forEach(kw => { if (combined.includes(kw)) score += 10; });
 
-  // Medium-value keywords
-  const midValue = ['software', 'app', 'tool', 'help', 'build', 'create',
-    'cofounder', 'technical', 'programmer'];
+  // Medium-value - general development needs
+  const midValue = [
+    'software', 'app', 'tool', 'help', 'build', 'create',
+    'cofounder', 'technical', 'programmer', 'developer',
+    'mvp', 'prototype', 'custom', 'limitations', 'workaround',
+    'outsource', 'virtual assistant', 'freelance',
+  ];
   midValue.forEach(kw => { if (combined.includes(kw)) score += 5; });
+
+  // Tool-specific keywords (people hitting limits)
+  const toolPainPoints = [
+    'zapier', 'make.com', 'integromat', 'n8n', 'bubble', 'webflow',
+    'nocode', 'no-code', 'lowcode', 'low-code', 'airtable', 'notion',
+  ];
+  toolPainPoints.forEach(kw => { if (combined.includes(kw)) score += 3; });
 
   // Engagement signals
   if (post.num_comments > 10) score += 5;
@@ -1210,12 +1474,12 @@ async function searchSubreddit(subreddit, query) {
 }
 
 // Fetch prospects from all searches
-export async function fetchProspects(onProgress = null) {
+export async function fetchProspects(onProgress = null, onPartialResults = null, startFromIndex = 0) {
   const allProspects = [];
   const seenIds = new Set();
   const total = PROSPECT_SEARCHES.length;
 
-  for (let i = 0; i < total; i++) {
+  for (let i = startFromIndex; i < total; i++) {
     const { subreddit, query } = PROSPECT_SEARCHES[i];
     if (onProgress) onProgress(i + 1, total, `r/${subreddit}: ${query}`);
 
@@ -1228,6 +1492,12 @@ export async function fetchProspects(onProgress = null) {
       }
     }
 
+    // Save partial results after each search
+    if (onPartialResults) {
+      const sorted = [...allProspects].sort((a, b) => b.prospect_score - a.prospect_score);
+      onPartialResults(sorted, i + 1);
+    }
+
     // Delay between requests
     await new Promise(r => setTimeout(r, 400));
   }
@@ -1235,4 +1505,9 @@ export async function fetchProspects(onProgress = null) {
   // Sort by prospect score
   allProspects.sort((a, b) => b.prospect_score - a.prospect_score);
   return allProspects;
+}
+
+// Get total number of prospect searches (for resume calculation)
+export function getProspectSearchCount() {
+  return PROSPECT_SEARCHES.length;
 }
