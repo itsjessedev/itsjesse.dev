@@ -204,7 +204,21 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/41890a82db39a3d4c0ca
   --data '{"type":"A","name":"subdomain.itsjesse.dev","content":"204.152.223.104","proxied":true}'
 ```
 
-## Work In Progress (Session: 2025-12-26)
+## Resume Files
+
+**Dark HTML (web viewing):** `/resume.html`
+**Light PDF (download):** `/Jesse-Eldridge-Resume.pdf`
+**Light HTML (PDF source):** `/Jesse-Eldridge-Resume.html`
+
+Resume buttons on all pages link to `/resume.html` which has a "Download PDF" button.
+
+**IMPORTANT:** After generating PDFs or editing resume HTML files, ensure permissions are 644:
+```bash
+chmod 644 site/public/resume.html site/public/Jesse-Eldridge-Resume.*
+ssh junipr-vps "chmod 644 /home/deploy/itsjesse.dev/resume.html /home/deploy/itsjesse.dev/Jesse-Eldridge-Resume.*"
+```
+
+## Work In Progress
 
 ### Banner Generation
 - Need to create professional hero banners for all 15 projects
@@ -212,7 +226,13 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/41890a82db39a3d4c0ca
 - Script started: `site/scripts/generate-banners.mjs`
 - Using Playwright to render HTML templates at 1440x900
 
-### Completed This Session
+## Completed (Session: 2025-12-27)
+- Fixed graduation year in resumes: 2025 → 2026
+- Updated all footer "Email" links to "Contact" pointing to `/#contact`
+- Fixed resume file permissions (644 for web access)
+- Gmail labels and filters fully configured for Portfolio emails
+
+## Completed (Session: 2025-12-26)
 - Fixed all mockup viewports to 1440x900
 - Re-took 93 screenshots with consistent styling
 - Re-recorded 15 demo videos matching screenshots
