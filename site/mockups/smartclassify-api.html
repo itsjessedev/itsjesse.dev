@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>SmartClassify - API Documentation</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #1e293b 50%, #0a1628 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .container { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 23, 42, 0.9);
+      border-right: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .nav-item:hover { background: rgba(59, 130, 246, 0.1); color: #e2e8f0; }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.1));
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    /* Main Content */
+    .main { flex: 1; padding: 32px; overflow-y: auto; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 28px; font-weight: 700; }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+    }
+    .btn-secondary {
+      background: rgba(59, 130, 246, 0.1);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary:hover { box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+
+    /* API Keys Section */
+    .api-keys-section {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .key-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .key-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .key-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    .key-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+    .key-value {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .key-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(10, 22, 40, 0.8);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 6px;
+      color: #60a5fa;
+      font-size: 13px;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+    .key-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /* Usage Stats */
+    .usage-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .usage-card {
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(59, 130, 246, 0.15);
+    }
+    .usage-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .usage-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+
+    /* Endpoint Cards */
+    .endpoint-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .method-badge {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+    }
+    .method-badge.post {
+      background: linear-gradient(135deg, #22c55e, #10b981);
+    }
+    .method-badge.get {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    }
+    .method-badge.delete {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    .endpoint-path {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e2e8f0;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+    .endpoint-desc {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    /* Code Block */
+    .code-block {
+      background: rgba(10, 22, 40, 0.9);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+    }
+    .code-lang {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .copy-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      border-radius: 4px;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: rgba(59, 130, 246, 0.25);
+    }
+    pre {
+      margin: 0;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #cbd5e1;
+      overflow-x: auto;
+    }
+    .code-keyword { color: #c792ea; }
+    .code-string { color: #c3e88d; }
+    .code-number { color: #f78c6c; }
+    .code-comment { color: #546e7a; }
+    .code-function { color: #82aaff; }
+
+    /* Parameters Table */
+    .params-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+    .params-table th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      background: rgba(15, 23, 42, 0.5);
+      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    .params-table td {
+      padding: 12px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+    }
+    .param-name {
+      font-family: 'Monaco', 'Courier New', monospace;
+      color: #60a5fa;
+      font-weight: 600;
+    }
+    .param-type {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+    .param-required {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+    .param-optional {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+
+    /* Rate Limits */
+    .rate-limits {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .rate-card {
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 10px;
+      text-align: center;
+    }
+    .rate-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 12px;
+    }
+    .rate-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #60a5fa;
+      margin-bottom: 8px;
+    }
+    .rate-desc {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🎯</div>
+        <span class="logo-text">SmartClassify</span>
+      </div>
+      <nav>
+        <div class="nav-item">📊 Dashboard</div>
+        <div class="nav-item">📝 Classify Text</div>
+        <div class="nav-item">📁 Batch Processing</div>
+        <div class="nav-item">🏷️ Categories</div>
+        <div class="nav-item">📈 Analytics</div>
+        <div class="nav-item active">🔌 API Access</div>
+        <div class="nav-item">⚙️ Settings</div>
+      </nav>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>API Documentation</h1>
+        <button class="btn btn-primary">🔑 Generate New Key</button>
+      </div>
+
+      <div class="api-keys-section">
+        <h2 class="section-title">🔐 API Keys</h2>
+
+        <div class="key-card">
+          <div class="key-header">
+            <span class="key-name">Production Key</span>
+            <span class="key-badge">Active</span>
+          </div>
+          <div class="key-value">
+            <input class="key-input" type="text" value="sc_prod_XXXX-XXXX-XXXX-XXXX-DEMO" readonly>
+            <button class="btn btn-secondary" style="padding: 8px 14px;">📋 Copy</button>
+            <button class="btn btn-secondary" style="padding: 8px 14px;">🔄 Rotate</button>
+          </div>
+          <div class="key-meta">
+            <span>Created: Dec 15, 2024</span>
+            <span>Last used: 2 hours ago</span>
+            <span>Requests today: 1,247</span>
+          </div>
+        </div>
+
+        <div class="usage-grid" style="margin-top: 20px;">
+          <div class="usage-card">
+            <div class="usage-label">Requests Today</div>
+            <div class="usage-value">1,247</div>
+          </div>
+          <div class="usage-card">
+            <div class="usage-label">Requests This Month</div>
+            <div class="usage-value">24.3K</div>
+          </div>
+          <div class="usage-card">
+            <div class="usage-label">Success Rate</div>
+            <div class="usage-value">99.2%</div>
+          </div>
+          <div class="usage-card">
+            <div class="usage-label">Avg Response</div>
+            <div class="usage-value">142ms</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method-badge post">POST</span>
+          <span class="endpoint-path">/api/v1/classify</span>
+        </div>
+        <p class="endpoint-desc">Classify a single text input and return category predictions with confidence scores.</p>
+
+        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #94a3b8;">Parameters</h3>
+        <table class="params-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="param-name">text</span></td>
+              <td><span class="param-type">string</span></td>
+              <td><span class="param-required">Required</span></td>
+              <td>The text content to classify</td>
+            </tr>
+            <tr>
+              <td><span class="param-name">include_sentiment</span></td>
+              <td><span class="param-type">boolean</span></td>
+              <td><span class="param-optional">Optional</span></td>
+              <td>Include sentiment analysis (default: false)</td>
+            </tr>
+            <tr>
+              <td><span class="param-name">include_keywords</span></td>
+              <td><span class="param-type">boolean</span></td>
+              <td><span class="param-optional">Optional</span></td>
+              <td>Extract keywords (default: false)</td>
+            </tr>
+            <tr>
+              <td><span class="param-name">threshold</span></td>
+              <td><span class="param-type">float</span></td>
+              <td><span class="param-optional">Optional</span></td>
+              <td>Minimum confidence threshold 0-1 (default: 0.5)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #94a3b8;">Request Example</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">cURL</span>
+            <button class="copy-btn">📋 Copy</button>
+          </div>
+          <pre><span class="code-keyword">curl</span> -X POST https://api.smartclassify.io/v1/classify \
+  -H <span class="code-string">"Authorization: Bearer YOUR_API_KEY"</span> \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -d <span class="code-string">'{
+    "text": "I love this product!",
+    "include_sentiment": true,
+    "include_keywords": true
+  }'</span></pre>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">Python</span>
+            <button class="copy-btn">📋 Copy</button>
+          </div>
+          <pre><span class="code-keyword">import</span> requests
+
+url = <span class="code-string">"https://api.smartclassify.io/v1/classify"</span>
+headers = {
+    <span class="code-string">"Authorization"</span>: <span class="code-string">"Bearer YOUR_API_KEY"</span>,
+    <span class="code-string">"Content-Type"</span>: <span class="code-string">"application/json"</span>
+}
+data = {
+    <span class="code-string">"text"</span>: <span class="code-string">"I love this product!"</span>,
+    <span class="code-string">"include_sentiment"</span>: <span class="code-keyword">True</span>,
+    <span class="code-string">"include_keywords"</span>: <span class="code-keyword">True</span>
+}
+
+response = requests.<span class="code-function">post</span>(url, headers=headers, json=data)
+result = response.<span class="code-function">json</span>()
+<span class="code-function">print</span>(result)</pre>
+        </div>
+
+        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; margin-top: 20px; color: #94a3b8;">Response Example</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSON</span>
+            <button class="copy-btn">📋 Copy</button>
+          </div>
+          <pre>{
+  <span class="code-string">"status"</span>: <span class="code-string">"success"</span>,
+  <span class="code-string">"categories"</span>: [
+    {
+      <span class="code-string">"name"</span>: <span class="code-string">"Product Review"</span>,
+      <span class="code-string">"confidence"</span>: <span class="code-number">0.94</span>
+    },
+    {
+      <span class="code-string">"name"</span>: <span class="code-string">"Feedback"</span>,
+      <span class="code-string">"confidence"</span>: <span class="code-number">0.78</span>
+    }
+  ],
+  <span class="code-string">"sentiment"</span>: {
+    <span class="code-string">"label"</span>: <span class="code-string">"positive"</span>,
+    <span class="code-string">"score"</span>: <span class="code-number">0.89</span>
+  },
+  <span class="code-string">"keywords"</span>: [<span class="code-string">"love"</span>, <span class="code-string">"product"</span>],
+  <span class="code-string">"processing_time_ms"</span>: <span class="code-number">142</span>
+}</pre>
+        </div>
+      </div>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method-badge post">POST</span>
+          <span class="endpoint-path">/api/v1/batch</span>
+        </div>
+        <p class="endpoint-desc">Submit a batch of texts for classification. Returns a job ID for tracking progress.</p>
+
+        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #94a3b8;">Request Example</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JavaScript</span>
+            <button class="copy-btn">📋 Copy</button>
+          </div>
+          <pre><span class="code-keyword">const</span> response = <span class="code-keyword">await</span> <span class="code-function">fetch</span>(<span class="code-string">'https://api.smartclassify.io/v1/batch'</span>, {
+  method: <span class="code-string">'POST'</span>,
+  headers: {
+    <span class="code-string">'Authorization'</span>: <span class="code-string">'Bearer YOUR_API_KEY'</span>,
+    <span class="code-string">'Content-Type'</span>: <span class="code-string">'application/json'</span>
+  },
+  body: <span class="code-function">JSON.stringify</span>({
+    texts: [
+      <span class="code-string">"Great customer service!"</span>,
+      <span class="code-string">"App keeps crashing"</span>,
+      <span class="code-string">"How much does it cost?"</span>
+    ]
+  })
+});
+
+<span class="code-keyword">const</span> data = <span class="code-keyword">await</span> response.<span class="code-function">json</span>();
+console.<span class="code-function">log</span>(data.job_id);</pre>
+        </div>
+      </div>
+
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method-badge get">GET</span>
+          <span class="endpoint-path">/api/v1/categories</span>
+        </div>
+        <p class="endpoint-desc">Retrieve all available classification categories and their metadata.</p>
+
+        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #94a3b8;">Response Example</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">JSON</span>
+            <button class="copy-btn">📋 Copy</button>
+          </div>
+          <pre>{
+  <span class="code-string">"categories"</span>: [
+    {
+      <span class="code-string">"id"</span>: <span class="code-string">"customer_support"</span>,
+      <span class="code-string">"name"</span>: <span class="code-string">"Customer Support"</span>,
+      <span class="code-string">"accuracy"</span>: <span class="code-number">0.968</span>,
+      <span class="code-string">"samples"</span>: <span class="code-number">1247</span>
+    },
+    <span class="code-comment">// ... more categories</span>
+  ]
+}</pre>
+        </div>
+      </div>
+
+      <div class="api-keys-section">
+        <h2 class="section-title">⚡ Rate Limits</h2>
+        <div class="rate-limits">
+          <div class="rate-card">
+            <div class="rate-title">Free Tier</div>
+            <div class="rate-value">100</div>
+            <div class="rate-desc">requests per day</div>
+          </div>
+          <div class="rate-card">
+            <div class="rate-title">Pro Tier</div>
+            <div class="rate-value">10K</div>
+            <div class="rate-desc">requests per day</div>
+          </div>
+          <div class="rate-card">
+            <div class="rate-title">Enterprise</div>
+            <div class="rate-value">Unlimited</div>
+            <div class="rate-desc">custom limits available</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

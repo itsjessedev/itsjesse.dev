@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>DealScout - Deal Detail</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #4c1d95 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .app-content {
+      padding: 0 16px 16px;
+      overflow-y: auto;
+      max-height: calc(100% - 44px - 80px);
+    }
+
+    /* Header with back */
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 0;
+    }
+    .back-btn {
+      width: 32px;
+      height: 32px;
+      background: rgba(167, 139, 250, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .header-title {
+      font-size: 16px;
+      font-weight: 600;
+      flex: 1;
+    }
+    .share-btn {
+      font-size: 18px;
+    }
+
+    /* Product Image */
+    .product-image {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #374151, #1f2937);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .hot-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 12px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* Title Section */
+    .product-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .product-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Price Card */
+    .price-card {
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .price-row:last-child {
+      margin-bottom: 0;
+      padding-top: 12px;
+      border-top: 1px solid rgba(167, 139, 250, 0.2);
+    }
+    .price-label {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .price-value {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .asking { color: #f472b6; }
+    .market { color: #a78bfa; }
+    .fees { color: #fbbf24; }
+    .profit { color: #22c55e; font-size: 18px; }
+
+    /* AI Classification */
+    .ai-section {
+      background: rgba(167, 139, 250, 0.08);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .ai-icon {
+      font-size: 16px;
+    }
+    .ai-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .ai-item {
+      background: rgba(167, 139, 250, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .ai-label {
+      font-size: 10px;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+    .ai-value {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Market Data */
+    .market-section {
+      background: rgba(167, 139, 250, 0.08);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .market-header {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .comp-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(167, 139, 250, 0.1);
+      font-size: 12px;
+    }
+    .comp-item:last-child {
+      border-bottom: none;
+    }
+    .comp-condition {
+      color: #94a3b8;
+    }
+    .comp-price {
+      font-weight: 600;
+      color: #a78bfa;
+    }
+
+    /* Action Buttons */
+    .action-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: rgba(15, 15, 35, 0.98);
+      border-top: 1px solid rgba(167, 139, 250, 0.2);
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-secondary {
+      background: rgba(167, 139, 250, 0.2);
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      color: #a78bfa;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+
+    .info-panel { max-width: 500px; }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(244, 114, 182, 0.1));
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #c4b5fd;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(167, 139, 250, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>5G</span>
+        </div>
+
+        <div class="app-content">
+          <div class="detail-header">
+            <div class="back-btn">&#8592;</div>
+            <span class="header-title">Deal Details</span>
+            <span class="share-btn">&#128279;</span>
+          </div>
+
+          <div class="product-image">
+            &#128187;
+            <span class="hot-badge">HOT DEAL</span>
+          </div>
+
+          <div class="product-title">RTX 3080 Gaming GPU - Lightly Used, Original Box</div>
+          <div class="product-meta">
+            <span class="meta-item">&#128205; Swoopa</span>
+            <span class="meta-item">&#128338; 2 min ago</span>
+            <span class="meta-item">&#128200; Electronics</span>
+          </div>
+
+          <div class="price-card">
+            <div class="price-row">
+              <span class="price-label">Asking Price</span>
+              <span class="price-value asking">$320.00</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Market Value (eBay avg)</span>
+              <span class="price-value market">$485.00</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Est. Fees (13.25% + $12)</span>
+              <span class="price-value fees">-$76.26</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Estimated Profit</span>
+              <span class="price-value profit">+$88.74</span>
+            </div>
+          </div>
+
+          <div class="ai-section">
+            <div class="ai-header">
+              <span class="ai-icon">&#129302;</span>
+              AI Classification
+            </div>
+            <div class="ai-grid">
+              <div class="ai-item">
+                <div class="ai-label">Category</div>
+                <div class="ai-value">Graphics Cards</div>
+              </div>
+              <div class="ai-item">
+                <div class="ai-label">Brand</div>
+                <div class="ai-value">NVIDIA</div>
+              </div>
+              <div class="ai-item">
+                <div class="ai-label">Model</div>
+                <div class="ai-value">RTX 3080</div>
+              </div>
+              <div class="ai-item">
+                <div class="ai-label">Condition</div>
+                <div class="ai-value">Used - Good</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="market-section">
+            <div class="market-header">&#128722; eBay Comparables</div>
+            <div class="comp-item">
+              <span class="comp-condition">Used - Like New</span>
+              <span class="comp-price">$520</span>
+            </div>
+            <div class="comp-item">
+              <span class="comp-condition">Used - Good</span>
+              <span class="comp-price">$485</span>
+            </div>
+            <div class="comp-item">
+              <span class="comp-condition">Used - Acceptable</span>
+              <span class="comp-price">$425</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="action-btn btn-secondary">&#128279; Open Link</button>
+          <button class="action-btn btn-primary">&#10003; Mark Purchased</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">&#128270; Deal Analysis</div>
+      <h1 class="info-title">Deep <span>Insights</span></h1>
+      <p class="info-desc">
+        Every deal shows AI-powered classification, eBay market comparables,
+        and detailed profit calculations after fees.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Gemini AI item classification</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Live eBay comparable listings</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Profit after fees calculation</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">One-tap purchase tracking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

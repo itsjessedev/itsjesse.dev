@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>DealScout - Deals Feed</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #4c1d95 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+      overflow-y: auto;
+      max-height: calc(100% - 44px - 70px);
+    }
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .filter-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(167, 139, 250, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px 12px;
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      color: #94a3b8;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.3), rgba(244, 114, 182, 0.2));
+      border-color: #a78bfa;
+      color: white;
+    }
+    .tab-count {
+      font-size: 10px;
+      color: #a78bfa;
+      margin-left: 4px;
+    }
+
+    /* Deal Card */
+    .deal-card {
+      background: rgba(167, 139, 250, 0.08);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .deal-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .deal-image {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #374151, #1f2937);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .deal-info {
+      flex: 1;
+    }
+    .deal-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .deal-source {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .deal-prices {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid rgba(167, 139, 250, 0.1);
+    }
+    .price-group {
+      text-align: center;
+    }
+    .price-label {
+      font-size: 10px;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+    .price-value {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .price-asking { color: #f472b6; }
+    .price-market { color: #a78bfa; }
+    .price-profit { color: #22c55e; }
+    .profit-badge {
+      padding: 6px 12px;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.1));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 8px;
+    }
+    .profit-percent {
+      font-size: 11px;
+      color: #22c55e;
+    }
+
+    /* Hot Badge */
+    .hot-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 3px 8px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 15, 35, 0.95);
+      border-top: 1px solid rgba(167, 139, 250, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #a78bfa; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(244, 114, 182, 0.1));
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #c4b5fd;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(167, 139, 250, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>5G</span>
+        </div>
+
+        <div class="app-content">
+          <div class="app-header">
+            <div class="page-title">DealScout</div>
+            <div class="filter-btn">&#128269;</div>
+          </div>
+
+          <div class="tabs">
+            <div class="tab active">All<span class="tab-count">24</span></div>
+            <div class="tab">Hot<span class="tab-count">8</span></div>
+            <div class="tab">New<span class="tab-count">12</span></div>
+          </div>
+
+          <div class="deal-card" style="position: relative;">
+            <span class="hot-badge">HOT</span>
+            <div class="deal-header">
+              <div class="deal-image">&#128187;</div>
+              <div class="deal-info">
+                <div class="deal-title">RTX 3080 Gaming GPU - Lightly Used</div>
+                <div class="deal-source">Swoopa - Electronics - 2 min ago</div>
+              </div>
+            </div>
+            <div class="deal-prices">
+              <div class="price-group">
+                <div class="price-label">Asking</div>
+                <div class="price-value price-asking">$320</div>
+              </div>
+              <div class="price-group">
+                <div class="price-label">Market</div>
+                <div class="price-value price-market">$485</div>
+              </div>
+              <div class="profit-badge">
+                <div class="price-value price-profit">+$165</div>
+                <div class="profit-percent">52% ROI</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="deal-card">
+            <div class="deal-header">
+              <div class="deal-image">&#127918;</div>
+              <div class="deal-info">
+                <div class="deal-title">PS5 Disc Edition Bundle w/ 3 Games</div>
+                <div class="deal-source">Swoopa - Gaming - 15 min ago</div>
+              </div>
+            </div>
+            <div class="deal-prices">
+              <div class="price-group">
+                <div class="price-label">Asking</div>
+                <div class="price-value price-asking">$380</div>
+              </div>
+              <div class="price-group">
+                <div class="price-label">Market</div>
+                <div class="price-value price-market">$520</div>
+              </div>
+              <div class="profit-badge">
+                <div class="price-value price-profit">+$140</div>
+                <div class="profit-percent">37% ROI</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="deal-card">
+            <div class="deal-header">
+              <div class="deal-image">&#128241;</div>
+              <div class="deal-info">
+                <div class="deal-title">iPhone 14 Pro 256GB Space Black</div>
+                <div class="deal-source">Swoopa - Phones - 28 min ago</div>
+              </div>
+            </div>
+            <div class="deal-prices">
+              <div class="price-group">
+                <div class="price-label">Asking</div>
+                <div class="price-value price-asking">$650</div>
+              </div>
+              <div class="price-group">
+                <div class="price-label">Market</div>
+                <div class="price-value price-market">$825</div>
+              </div>
+              <div class="profit-badge">
+                <div class="price-value price-profit">+$175</div>
+                <div class="profit-percent">27% ROI</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <span class="nav-icon">&#128184;</span>
+            <span>Deals</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#128230;</span>
+            <span>Flips</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#128200;</span>
+            <span>Profits</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#9881;</span>
+            <span>Settings</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">&#128184; Deal Discovery</div>
+      <h1 class="info-title">Find <span>Profitable</span> Deals</h1>
+      <p class="info-desc">
+        Automated deal discovery from Swoopa marketplace alerts. AI-powered
+        classification and real-time eBay price lookups show you instant profit potential.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Gmail integration for Swoopa alerts</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">AI classification with Gemini</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Real-time eBay market prices</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Push notifications for hot deals</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

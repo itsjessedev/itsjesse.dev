@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>DocuMind - Settings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .container { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 15, 35, 0.8);
+      border-right: 1px solid rgba(139, 92, 246, 0.2);
+      padding: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .nav-item:hover { background: rgba(139, 92, 246, 0.1); color: #e2e8f0; }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+      color: #a78bfa;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    /* Main Content */
+    .main { flex: 1; padding: 32px; overflow-y: auto; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 28px; font-weight: 700; }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3); }
+    .btn-secondary {
+      background: rgba(139, 92, 246, 0.1);
+      color: #a78bfa;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    /* Settings Layout */
+    .settings-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+    }
+
+    /* Settings Nav */
+    .settings-nav {
+      background: rgba(30, 30, 60, 0.6);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      height: fit-content;
+    }
+    .settings-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      color: #94a3b8;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .settings-nav-item:hover { background: rgba(139, 92, 246, 0.1); color: #e2e8f0; }
+    .settings-nav-item.active {
+      background: rgba(139, 92, 246, 0.15);
+      color: #a78bfa;
+    }
+
+    /* Settings Content */
+    .settings-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Settings Card */
+    .settings-card {
+      background: rgba(30, 30, 60, 0.6);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 16px;
+      padding: 28px;
+    }
+    .card-header {
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 24px;
+    }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+    .form-hint {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 6px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(15, 15, 35, 0.8);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 14px;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(15, 15, 35, 0.8);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .form-select:focus {
+      outline: none;
+      border-color: #8b5cf6;
+    }
+
+    /* Key Display */
+    .key-display {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .key-value {
+      flex: 1;
+      padding: 12px 16px;
+      background: rgba(15, 15, 35, 0.8);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #a78bfa;
+    }
+    .key-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .icon-btn:hover {
+      background: rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.4);
+    }
+
+    /* Range Slider */
+    .range-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .range-slider {
+      flex: 1;
+      height: 6px;
+      background: rgba(139, 92, 246, 0.2);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .range-value {
+      min-width: 60px;
+      padding: 8px 12px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 500;
+      color: #a78bfa;
+      font-size: 13px;
+    }
+
+    /* Toggle Switch */
+    .toggle-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: rgba(15, 15, 35, 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .toggle-info {
+      flex: 1;
+    }
+    .toggle-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .toggle-desc {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .toggle-switch {
+      width: 50px;
+      height: 28px;
+      background: rgba(139, 92, 246, 0.2);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .toggle-switch.active {
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-color: #8b5cf6;
+    }
+    .toggle-knob {
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: all 0.3s;
+    }
+    .toggle-switch.active .toggle-knob {
+      left: 24px;
+    }
+
+    /* Collections List */
+    .collections-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .collection-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: rgba(15, 15, 35, 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+    .collection-item:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.05);
+    }
+    .collection-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .collection-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .collection-name {
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .collection-meta {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .collection-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Danger Zone */
+    .danger-zone {
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .danger-zone .card-title {
+      color: #ef4444;
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🧠</div>
+        <span class="logo-text">DocuMind</span>
+      </div>
+      <nav>
+        <div class="nav-item">📊 Dashboard</div>
+        <div class="nav-item">📁 Documents</div>
+        <div class="nav-item">🔍 Search</div>
+        <div class="nav-item">💬 Chat History</div>
+        <div class="nav-item">📈 Analytics</div>
+        <div class="nav-item active">⚙️ Settings</div>
+      </nav>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>Settings</h1>
+        <button class="btn btn-primary">Save Changes</button>
+      </div>
+
+      <div class="settings-layout">
+        <div class="settings-nav">
+          <div class="settings-nav-item active">🔑 API Keys</div>
+          <div class="settings-nav-item">🤖 AI Models</div>
+          <div class="settings-nav-item">⚡ Processing</div>
+          <div class="settings-nav-item">📚 Collections</div>
+          <div class="settings-nav-item">👥 Team</div>
+          <div class="settings-nav-item">🚨 Advanced</div>
+        </div>
+
+        <div class="settings-content">
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-title">OpenAI API Key</div>
+              <div class="card-subtitle">Used for embeddings and chat completions</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">API Key</label>
+              <div class="key-display">
+                <div class="key-value">sk-proj-••••••••••••••••••••••••••••••••••••</div>
+                <div class="key-actions">
+                  <button class="icon-btn">👁️</button>
+                  <button class="icon-btn">📋</button>
+                  <button class="icon-btn">🔄</button>
+                </div>
+              </div>
+              <div class="form-hint">Keep your API key secure. Never share it publicly.</div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-title">AI Model Configuration</div>
+              <div class="card-subtitle">Choose models for different tasks</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Embedding Model</label>
+              <select class="form-select">
+                <option>text-embedding-3-large (Best quality)</option>
+                <option>text-embedding-3-small (Faster, cheaper)</option>
+                <option>text-embedding-ada-002 (Legacy)</option>
+              </select>
+              <div class="form-hint">Larger models provide better semantic understanding but cost more.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chat Model</label>
+              <select class="form-select">
+                <option>gpt-4-turbo (Recommended)</option>
+                <option>gpt-4</option>
+                <option>gpt-3.5-turbo (Faster, cheaper)</option>
+              </select>
+              <div class="form-hint">Used for generating responses to user queries.</div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-title">Document Processing</div>
+              <div class="card-subtitle">Configure chunking and indexing parameters</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chunk Size (tokens)</label>
+              <div class="range-group">
+                <input type="range" class="range-slider" min="128" max="2048" value="512" step="128">
+                <div class="range-value">512</div>
+              </div>
+              <div class="form-hint">Smaller chunks: better precision. Larger chunks: more context.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Chunk Overlap (tokens)</label>
+              <div class="range-group">
+                <input type="range" class="range-slider" min="0" max="512" value="128" step="32">
+                <div class="range-value">128</div>
+              </div>
+              <div class="form-hint">Overlap helps maintain context across chunk boundaries.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Top K Results</label>
+              <div class="range-group">
+                <input type="range" class="range-slider" min="1" max="20" value="5" step="1">
+                <div class="range-value">5</div>
+              </div>
+              <div class="form-hint">Number of most relevant chunks to retrieve for each query.</div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-title">Search & Response Settings</div>
+              <div class="card-subtitle">Fine-tune search behavior</div>
+            </div>
+            <div class="toggle-group">
+              <div class="toggle-info">
+                <div class="toggle-title">Enable Semantic Search</div>
+                <div class="toggle-desc">Use vector embeddings for more accurate results</div>
+              </div>
+              <div class="toggle-switch active">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+            <div class="toggle-group">
+              <div class="toggle-info">
+                <div class="toggle-title">Hybrid Search Mode</div>
+                <div class="toggle-desc">Combine semantic and keyword search</div>
+              </div>
+              <div class="toggle-switch active">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+            <div class="toggle-group">
+              <div class="toggle-info">
+                <div class="toggle-title">Include Source Citations</div>
+                <div class="toggle-desc">Show document references in responses</div>
+              </div>
+              <div class="toggle-switch active">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+            <div class="toggle-group">
+              <div class="toggle-info">
+                <div class="toggle-title">Stream Responses</div>
+                <div class="toggle-desc">Show answers as they're generated</div>
+              </div>
+              <div class="toggle-switch">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="card-header">
+              <div class="card-title">Collections Management</div>
+              <div class="card-subtitle">Organize and manage document collections</div>
+            </div>
+            <div class="collections-list">
+              <div class="collection-item">
+                <div class="collection-info">
+                  <div class="collection-icon">📁</div>
+                  <div>
+                    <div class="collection-name">Legal Documents</div>
+                    <div class="collection-meta">42 documents • 3,847 chunks • Last updated 2 hours ago</div>
+                  </div>
+                </div>
+                <div class="collection-actions">
+                  <button class="icon-btn">✏️</button>
+                  <button class="icon-btn">🗑️</button>
+                </div>
+              </div>
+              <div class="collection-item">
+                <div class="collection-info">
+                  <div class="collection-icon">📁</div>
+                  <div>
+                    <div class="collection-name">Financial Reports</div>
+                    <div class="collection-meta">67 documents • 5,234 chunks • Last updated 5 hours ago</div>
+                  </div>
+                </div>
+                <div class="collection-actions">
+                  <button class="icon-btn">✏️</button>
+                  <button class="icon-btn">🗑️</button>
+                </div>
+              </div>
+              <div class="collection-item">
+                <div class="collection-info">
+                  <div class="collection-icon">📁</div>
+                  <div>
+                    <div class="collection-name">HR & Policies</div>
+                    <div class="collection-meta">35 documents • 2,456 chunks • Last updated yesterday</div>
+                  </div>
+                </div>
+                <div class="collection-actions">
+                  <button class="icon-btn">✏️</button>
+                  <button class="icon-btn">🗑️</button>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-secondary" style="margin-top: 16px; width: 100%;">+ Create New Collection</button>
+          </div>
+
+          <div class="settings-card danger-zone">
+            <div class="card-header">
+              <div class="card-title">⚠️ Danger Zone</div>
+              <div class="card-subtitle">Irreversible actions - proceed with caution</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Clear All Chat History</label>
+              <button class="btn btn-danger">Clear Chat History</button>
+              <div class="form-hint">This will permanently delete all conversation history.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rebuild Index</label>
+              <button class="btn btn-danger">Rebuild All Indices</button>
+              <div class="form-hint">Re-process and re-index all documents. This may take several hours.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Delete All Data</label>
+              <button class="btn btn-danger">Delete Everything</button>
+              <div class="form-hint">Permanently delete all documents, collections, and settings.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

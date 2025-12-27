@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>FieldOps - Profile</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #064e3b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f1f1c 0%, #1a2f2a 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+      height: calc(100% - 114px);
+      overflow-y: auto;
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .settings-icon {
+      font-size: 20px;
+      color: #10b981;
+    }
+
+    /* Profile Header */
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin-bottom: 12px;
+      border: 3px solid rgba(16, 185, 129, 0.3);
+    }
+    .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .profile-role {
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 2px;
+    }
+    .profile-id {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #10b981;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: #6ee7b7;
+    }
+
+    /* Certifications */
+    .section {
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6ee7b7;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .cert-badge {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cert-icon {
+      font-size: 20px;
+    }
+    .cert-info {
+      flex: 1;
+    }
+    .cert-name {
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .cert-expiry {
+      font-size: 9px;
+      color: #6ee7b7;
+    }
+
+    /* Menu Items */
+    .menu-item {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .menu-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .menu-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .menu-text {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .menu-arrow {
+      color: #6ee7b7;
+      font-size: 16px;
+    }
+
+    /* Performance Chart */
+    .performance-section {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 20px;
+    }
+    .performance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .performance-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .performance-period {
+      font-size: 11px;
+      color: #6ee7b7;
+    }
+    .performance-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 60px;
+    }
+    .performance-bar {
+      flex: 1;
+      background: rgba(16, 185, 129, 0.3);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+    }
+    .bar-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 31, 28, 0.95);
+      border-top: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #10b981; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="app-content">
+          <div class="page-header">
+            <span></span>
+            <span class="page-title">Profile</span>
+            <span class="settings-icon">⚙</span>
+          </div>
+
+          <div class="profile-header">
+            <div class="profile-avatar">👷</div>
+            <div class="profile-name">Mike Thompson</div>
+            <div class="profile-role">Senior Field Technician</div>
+            <div class="profile-id">ID: FT-2847</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">142</div>
+              <div class="stat-label">Jobs Completed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">4.9</div>
+              <div class="stat-label">Rating</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">3.2</div>
+              <div class="stat-label">Years Active</div>
+            </div>
+          </div>
+
+          <div class="performance-section">
+            <div class="performance-header">
+              <span class="performance-title">This Month</span>
+              <span class="performance-period">Dec 2024</span>
+            </div>
+            <div class="performance-bars">
+              <div class="performance-bar" style="height: 40%;">
+                <span class="bar-label">W1</span>
+              </div>
+              <div class="performance-bar" style="height: 65%;">
+                <span class="bar-label">W2</span>
+              </div>
+              <div class="performance-bar" style="height: 85%;">
+                <span class="bar-label">W3</span>
+              </div>
+              <div class="performance-bar" style="height: 100%;">
+                <span class="bar-label">W4</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Certifications</div>
+            <div class="cert-grid">
+              <div class="cert-badge">
+                <span class="cert-icon">🏅</span>
+                <div class="cert-info">
+                  <div class="cert-name">HVAC License</div>
+                  <div class="cert-expiry">Exp: 12/2025</div>
+                </div>
+              </div>
+              <div class="cert-badge">
+                <span class="cert-icon">⚡</span>
+                <div class="cert-info">
+                  <div class="cert-name">Electrical</div>
+                  <div class="cert-expiry">Exp: 03/2026</div>
+                </div>
+              </div>
+              <div class="cert-badge">
+                <span class="cert-icon">🔧</span>
+                <div class="cert-info">
+                  <div class="cert-name">Plumbing</div>
+                  <div class="cert-expiry">Exp: 08/2025</div>
+                </div>
+              </div>
+              <div class="cert-badge">
+                <span class="cert-icon">✓</span>
+                <div class="cert-info">
+                  <div class="cert-name">Safety</div>
+                  <div class="cert-expiry">Exp: 06/2025</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Settings</div>
+            <div class="menu-item">
+              <div class="menu-left">
+                <div class="menu-icon">👤</div>
+                <span class="menu-text">Edit Profile</span>
+              </div>
+              <span class="menu-arrow">→</span>
+            </div>
+            <div class="menu-item">
+              <div class="menu-left">
+                <div class="menu-icon">🔔</div>
+                <span class="menu-text">Notifications</span>
+              </div>
+              <span class="menu-arrow">→</span>
+            </div>
+            <div class="menu-item">
+              <div class="menu-left">
+                <div class="menu-icon">📊</div>
+                <span class="menu-text">Reports</span>
+              </div>
+              <span class="menu-arrow">→</span>
+            </div>
+            <div class="menu-item">
+              <div class="menu-left">
+                <div class="menu-icon">❓</div>
+                <span class="menu-text">Help & Support</span>
+              </div>
+              <span class="menu-arrow">→</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>Tasks</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📍</span>
+            <span>Map</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">👤</span>
+            <span>Profile</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">👤 Technician Profile</div>
+      <h1 class="info-title">Profile & <span>Performance</span></h1>
+      <p class="info-desc">
+        Comprehensive technician profile with performance stats, certifications,
+        and account settings for managing your field service career.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Performance tracking</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Certification management</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Customer ratings</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Account settings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

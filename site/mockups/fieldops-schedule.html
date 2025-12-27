@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>FieldOps - Schedule</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #064e3b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f1f1c 0%, #1a2f2a 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+    }
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .week-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .week-nav-btn {
+      width: 28px;
+      height: 28px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #6ee7b7;
+    }
+    .week-label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* Week Days */
+    .week-days {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .day-item {
+      flex: 1;
+      text-align: center;
+      padding: 10px 4px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+    }
+    .day-item.active {
+      background: rgba(16, 185, 129, 0.3);
+      border-color: #10b981;
+    }
+    .day-name {
+      font-size: 10px;
+      color: #6ee7b7;
+      margin-bottom: 4px;
+    }
+    .day-number {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .day-item.active .day-number {
+      color: #10b981;
+    }
+    .day-tasks {
+      font-size: 9px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* Time Slots */
+    .schedule-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #94a3b8;
+    }
+    .time-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .time-slot {
+      display: flex;
+      gap: 10px;
+    }
+    .time-label {
+      width: 50px;
+      font-size: 12px;
+      color: #64748b;
+      padding-top: 6px;
+    }
+    .slot-content {
+      flex: 1;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .slot-empty {
+      background: transparent;
+      border-style: dashed;
+      border-color: rgba(100, 116, 139, 0.3);
+      color: #64748b;
+      font-size: 12px;
+      text-align: center;
+      padding: 16px 10px;
+    }
+    .slot-task-title {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .slot-task-location {
+      font-size: 11px;
+      color: #6ee7b7;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .slot-task-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 10px;
+      color: #94a3b8;
+    }
+    .slot-priority {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 600;
+    }
+    .priority-high { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .priority-medium { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 31, 28, 0.95);
+      border-top: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #10b981; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>5G</span>
+        </div>
+
+        <div class="app-content">
+          <div class="app-header">
+            <div class="page-title">Schedule</div>
+            <div class="week-nav">
+              <div class="week-nav-btn">&#9664;</div>
+              <span class="week-label">Dec 23-27</span>
+              <div class="week-nav-btn">&#9654;</div>
+            </div>
+          </div>
+
+          <div class="week-days">
+            <div class="day-item">
+              <div class="day-name">Mon</div>
+              <div class="day-number">23</div>
+              <div class="day-tasks">4 tasks</div>
+            </div>
+            <div class="day-item">
+              <div class="day-name">Tue</div>
+              <div class="day-number">24</div>
+              <div class="day-tasks">2 tasks</div>
+            </div>
+            <div class="day-item active">
+              <div class="day-name">Wed</div>
+              <div class="day-number">25</div>
+              <div class="day-tasks">5 tasks</div>
+            </div>
+            <div class="day-item">
+              <div class="day-name">Thu</div>
+              <div class="day-number">26</div>
+              <div class="day-tasks">3 tasks</div>
+            </div>
+            <div class="day-item">
+              <div class="day-name">Fri</div>
+              <div class="day-number">27</div>
+              <div class="day-tasks">6 tasks</div>
+            </div>
+          </div>
+
+          <div class="schedule-section-title">Wednesday, Dec 25</div>
+
+          <div class="time-slots">
+            <div class="time-slot">
+              <div class="time-label">8:00 AM</div>
+              <div class="slot-content">
+                <div class="slot-task-title">Site Inspection</div>
+                <div class="slot-task-location">&#128205; 456 Industrial Park</div>
+                <div class="slot-task-meta">
+                  <span>Est: 1.5 hrs</span>
+                  <span class="slot-priority priority-medium">Medium</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="time-slot">
+              <div class="time-label">10:00 AM</div>
+              <div class="slot-content">
+                <div class="slot-task-title">HVAC Installation</div>
+                <div class="slot-task-location">&#128205; 1234 Oak Street</div>
+                <div class="slot-task-meta">
+                  <span>Est: 3 hrs</span>
+                  <span class="slot-priority priority-high">Urgent</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="time-slot">
+              <div class="time-label">1:00 PM</div>
+              <div class="slot-empty">Lunch Break</div>
+            </div>
+
+            <div class="time-slot">
+              <div class="time-label">2:00 PM</div>
+              <div class="slot-content">
+                <div class="slot-task-title">Maintenance Check</div>
+                <div class="slot-task-location">&#128205; 567 Pine Avenue</div>
+                <div class="slot-task-meta">
+                  <span>Est: 1 hr</span>
+                  <span class="slot-priority priority-medium">Medium</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="time-slot">
+              <div class="time-label">4:00 PM</div>
+              <div class="slot-content">
+                <div class="slot-task-title">Equipment Delivery</div>
+                <div class="slot-task-location">&#128205; 789 Maple Drive</div>
+                <div class="slot-task-meta">
+                  <span>Est: 45 min</span>
+                  <span class="slot-priority priority-medium">Medium</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">&#127968;</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">&#128197;</span>
+            <span>Schedule</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#128205;</span>
+            <span>Map</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#128248;</span>
+            <span>Photos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">&#128197; Weekly Schedule</div>
+      <h1 class="info-title">Plan Your <span>Week</span></h1>
+      <p class="info-desc">
+        View and manage your weekly schedule with time-blocked tasks,
+        estimated durations, and smart scheduling suggestions.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Week-at-a-glance overview</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Time-blocked task scheduling</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Estimated task durations</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Calendar sync with dispatch</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

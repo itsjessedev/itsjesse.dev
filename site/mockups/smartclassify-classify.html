@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>SmartClassify - Classify Text</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #1e293b 50%, #0a1628 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .container { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 23, 42, 0.9);
+      border-right: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .nav-item:hover { background: rgba(59, 130, 246, 0.1); color: #e2e8f0; }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.1));
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    /* Main Content */
+    .main { flex: 1; padding: 32px; overflow-y: auto; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 28px; font-weight: 700; }
+    .header-actions { display: flex; gap: 12px; }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+    }
+    .btn-secondary {
+      background: rgba(59, 130, 246, 0.1);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary:hover { box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+
+    /* Input Section */
+    .input-section {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .text-input {
+      width: 100%;
+      min-height: 160px;
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-size: 15px;
+      resize: vertical;
+      margin-bottom: 16px;
+      font-family: inherit;
+    }
+    .text-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .input-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+    }
+    .char-count { font-size: 13px; color: #94a3b8; }
+    .char-count strong { color: #60a5fa; }
+    .options {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13px;
+    }
+    .option:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .option input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #3b82f6;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Results Section */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .result-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 28px;
+    }
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .result-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .result-title { font-weight: 600; font-size: 16px; }
+
+    /* Category Results */
+    .category-item {
+      margin-bottom: 16px;
+    }
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .category-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+    .category-confidence {
+      font-size: 18px;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+    .category-bar {
+      height: 12px;
+      background: rgba(59, 130, 246, 0.15);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .category-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #06b6d4);
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+    .category-label {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .stat-box {
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+
+    /* Sentiment Gauge */
+    .sentiment-gauge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .gauge-circle {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #22c55e 0deg 252deg,
+        rgba(59, 130, 246, 0.2) 252deg 360deg
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .gauge-inner {
+      width: 130px;
+      height: 130px;
+      background: #1e293b;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .gauge-value { font-size: 32px; font-weight: 700; color: #22c55e; }
+    .gauge-label { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .sentiment-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #22c55e;
+      margin-bottom: 12px;
+    }
+    .sentiment-desc {
+      font-size: 13px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    /* Additional Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+    .keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .keyword {
+      padding: 6px 14px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 20px;
+      font-size: 13px;
+      color: #60a5fa;
+    }
+    .entities-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .entity-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 6px;
+    }
+    .entity-text { font-size: 14px; color: #e2e8f0; }
+    .entity-type {
+      padding: 4px 10px;
+      background: rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      font-size: 11px;
+      color: #60a5fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🎯</div>
+        <span class="logo-text">SmartClassify</span>
+      </div>
+      <nav>
+        <div class="nav-item">📊 Dashboard</div>
+        <div class="nav-item active">📝 Classify Text</div>
+        <div class="nav-item">📁 Batch Processing</div>
+        <div class="nav-item">🏷️ Categories</div>
+        <div class="nav-item">📈 Analytics</div>
+        <div class="nav-item">🔌 API Access</div>
+        <div class="nav-item">⚙️ Settings</div>
+      </nav>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>Classify Text</h1>
+        <div class="header-actions">
+          <button class="btn btn-secondary">🕐 History</button>
+          <button class="btn btn-secondary">💾 Save Result</button>
+        </div>
+      </div>
+
+      <div class="input-section">
+        <h2 class="section-title">🔍 Input Text</h2>
+        <textarea class="text-input" placeholder="Enter or paste text to classify...">I've been trying to reach customer support for three days now and nobody has responded to my emails. The product itself works fine, but this level of service is completely unacceptable for what I paid. I'm seriously considering returning this and switching to a competitor if this doesn't get resolved soon.</textarea>
+
+        <div class="input-meta">
+          <div class="char-count">
+            <strong>287</strong> characters · <strong>48</strong> words
+          </div>
+          <div class="options">
+            <label class="option">
+              <input type="checkbox" checked>
+              <span>Include sentiment</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" checked>
+              <span>Extract keywords</span>
+            </label>
+            <label class="option">
+              <input type="checkbox">
+              <span>Named entities</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary">🎯 Classify Now</button>
+          <button class="btn btn-secondary">🗑️ Clear</button>
+          <button class="btn btn-secondary">📋 Load Example</button>
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon">🏷️</div>
+            <span class="result-title">Classification Results</span>
+          </div>
+
+          <div class="category-item">
+            <div class="category-header">
+              <span class="category-name">Customer Support</span>
+              <span class="category-confidence">91%</span>
+            </div>
+            <div class="category-bar">
+              <div class="category-fill" style="width: 91%"></div>
+            </div>
+            <div class="category-label">High confidence · Primary category</div>
+          </div>
+
+          <div class="category-item">
+            <div class="category-header">
+              <span class="category-name">Complaint</span>
+              <span class="category-confidence">78%</span>
+            </div>
+            <div class="category-bar">
+              <div class="category-fill" style="width: 78%"></div>
+            </div>
+            <div class="category-label">High confidence</div>
+          </div>
+
+          <div class="category-item">
+            <div class="category-header">
+              <span class="category-name">Feedback</span>
+              <span class="category-confidence">56%</span>
+            </div>
+            <div class="category-bar">
+              <div class="category-fill" style="width: 56%"></div>
+            </div>
+            <div class="category-label">Medium confidence</div>
+          </div>
+
+          <div class="category-item">
+            <div class="category-header">
+              <span class="category-name">Product Review</span>
+              <span class="category-confidence">42%</span>
+            </div>
+            <div class="category-bar">
+              <div class="category-fill" style="width: 42%"></div>
+            </div>
+            <div class="category-label">Medium confidence</div>
+          </div>
+
+          <div class="category-item">
+            <div class="category-header">
+              <span class="category-name">Sales Inquiry</span>
+              <span class="category-confidence">12%</span>
+            </div>
+            <div class="category-bar">
+              <div class="category-fill" style="width: 12%"></div>
+            </div>
+            <div class="category-label">Low confidence</div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon">😊</div>
+            <span class="result-title">Sentiment Analysis</span>
+          </div>
+          <div class="sentiment-gauge">
+            <div class="gauge-circle" style="background: conic-gradient(#ef4444 0deg 126deg, rgba(59, 130, 246, 0.2) 126deg 360deg);">
+              <div class="gauge-inner">
+                <span class="gauge-value" style="color: #ef4444;">-0.65</span>
+                <span class="gauge-label">score</span>
+              </div>
+            </div>
+            <span class="sentiment-label" style="color: #ef4444;">Negative</span>
+            <span class="sentiment-desc">Strong negative sentiment detected<br>with frustration indicators</span>
+          </div>
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-label">Confidence</div>
+              <div class="stat-value">87%</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Polarity</div>
+              <div class="stat-value">-0.7</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Subjectivity</div>
+              <div class="stat-value">0.82</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon">🔑</div>
+            <span class="result-title">Extracted Keywords</span>
+          </div>
+          <div class="keywords">
+            <span class="keyword">customer support</span>
+            <span class="keyword">service</span>
+            <span class="keyword">unacceptable</span>
+            <span class="keyword">returning</span>
+            <span class="keyword">competitor</span>
+            <span class="keyword">resolved</span>
+            <span class="keyword">emails</span>
+            <span class="keyword">product</span>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon">🏢</div>
+            <span class="result-title">Named Entities</span>
+          </div>
+          <div class="entities-list">
+            <div class="entity-item">
+              <span class="entity-text">three days</span>
+              <span class="entity-type">TIME</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-text">customer support</span>
+              <span class="entity-type">ORG</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-text">competitor</span>
+              <span class="entity-type">ORG</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

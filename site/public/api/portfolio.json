@@ -363,7 +363,15 @@
       "tech": ["Flutter", "Dart", "REST API", "SharedPreferences"],
       "category": "native-apps",
       "serviceId": "site-to-app",
-      "image": "https://itsjesse.dev/projects/itsjesse-mobile.png",
+      "image": "https://itsjesse.dev/projects/itsjesse-mobile/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/itsjesse-mobile/dashboard.png",
+        "https://itsjesse.dev/projects/itsjesse-mobile/projects.png",
+        "https://itsjesse.dev/projects/itsjesse-mobile/project-detail.png",
+        "https://itsjesse.dev/projects/itsjesse-mobile/services.png",
+        "https://itsjesse.dev/projects/itsjesse-mobile/about.png",
+        "https://itsjesse.dev/projects/itsjesse-mobile/contact.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/itsjesse-mobile",
       "featured": true
     },
@@ -382,7 +390,15 @@
       "tech": ["React Native", "TypeScript", "Expo", "AsyncStorage"],
       "category": "native-apps",
       "serviceId": "native-apps",
-      "image": "https://itsjesse.dev/projects/fieldops.png",
+      "image": "https://itsjesse.dev/projects/fieldops/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/fieldops/dashboard.png",
+        "https://itsjesse.dev/projects/fieldops/tasks.png",
+        "https://itsjesse.dev/projects/fieldops/task-detail.png",
+        "https://itsjesse.dev/projects/fieldops/map.png",
+        "https://itsjesse.dev/projects/fieldops/photos.png",
+        "https://itsjesse.dev/projects/fieldops/settings.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/fieldops",
       "featured": true
     },
@@ -401,7 +417,15 @@
       "tech": ["Python", "FastAPI", "Sentence Transformers", "ChromaDB"],
       "category": "ai-ml",
       "serviceId": "ai-ml",
-      "image": "https://itsjesse.dev/projects/documind.png",
+      "image": "https://itsjesse.dev/projects/documind/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/documind/dashboard.png",
+        "https://itsjesse.dev/projects/documind/documents.png",
+        "https://itsjesse.dev/projects/documind/search.png",
+        "https://itsjesse.dev/projects/documind/chat.png",
+        "https://itsjesse.dev/projects/documind/analytics.png",
+        "https://itsjesse.dev/projects/documind/settings.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/documind",
       "demoUrl": "https://documind.itsjesse.dev",
       "featured": true
@@ -421,9 +445,44 @@
       "tech": ["Python", "FastAPI", "scikit-learn", "TF-IDF"],
       "category": "ai-ml",
       "serviceId": "ai-ml",
-      "image": "https://itsjesse.dev/projects/smartclassify.png",
+      "image": "https://itsjesse.dev/projects/smartclassify/dashboard.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/smartclassify/dashboard.png",
+        "https://itsjesse.dev/projects/smartclassify/classify.png",
+        "https://itsjesse.dev/projects/smartclassify/batch.png",
+        "https://itsjesse.dev/projects/smartclassify/categories.png",
+        "https://itsjesse.dev/projects/smartclassify/analytics.png",
+        "https://itsjesse.dev/projects/smartclassify/api.png"
+      ],
       "githubUrl": "https://github.com/itsjessedev/smartclassify",
       "demoUrl": "https://smartclassify.itsjesse.dev",
+      "featured": true
+    },
+    {
+      "id": "dealscout",
+      "title": "DealScout",
+      "tagline": "Deal Discovery & Flip Tracking",
+      "description": "AI-powered deal discovery from marketplace alerts with real-time eBay price lookups and profit tracking.",
+      "problem": "Resellers miss profitable deals by manually checking marketplaces, and struggle to track purchase-to-sale profit across multiple flips.",
+      "solution": "React Native app that monitors Swoopa alerts via Gmail, uses Gemini AI to classify items, fetches eBay market prices, and tracks the full flip lifecycle from purchase to sale.",
+      "results": [
+        "Instant profit calculations on new deals",
+        "AI classification extracts brand, model, condition",
+        "Push notifications for high-ROI opportunities"
+      ],
+      "tech": ["React Native", "FastAPI", "Gemini AI", "eBay API", "Gmail API", "Firebase"],
+      "category": "automation",
+      "serviceId": "automation",
+      "image": "https://itsjesse.dev/projects/dealscout/deals.png",
+      "screenshots": [
+        "https://itsjesse.dev/projects/dealscout/deals.png",
+        "https://itsjesse.dev/projects/dealscout/flips.png",
+        "https://itsjesse.dev/projects/dealscout/profits.png",
+        "https://itsjesse.dev/projects/dealscout/detail.png",
+        "https://itsjesse.dev/projects/dealscout/notifications.png",
+        "https://itsjesse.dev/projects/dealscout/settings.png"
+      ],
+      "githubUrl": "https://github.com/itsjessedev/dealscout",
       "featured": true
     }
   ],
