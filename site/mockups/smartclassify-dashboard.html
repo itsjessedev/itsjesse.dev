@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>SmartClassify - Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #1e293b 50%, #0a1628 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .container { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 23, 42, 0.9);
+      border-right: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .nav-item:hover { background: rgba(59, 130, 246, 0.1); color: #e2e8f0; }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.1));
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    /* Main Content */
+    .main { flex: 1; padding: 32px; overflow-y: auto; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 28px; font-weight: 700; }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+    .stat-label { color: #94a3b8; font-size: 14px; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 700; color: #60a5fa; }
+    .stat-change { font-size: 12px; color: #22c55e; margin-top: 4px; }
+
+    /* Classify Section */
+    .classify-section {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    .classify-section h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    .text-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-size: 15px;
+      resize: vertical;
+      margin-bottom: 16px;
+    }
+    .text-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    .actions { display: flex; gap: 12px; }
+
+    /* Results Section */
+    .results-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .result-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .result-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .result-title { font-weight: 600; font-size: 16px; }
+
+    /* Category Results */
+    .category-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .category-bar {
+      flex: 1;
+      height: 8px;
+      background: rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .category-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #06b6d4);
+      border-radius: 4px;
+    }
+    .category-name { min-width: 100px; font-size: 14px; }
+    .category-score { font-weight: 600; color: #60a5fa; min-width: 50px; text-align: right; }
+
+    /* Sentiment Gauge */
+    .sentiment-gauge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .gauge-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: conic-gradient(
+        #22c55e 0deg 252deg,
+        rgba(59, 130, 246, 0.2) 252deg 360deg
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .gauge-inner {
+      width: 110px;
+      height: 110px;
+      background: #1e293b;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .gauge-value { font-size: 28px; font-weight: 700; color: #22c55e; }
+    .gauge-label { font-size: 12px; color: #94a3b8; }
+    .sentiment-label {
+      font-size: 18px;
+      font-weight: 600;
+      color: #22c55e;
+    }
+
+    /* Keywords */
+    .keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .keyword {
+      padding: 6px 14px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 20px;
+      font-size: 13px;
+      color: #60a5fa;
+    }
+
+    /* Recent Activity */
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .activity-info { flex: 1; }
+    .activity-text { font-size: 14px; }
+    .activity-time { font-size: 12px; color: #94a3b8; }
+    .activity-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-positive { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .badge-neutral { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .badge-negative { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🎯</div>
+        <span class="logo-text">SmartClassify</span>
+      </div>
+      <nav>
+        <div class="nav-item active">📊 Dashboard</div>
+        <div class="nav-item">📝 Classify Text</div>
+        <div class="nav-item">📁 Batch Processing</div>
+        <div class="nav-item">🏷️ Categories</div>
+        <div class="nav-item">📈 Analytics</div>
+        <div class="nav-item">🔌 API Access</div>
+        <div class="nav-item">⚙️ Settings</div>
+      </nav>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>Text Classification</h1>
+        <button class="btn btn-primary">📤 Batch Upload</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Texts Classified</div>
+          <div class="stat-value">12.4K</div>
+          <div class="stat-change">↑ 847 today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Accuracy Rate</div>
+          <div class="stat-value">94.7%</div>
+          <div class="stat-change">↑ 1.2% this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Categories</div>
+          <div class="stat-value">7</div>
+          <div class="stat-change">Custom trained</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Processing</div>
+          <div class="stat-value">0.3s</div>
+          <div class="stat-change">Per text item</div>
+        </div>
+      </div>
+
+      <div class="classify-section">
+        <h2>🔍 Classify New Text</h2>
+        <textarea class="text-input" placeholder="Enter text to classify...">The customer support team was incredibly helpful and resolved my issue within minutes. I'm very impressed with the quality of service and will definitely recommend this product to my colleagues. Great experience overall!</textarea>
+        <div class="actions">
+          <button class="btn btn-primary">Classify Text</button>
+        </div>
+      </div>
+
+      <div class="results-section">
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon">🏷️</div>
+            <span class="result-title">Category Detection</span>
+          </div>
+          <div class="category-item">
+            <span class="category-name">Support</span>
+            <div class="category-bar"><div class="category-fill" style="width: 87%"></div></div>
+            <span class="category-score">87%</span>
+          </div>
+          <div class="category-item">
+            <span class="category-name">Feedback</span>
+            <div class="category-bar"><div class="category-fill" style="width: 72%"></div></div>
+            <span class="category-score">72%</span>
+          </div>
+          <div class="category-item">
+            <span class="category-name">Sales</span>
+            <div class="category-bar"><div class="category-fill" style="width: 34%"></div></div>
+            <span class="category-score">34%</span>
+          </div>
+          <div class="category-item">
+            <span class="category-name">Technical</span>
+            <div class="category-bar"><div class="category-fill" style="width: 18%"></div></div>
+            <span class="category-score">18%</span>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon">😊</div>
+            <span class="result-title">Sentiment Analysis</span>
+          </div>
+          <div class="sentiment-gauge">
+            <div class="gauge-circle">
+              <div class="gauge-inner">
+                <span class="gauge-value">+0.78</span>
+                <span class="gauge-label">score</span>
+              </div>
+            </div>
+            <span class="sentiment-label">Very Positive</span>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon">🔑</div>
+            <span class="result-title">Extracted Keywords</span>
+          </div>
+          <div class="keywords">
+            <span class="keyword">customer support</span>
+            <span class="keyword">helpful</span>
+            <span class="keyword">resolved</span>
+            <span class="keyword">impressed</span>
+            <span class="keyword">quality</span>
+            <span class="keyword">recommend</span>
+            <span class="keyword">experience</span>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-icon">📋</div>
+            <span class="result-title">Recent Classifications</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">📧</div>
+            <div class="activity-info">
+              <div class="activity-text">Email from john@acme.com</div>
+              <div class="activity-time">2 minutes ago</div>
+            </div>
+            <span class="activity-badge badge-positive">Positive</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">💬</div>
+            <div class="activity-info">
+              <div class="activity-text">Chat transcript #4521</div>
+              <div class="activity-time">15 minutes ago</div>
+            </div>
+            <span class="activity-badge badge-neutral">Neutral</span>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">📝</div>
+            <div class="activity-info">
+              <div class="activity-text">Support ticket feedback</div>
+              <div class="activity-time">32 minutes ago</div>
+            </div>
+            <span class="activity-badge badge-negative">Negative</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

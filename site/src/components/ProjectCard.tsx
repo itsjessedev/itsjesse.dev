@@ -55,7 +55,7 @@ export default function ProjectCard({ project, size = "normal" }: ProjectCardPro
             href={project.demoUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={`absolute ${isLarge ? "top-4 right-4" : "top-3 right-3"} z-20 text-xs bg-[var(--accent)]/90 text-white px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-[var(--accent)] hover:bg-[var(--accent)] hover:scale-105 transition-all duration-200`}
+            className={`absolute ${isLarge ? "top-4 right-4" : "top-3 right-3"} z-20 text-xs bg-[var(--accent)] text-white px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-lg shadow-black/40 backdrop-blur-sm hover:bg-[var(--accent)]/90 hover:scale-105 transition-all duration-200`}
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -70,7 +70,7 @@ export default function ProjectCard({ project, size = "normal" }: ProjectCardPro
             href={project.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={`absolute ${isLarge ? (project.demoUrl ? "top-14 right-4" : "top-4 right-4") : (project.demoUrl ? "top-11 right-3" : "top-3 right-3")} z-20 text-xs bg-[var(--bg-primary)]/90 px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-[var(--border)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:scale-105 transition-all duration-200`}
+            className={`absolute ${isLarge ? (project.demoUrl ? "top-14 right-4" : "top-4 right-4") : (project.demoUrl ? "top-11 right-3" : "top-3 right-3")} z-20 text-xs bg-black/80 text-white px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-lg shadow-black/40 backdrop-blur-sm hover:bg-black/90 hover:scale-105 transition-all duration-200`}
           >
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -84,7 +84,7 @@ export default function ProjectCard({ project, size = "normal" }: ProjectCardPro
         )}
         {project.featured && (
           <div className={`absolute ${isLarge ? "top-4 left-4" : "top-3 left-3"}`}>
-            <span className="text-xs bg-[var(--accent)] text-white px-2 py-1 rounded">
+            <span className="text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2.5 py-1 rounded-lg shadow-lg shadow-black/40 backdrop-blur-sm font-medium">
               Featured
             </span>
           </div>

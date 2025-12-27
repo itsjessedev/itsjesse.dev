@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>FieldOps - App Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #064e3b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f1f1c 0%, #1a2f2a 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+    }
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .user-name { font-weight: 600; font-size: 16px; }
+    .user-role { font-size: 12px; color: #6ee7b7; }
+    .sync-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 20px;
+      font-size: 11px;
+      color: #6ee7b7;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-box {
+      flex: 1;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-value { font-size: 22px; font-weight: 700; color: #10b981; }
+    .stat-label { font-size: 11px; color: #6ee7b7; margin-top: 2px; }
+
+    /* Task List */
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .task-card {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .task-title { font-weight: 600; font-size: 14px; }
+    .task-priority {
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .priority-high { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .priority-medium { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+    .task-location {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #6ee7b7;
+      margin-bottom: 8px;
+    }
+    .task-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 31, 28, 0.95);
+      border-top: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #10b981; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="app-content">
+          <div class="app-header">
+            <div class="user-info">
+              <div class="user-avatar">👷</div>
+              <div>
+                <div class="user-name">Mike Thompson</div>
+                <div class="user-role">Field Technician</div>
+              </div>
+            </div>
+            <div class="sync-badge">🟢 Synced</div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-value">5</div>
+              <div class="stat-label">Today's Tasks</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">2</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">12</div>
+              <div class="stat-label">Photos</div>
+            </div>
+          </div>
+
+          <div class="section-title">
+            <span>Active Tasks</span>
+            <span style="color: #6ee7b7; font-size: 12px;">View All →</span>
+          </div>
+
+          <div class="task-card">
+            <div class="task-header">
+              <div class="task-title">HVAC Installation</div>
+              <span class="task-priority priority-high">High</span>
+            </div>
+            <div class="task-location">📍 1234 Oak Street, Suite 102</div>
+            <div class="task-meta">
+              <span>⏰ Due: 2:00 PM</span>
+              <span>📷 3 photos req.</span>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-header">
+              <div class="task-title">Maintenance Check</div>
+              <span class="task-priority priority-medium">Medium</span>
+            </div>
+            <div class="task-location">📍 567 Pine Avenue</div>
+            <div class="task-meta">
+              <span>⏰ Due: 4:30 PM</span>
+              <span>📋 Inspection form</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>Tasks</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📍</span>
+            <span>Map</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📸</span>
+            <span>Photos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">📱 React Native App</div>
+      <h1 class="info-title">Field Service <span>Management</span></h1>
+      <p class="info-desc">
+        Native mobile app for field technicians to manage tasks,
+        track locations, and document work with photo evidence.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">GPS tracking & route optimization</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Offline-first architecture</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Photo documentation</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Real-time task updates</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

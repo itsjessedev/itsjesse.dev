@@ -20,7 +20,7 @@ export default function DownloadModal({ appName, downloadUrl, isLarge = false }:
           e.stopPropagation();
           setIsOpen(true);
         }}
-        className={`absolute ${isLarge ? "bottom-4 left-4" : "bottom-3 left-3"} z-20 text-xs bg-green-500/90 text-white px-2.5 py-1 rounded-lg flex items-center gap-1.5 border border-green-500 hover:bg-green-500 hover:scale-105 transition-all duration-200`}
+        className={`absolute ${isLarge ? "bottom-4 left-4" : "bottom-3 left-3"} z-20 text-xs bg-green-500 text-white px-2.5 py-1 rounded-lg flex items-center gap-1.5 shadow-lg shadow-black/40 backdrop-blur-sm hover:bg-green-600 hover:scale-105 transition-all duration-200`}
       >
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
