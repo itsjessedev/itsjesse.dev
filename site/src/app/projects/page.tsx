@@ -16,6 +16,8 @@ export default function ProjectsPage() {
     { value: "integration", label: "Integration" },
     { value: "dashboard", label: "Dashboard" },
     { value: "migration", label: "Migration" },
+    { value: "native-apps", label: "Native Apps" },
+    { value: "ai-ml", label: "AI/ML" },
   ];
 
   const filteredProjects =
