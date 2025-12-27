@@ -1202,162 +1202,45 @@ export function getIdeasForSubreddit(subreddit) {
 
 // ============= PROSPECTS (Outreach) =============
 
+// ============= PROSPECT SEARCHES =============
+// FOCUSED: Only actual hiring/job posts, not general discussions
+
 const PROSPECT_SEARCHES = [
-  // ============= DIRECT HIRING (GOLD) =============
-  { subreddit: 'forhire', query: '[Hiring]' },
-  { subreddit: 'slavelabour', query: '[TASK]' },
-  { subreddit: 'jobbit', query: '[Hiring]' },
-  { subreddit: 'Jobs4Bitcoins', query: '[Hiring]' },
-  { subreddit: 'remotejs', query: 'hiring OR contract' },
-  { subreddit: 'remotepython', query: 'hiring OR contract' },
-  { subreddit: 'WorkOnline', query: 'looking for OR need someone' },
-  { subreddit: 'freelance_forhire', query: 'developer OR automation' },
+  // ============= DIRECT HIRING SUBREDDITS (GOLD) =============
+  // These are subreddits specifically for hiring
+  { subreddit: 'forhire', query: '[Hiring]', source: 'reddit' },
+  { subreddit: 'slavelabour', query: '[TASK]', source: 'reddit' },
+  { subreddit: 'jobbit', query: '[Hiring]', source: 'reddit' },
+  { subreddit: 'Jobs4Bitcoins', query: '[Hiring]', source: 'reddit' },
+  { subreddit: 'remotejs', query: 'hiring', source: 'reddit' },
+  { subreddit: 'remotepython', query: 'hiring', source: 'reddit' },
+  { subreddit: 'freelance_forhire', query: 'hiring OR [Hiring]', source: 'reddit' },
+  { subreddit: 'hiring', query: 'developer OR engineer OR python OR javascript', source: 'reddit' },
 
-  // ============= NON-TECH FOUNDERS =============
-  { subreddit: 'smallbusiness', query: 'spreadsheet OR excel OR automation' },
-  { subreddit: 'smallbusiness', query: 'developer OR programmer' },
-  { subreddit: 'smallbusiness', query: 'sync OR integrate OR workflow' },
-  { subreddit: 'smallbusiness', query: 'manual data entry OR copy paste' },
-  { subreddit: 'smallbusiness', query: 'time consuming OR hours per week' },
-  { subreddit: 'Entrepreneur', query: 'need developer OR looking for developer' },
-  { subreddit: 'Entrepreneur', query: 'automation OR automate' },
-  { subreddit: 'Entrepreneur', query: 'scrape OR scraping OR data extraction' },
-  { subreddit: 'Entrepreneur', query: 'technical cofounder OR tech partner' },
-  { subreddit: 'Entrepreneur', query: 'bottleneck OR broken process' },
-  { subreddit: 'startups', query: 'looking for developer OR technical cofounder' },
-  { subreddit: 'startups', query: 'MVP OR prototype' },
-  { subreddit: 'startups', query: 'hire freelancer OR contractor' },
-  { subreddit: 'indiehackers', query: 'developer OR cofounder OR build' },
-  { subreddit: 'EntrepreneurRideAlong', query: 'automation OR developer' },
-  { subreddit: 'sweatystartup', query: 'software OR automation OR app' },
+  // ============= EXPLICIT HIRING LANGUAGE =============
+  // Searches with very specific "looking to hire" language
+  { subreddit: 'Entrepreneur', query: 'looking to hire developer', source: 'reddit' },
+  { subreddit: 'Entrepreneur', query: 'need a developer', source: 'reddit' },
+  { subreddit: 'startups', query: 'hiring developer OR hiring engineer', source: 'reddit' },
+  { subreddit: 'startups', query: 'looking for technical cofounder', source: 'reddit' },
+  { subreddit: 'smallbusiness', query: 'looking to hire developer', source: 'reddit' },
+  { subreddit: 'smallbusiness', query: 'need someone to build', source: 'reddit' },
+  { subreddit: 'SaaS', query: 'hiring developer OR looking for developer', source: 'reddit' },
+  { subreddit: 'indiehackers', query: 'looking for cofounder OR hiring developer', source: 'reddit' },
 
-  // ============= SAAS / TECH PRODUCTS =============
-  { subreddit: 'SaaS', query: 'looking for developer OR need help building' },
-  { subreddit: 'SaaS', query: 'integration OR API OR webhook' },
-  { subreddit: 'SaaS', query: 'freelancer OR contractor' },
-  { subreddit: 'microsaas', query: 'developer OR build OR integration' },
-  { subreddit: 'sideproject', query: 'developer OR help OR automation' },
-  { subreddit: 'juststart', query: 'automation OR scraping OR developer' },
+  // ============= FREELANCE-SPECIFIC =============
+  { subreddit: 'freelance', query: '[Hiring] OR looking for freelancer', source: 'reddit' },
+  { subreddit: 'remotework', query: 'hiring OR looking for developer', source: 'reddit' },
+  { subreddit: 'WorkOnline', query: '[Hiring] OR need developer', source: 'reddit' },
 
-  // ============= NO-CODE / LOW-CODE (hitting limits) =============
-  { subreddit: 'nocode', query: 'developer OR custom OR limitations' },
-  { subreddit: 'nocode', query: 'can\'t do OR impossible OR workaround' },
-  { subreddit: 'lowcode', query: 'developer OR custom code OR limitations' },
-  { subreddit: 'bubble', query: 'developer OR limitations OR custom' },
-  { subreddit: 'webflow', query: 'developer OR custom code OR limitations' },
-  { subreddit: 'retool', query: 'developer OR custom OR integration' },
-  { subreddit: 'AppSheet', query: 'developer OR limitations OR complex' },
-  { subreddit: 'OutSystems', query: 'developer OR freelance' },
-
-  // ============= AUTOMATION TOOLS =============
-  { subreddit: 'zapier', query: 'developer OR custom OR limitations' },
-  { subreddit: 'zapier', query: 'alternative OR expensive OR rate limit' },
-  { subreddit: 'n8n', query: 'developer OR help OR complex' },
-  { subreddit: 'make', query: 'developer OR limitations OR custom' },
-  { subreddit: 'IFTTT', query: 'developer OR alternative OR limitations' },
-  { subreddit: 'GoogleAppsScript', query: 'developer OR freelance OR help' },
-  { subreddit: 'MicrosoftFlow', query: 'developer OR custom OR limitations' },
-
-  // ============= PRODUCTIVITY TOOLS =============
-  { subreddit: 'Notion', query: 'developer OR API OR integration' },
-  { subreddit: 'Notion', query: 'automation OR sync OR connect' },
-  { subreddit: 'Airtable', query: 'developer OR automation OR script' },
-  { subreddit: 'Airtable', query: 'limitations OR slow OR integration' },
-  { subreddit: 'clickup', query: 'developer OR API OR integration' },
-  { subreddit: 'asana', query: 'developer OR integration OR automation' },
-  { subreddit: 'Trello', query: 'developer OR automation OR powerup' },
-  { subreddit: 'Monday', query: 'developer OR integration OR automation' },
-
-  // ============= ECOMMERCE =============
-  { subreddit: 'ecommerce', query: 'developer OR integration OR automation' },
-  { subreddit: 'ecommerce', query: 'sync inventory OR spreadsheet OR manual' },
-  { subreddit: 'shopify', query: 'developer OR custom OR help' },
-  { subreddit: 'shopify', query: 'automation OR workflow OR sync' },
-  { subreddit: 'shopify', query: 'integration OR connect OR API' },
-  { subreddit: 'woocommerce', query: 'developer OR custom OR integration' },
-  { subreddit: 'Etsy', query: 'automation OR bulk OR spreadsheet' },
-  { subreddit: 'Etsy', query: 'sync OR integration OR tool' },
-  { subreddit: 'FulfillmentByAmazon', query: 'automation OR software OR spreadsheet' },
-  { subreddit: 'FulfillmentByAmazon', query: 'developer OR integration OR API' },
-  { subreddit: 'AmazonSeller', query: 'automation OR software OR tool' },
-  { subreddit: 'AmazonSeller', query: 'developer OR integration' },
-  { subreddit: 'dropship', query: 'automation OR software OR developer' },
-  { subreddit: 'Flipping', query: 'automation OR spreadsheet OR software' },
-  { subreddit: 'Reselling', query: 'automation OR tool OR software' },
-  { subreddit: 'printOnDemand', query: 'automation OR integration OR developer' },
-  { subreddit: 'merchbyamazon', query: 'automation OR tool OR software' },
-
-  // ============= CRM / MARKETING / SALES =============
-  { subreddit: 'CRM', query: 'developer OR integration OR automation' },
-  { subreddit: 'hubspot', query: 'developer OR integration OR custom' },
-  { subreddit: 'hubspot', query: 'automation OR workflow OR API' },
-  { subreddit: 'Salesforce', query: 'developer OR integration OR automation' },
-  { subreddit: 'Salesforce', query: 'freelance OR contractor OR hire' },
-  { subreddit: 'pipedrive', query: 'developer OR integration OR automation' },
-  { subreddit: 'activecampaign', query: 'developer OR integration' },
-  { subreddit: 'marketing', query: 'automation OR integration OR developer' },
-  { subreddit: 'marketing', query: 'scrape OR data OR leads' },
-  { subreddit: 'digital_marketing', query: 'automation OR scraping OR API' },
-  { subreddit: 'emailmarketing', query: 'automation OR integration OR API' },
-  { subreddit: 'leadgeneration', query: 'automation OR scrape OR software' },
-  { subreddit: 'socialmediamarketing', query: 'automation OR tool OR API' },
-  { subreddit: 'PPC', query: 'automation OR script OR integration' },
-  { subreddit: 'klaviyo', query: 'developer OR integration OR automation' },
-  { subreddit: 'mailchimp', query: 'developer OR API OR integration' },
-
-  // ============= REAL ESTATE / PROPERTY =============
-  { subreddit: 'realestateinvesting', query: 'spreadsheet OR automation OR software' },
-  { subreddit: 'realestateinvesting', query: 'developer OR tool OR system' },
-  { subreddit: 'realestate', query: 'automation OR CRM OR software development' },
-  { subreddit: 'realestate', query: 'lead OR integration OR developer' },
-  { subreddit: 'realtors', query: 'automation OR software OR integration' },
-  { subreddit: 'PropertyManagement', query: 'automation OR software OR developer' },
-
-  // ============= FINANCE / ACCOUNTING =============
-  { subreddit: 'Bookkeeping', query: 'automation OR integration OR sync' },
-  { subreddit: 'Bookkeeping', query: 'developer OR software OR tool' },
-  { subreddit: 'accounting', query: 'automation OR script OR integration' },
-  { subreddit: 'accounting', query: 'developer OR software OR tool' },
-  { subreddit: 'QuickBooks', query: 'developer OR integration OR automation' },
-  { subreddit: 'xero', query: 'developer OR integration OR automation' },
-
-  // ============= HEALTHCARE / LEGAL =============
-  { subreddit: 'HealthIT', query: 'developer OR integration OR automation' },
-  { subreddit: 'healthcare', query: 'automation OR integration OR software' },
-  { subreddit: 'LawFirm', query: 'automation OR software OR integration' },
-
-  // ============= DATA / ANALYTICS =============
-  { subreddit: 'dataengineering', query: 'freelance OR hire OR looking for' },
-  { subreddit: 'datascience', query: 'freelance OR hire OR looking for' },
-  { subreddit: 'analytics', query: 'developer OR integration OR automation' },
-  { subreddit: 'PowerBI', query: 'developer OR integration OR custom' },
-  { subreddit: 'Tableau', query: 'developer OR integration OR automation' },
-  { subreddit: 'excel', query: 'developer OR automation OR VBA' },
-  { subreddit: 'excel', query: 'API OR integration OR python' },
-  { subreddit: 'googlesheets', query: 'developer OR automation OR script' },
-  { subreddit: 'SQL', query: 'freelance OR hire OR automation' },
-
-  // ============= OPERATIONS / PRODUCTIVITY =============
-  { subreddit: 'productivity', query: 'developer OR automation OR integration' },
-  { subreddit: 'selfhosted', query: 'developer OR integration OR automation' },
-  { subreddit: 'sysadmin', query: 'automation OR integration OR developer' },
-  { subreddit: 'devops', query: 'freelance OR contractor OR automation' },
-
-  // ============= FREELANCE / REMOTE WORK =============
-  { subreddit: 'freelance', query: 'looking for' },
-  { subreddit: 'freelance', query: 'developer OR automation' },
-  { subreddit: 'remotework', query: 'looking for developer OR hiring' },
-  { subreddit: 'digitalnomad', query: 'looking for developer OR freelancer' },
-  { subreddit: 'beermoney', query: 'automation OR script OR bot' },
-  { subreddit: 'passive_income', query: 'automation OR software OR developer' },
-  { subreddit: 'thesidehustle', query: 'automation OR software OR developer' },
-
-  // ============= PAIN POINT KEYWORDS =============
-  { subreddit: 'smallbusiness', query: 'outsource OR virtual assistant OR VA' },
-  { subreddit: 'Entrepreneur', query: 'outsource OR virtual assistant OR VA' },
-  { subreddit: 'startups', query: 'legacy system OR migrate OR switch from' },
-  { subreddit: 'SaaS', query: 'Zapier alternative OR make alternative' },
-  { subreddit: 'ecommerce', query: 'manual OR tedious OR repetitive' },
+  // ============= AUTOMATION/INTEGRATION PROJECTS =============
+  // People explicitly asking for help building something
+  { subreddit: 'Salesforce', query: 'hire freelancer OR looking for developer', source: 'reddit' },
+  { subreddit: 'hubspot', query: 'hire developer OR need integration', source: 'reddit' },
+  { subreddit: 'zapier', query: 'hire developer OR need custom', source: 'reddit' },
+  { subreddit: 'n8n', query: 'hire OR pay someone', source: 'reddit' },
+  { subreddit: 'shopify', query: 'hire developer OR looking for developer', source: 'reddit' },
+  { subreddit: 'Airtable', query: 'hire developer OR pay someone', source: 'reddit' },
 ];
 
 // Check if post is from a competitor offering services
@@ -1453,6 +1336,7 @@ async function searchSubreddit(subreddit, query) {
 
       posts.push({
         id: post.id,
+        source: 'reddit',
         subreddit: subreddit,
         title: post.title,
         body: post.selftext?.slice(0, 2000) || null,
@@ -1477,9 +1361,11 @@ async function searchSubreddit(subreddit, query) {
 export async function fetchProspects(onProgress = null, onPartialResults = null, startFromIndex = 0) {
   const allProspects = [];
   const seenIds = new Set();
-  const total = PROSPECT_SEARCHES.length;
+  const redditTotal = PROSPECT_SEARCHES.length;
+  const total = redditTotal + 2; // +2 for HN Who's Hiring and HN Freelancer
 
-  for (let i = startFromIndex; i < total; i++) {
+  // First, fetch Reddit sources
+  for (let i = startFromIndex; i < redditTotal; i++) {
     const { subreddit, query } = PROSPECT_SEARCHES[i];
     if (onProgress) onProgress(i + 1, total, `r/${subreddit}: ${query}`);
 
@@ -1502,6 +1388,47 @@ export async function fetchProspects(onProgress = null, onPartialResults = null,
     await new Promise(r => setTimeout(r, 400));
   }
 
+  // Then fetch Hacker News sources (only if not resuming from middle of Reddit)
+  if (startFromIndex <= redditTotal) {
+    // HN Who is Hiring
+    if (onProgress) onProgress(redditTotal + 1, total, 'Hacker News: Who is hiring?');
+    try {
+      const hnPosts = await fetchHNWhoIsHiring();
+      for (const post of hnPosts) {
+        if (!seenIds.has(post.id)) {
+          seenIds.add(post.id);
+          allProspects.push(post);
+        }
+      }
+      if (onPartialResults) {
+        const sorted = [...allProspects].sort((a, b) => b.prospect_score - a.prospect_score);
+        onPartialResults(sorted, redditTotal + 1);
+      }
+    } catch (err) {
+      console.error('Error in HN Who is hiring:', err);
+    }
+
+    await new Promise(r => setTimeout(r, 400));
+
+    // HN Freelancer thread
+    if (onProgress) onProgress(redditTotal + 2, total, 'Hacker News: Freelancer thread');
+    try {
+      const hnFreelancePosts = await fetchHNFreelancer();
+      for (const post of hnFreelancePosts) {
+        if (!seenIds.has(post.id)) {
+          seenIds.add(post.id);
+          allProspects.push(post);
+        }
+      }
+      if (onPartialResults) {
+        const sorted = [...allProspects].sort((a, b) => b.prospect_score - a.prospect_score);
+        onPartialResults(sorted, redditTotal + 2);
+      }
+    } catch (err) {
+      console.error('Error in HN Freelancer:', err);
+    }
+  }
+
   // Sort by prospect score
   allProspects.sort((a, b) => b.prospect_score - a.prospect_score);
   return allProspects;
@@ -1509,5 +1436,142 @@ export async function fetchProspects(onProgress = null, onPartialResults = null,
 
 // Get total number of prospect searches (for resume calculation)
 export function getProspectSearchCount() {
-  return PROSPECT_SEARCHES.length;
+  return PROSPECT_SEARCHES.length + 2; // +2 for HN Who's Hiring and HN Freelancer
 }
+
+// ============= NON-REDDIT SOURCES =============
+
+// Fetch Hacker News "Who is hiring?" monthly thread
+async function fetchHNWhoIsHiring() {
+  const posts = [];
+  try {
+    // Search for the latest "Ask HN: Who is hiring?" thread
+    const searchUrl = 'https://hn.algolia.com/api/v1/search_by_date?query=Ask%20HN:%20Who%20is%20hiring&tags=story&hitsPerPage=1';
+    const searchRes = await fetch(searchUrl);
+    const searchData = await searchRes.json();
+
+    if (!searchData.hits || searchData.hits.length === 0) return [];
+
+    const threadId = searchData.hits[0].objectID;
+    const threadTitle = searchData.hits[0].title;
+    const threadUrl = `https://news.ycombinator.com/item?id=${threadId}`;
+
+    // Fetch comments from the thread (top-level only = job listings)
+    const commentsUrl = `https://hn.algolia.com/api/v1/items/${threadId}`;
+    const commentsRes = await fetch(commentsUrl);
+    const commentsData = await commentsRes.json();
+
+    if (!commentsData.children) return [];
+
+    // Filter for relevant keywords (automation, integration, freelance-friendly)
+    const relevantKeywords = [
+      'python', 'javascript', 'typescript', 'react', 'node', 'api', 'integration',
+      'automation', 'fullstack', 'full stack', 'backend', 'remote', 'contract',
+      'freelance', 'part-time', 'part time', 'consultant', 'contractor'
+    ];
+
+    for (const comment of commentsData.children.slice(0, 50)) {
+      if (!comment.text) continue;
+
+      const textLower = comment.text.toLowerCase();
+      const hasRelevant = relevantKeywords.some(kw => textLower.includes(kw));
+      const hasRemote = textLower.includes('remote') || textLower.includes('onsite');
+
+      if (hasRelevant || hasRemote) {
+        // Score based on keywords
+        let score = 10;
+        if (textLower.includes('remote')) score += 15;
+        if (textLower.includes('contract') || textLower.includes('freelance')) score += 20;
+        if (textLower.includes('part-time') || textLower.includes('part time')) score += 15;
+        relevantKeywords.forEach(kw => { if (textLower.includes(kw)) score += 3; });
+
+        posts.push({
+          id: `hn-${comment.id}`,
+          source: 'hackernews',
+          subreddit: 'Hacker News', // For display
+          title: comment.text.slice(0, 120) + (comment.text.length > 120 ? '...' : ''),
+          body: comment.text,
+          url: `https://news.ycombinator.com/item?id=${comment.id}`,
+          author: comment.author || 'unknown',
+          score: 0,
+          num_comments: 0,
+          created_utc: comment.created_at_i || Date.now() / 1000,
+          prospect_score: score,
+          query: 'Who is hiring?',
+          is_hiring: true,
+          thread_title: threadTitle,
+          thread_url: threadUrl,
+        });
+      }
+    }
+    return posts;
+  } catch (err) {
+    console.error('Error fetching HN Who is hiring:', err);
+    return [];
+  }
+}
+
+// Fetch Hacker News "Freelancer? Seeking freelancer?" thread
+async function fetchHNFreelancer() {
+  const posts = [];
+  try {
+    // Search for "Freelancer? Seeking freelancer?" threads
+    const searchUrl = 'https://hn.algolia.com/api/v1/search_by_date?query=Ask%20HN:%20Freelancer&tags=story&hitsPerPage=1';
+    const searchRes = await fetch(searchUrl);
+    const searchData = await searchRes.json();
+
+    if (!searchData.hits || searchData.hits.length === 0) return [];
+
+    const threadId = searchData.hits[0].objectID;
+    const threadTitle = searchData.hits[0].title;
+    const threadUrl = `https://news.ycombinator.com/item?id=${threadId}`;
+
+    const commentsUrl = `https://hn.algolia.com/api/v1/items/${threadId}`;
+    const commentsRes = await fetch(commentsUrl);
+    const commentsData = await commentsRes.json();
+
+    if (!commentsData.children) return [];
+
+    // Look for "Seeking freelancer" comments (people hiring)
+    for (const comment of commentsData.children.slice(0, 50)) {
+      if (!comment.text) continue;
+
+      const textLower = comment.text.toLowerCase();
+      // Only include posts SEEKING freelancers (not freelancers offering)
+      const isSeeking = textLower.includes('seeking') || textLower.includes('looking for') ||
+                       textLower.includes('need') || textLower.includes('hiring');
+      const isOffering = textLower.includes('available') || textLower.includes('for hire') ||
+                        textLower.includes('my rate') || textLower.includes('my skills');
+
+      if (isSeeking && !isOffering) {
+        let score = 25; // Freelancer thread posts are high value
+        if (textLower.includes('python')) score += 10;
+        if (textLower.includes('javascript') || textLower.includes('react')) score += 10;
+        if (textLower.includes('automation') || textLower.includes('integration')) score += 15;
+
+        posts.push({
+          id: `hn-freelance-${comment.id}`,
+          source: 'hackernews',
+          subreddit: 'Hacker News',
+          title: comment.text.slice(0, 120) + (comment.text.length > 120 ? '...' : ''),
+          body: comment.text,
+          url: `https://news.ycombinator.com/item?id=${comment.id}`,
+          author: comment.author || 'unknown',
+          score: 0,
+          num_comments: 0,
+          created_utc: comment.created_at_i || Date.now() / 1000,
+          prospect_score: score,
+          query: 'Freelancer thread',
+          is_hiring: true,
+          thread_title: threadTitle,
+          thread_url: threadUrl,
+        });
+      }
+    }
+    return posts;
+  } catch (err) {
+    console.error('Error fetching HN Freelancer thread:', err);
+    return [];
+  }
+}
+

@@ -125,6 +125,7 @@ const styles = {
     borderRadius: '12px',
     fontSize: '12px',
     fontWeight: '500',
+    lineHeight: '1.2',
   },
   score: {
     background: '#2563eb',
@@ -864,9 +865,10 @@ function App() {
   const [newsResponses, setNewsResponses] = useState({}); // newsId -> response text
   const [autoMarkStatus, setAutoMarkStatus] = useState(null); // Status message for auto-mark
   const [generatingNews, setGeneratingNews] = useState({}); // newsId -> boolean
-  // Replies tab state (refactored)
-  const [respondedPosts, setRespondedPosts] = useState([]);
-  const [postRepliesData, setPostRepliesData] = useState({}); // postId -> { comments, totalUnreplied }
+  // Replies tab state (refactored) - with localStorage persistence
+  const [respondedPosts, setRespondedPosts] = useState(() => loadPersistedData('responded_posts'));
+  const [postRepliesData, setPostRepliesData] = useState(() => loadPersistedData('replies_data', {}));
+  const [dismissedReplies, setDismissedReplies] = useState(() => loadPersistedData('dismissed_replies', []));
   const [repliesFetching, setRepliesFetching] = useState(false);
   const [expandedPosts, setExpandedPosts] = useState({}); // postId -> boolean
   const [pollingActive, setPollingActive] = useState(false);
@@ -1099,6 +1101,42 @@ function App() {
     } catch (err) {
       alert('Failed to skip: ' + err.message);
     }
+  };
+
+  // Persist replies data to localStorage when it changes
+  useEffect(() => {
+    if (respondedPosts.length > 0) {
+      savePersistedData('responded_posts', respondedPosts);
+    }
+  }, [respondedPosts]);
+
+  useEffect(() => {
+    if (Object.keys(postRepliesData).length > 0) {
+      savePersistedData('replies_data', postRepliesData);
+    }
+  }, [postRepliesData]);
+
+  useEffect(() => {
+    savePersistedData('dismissed_replies', dismissedReplies);
+  }, [dismissedReplies]);
+
+  // Dismiss a reply (removes from notification count, persists across refresh)
+  const handleDismissReply = (replyId) => {
+    setDismissedReplies(prev => [...prev, replyId]);
+  };
+
+  // Clear all dismissed replies (e.g., when starting fresh)
+  const handleClearDismissed = () => {
+    setDismissedReplies([]);
+  };
+
+  // Get unreplied count excluding dismissed
+  const getActiveUnrepliedCount = (comments) => {
+    if (!comments) return 0;
+    return comments.reduce((sum, c) => {
+      const unreplied = c.replies?.filter(r => !r.hasUserReply && !dismissedReplies.includes(r.id)) || [];
+      return sum + unreplied.length;
+    }, 0);
   };
 
   const handleFetchGitHub = async () => {
@@ -1409,7 +1447,14 @@ function App() {
 
   // Calculate total unreplied comments across all posts
   const getTotalUnreadReplies = () => {
-    return Object.values(postRepliesData).reduce((sum, data) => sum + (data?.totalUnreplied || 0), 0);
+    // Count unreplied replies, excluding dismissed ones
+    return Object.values(postRepliesData).reduce((sum, data) => {
+      if (!data?.comments) return sum;
+      return sum + data.comments.reduce((cSum, c) => {
+        const unreplied = c.replies?.filter(r => !r.hasUserReply && !dismissedReplies.includes(r.id)) || [];
+        return cSum + unreplied.length;
+      }, 0);
+    }, 0);
   };
 
   // Background polling for replies on ALL pages (for global notification)
@@ -1751,7 +1796,7 @@ function App() {
             posts.map((post) => (
               <div key={post.id} style={styles.post} className="devscout-post">
                 <div style={styles.postHeader} className="devscout-post-header">
-                  <a href={`https://reddit.com/r/${post.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }}>r/{post.subreddit}</a>
+                  <a href={`https://reddit.com/r/${post.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }} className="devscout-subreddit">r/{post.subreddit}</a>
                   <span style={styles.score}>Score: {Math.round(post.relevance_score)}</span>
                 </div>
 
@@ -2086,7 +2131,7 @@ function App() {
         <div style={styles.postList}>
           {prospects.length === 0 ? (
             <div style={styles.empty} className="devscout-empty">
-              No prospects loaded. Click "Find Hot Prospects" to search Reddit for leads.
+              No prospects loaded. Click "Find Hot Prospects" to search for freelance opportunities.
             </div>
           ) : (
             [...prospects].sort((a, b) => b.score - a.score).map((prospect) => {
@@ -2094,7 +2139,11 @@ function App() {
               return (
                 <div key={prospect.id} style={styles.post} className="devscout-post">
                   <div style={styles.postHeader} className="devscout-post-header">
-                    <a href={`https://reddit.com/r/${prospect.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }}>r/{prospect.subreddit}</a>
+                    {prospect.source === 'hackernews' ? (
+                      <a href={prospect.thread_url || 'https://news.ycombinator.com'} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none', background: '#ff6600' }} className="devscout-subreddit">HN</a>
+                    ) : (
+                      <a href={`https://reddit.com/r/${prospect.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }} className="devscout-subreddit">r/{prospect.subreddit}</a>
+                    )}
                     <span style={{
                       ...styles.score,
                       background: category.bg,
@@ -2116,7 +2165,8 @@ function App() {
                   </h3>
 
                   <div style={styles.postMeta}>
-                    u/{prospect.author} · {formatTime(prospect.created_utc)} · {prospect.num_comments} comments · {prospect.ups} upvotes
+                    {prospect.source === 'hackernews' ? prospect.author : `u/${prospect.author}`} · {formatTime(prospect.created_utc)}
+                    {prospect.source !== 'hackernews' && ` · ${prospect.num_comments} comments · ${prospect.ups || prospect.score} upvotes`}
                   </div>
 
                   {prospect.body && (
@@ -2184,7 +2234,9 @@ function App() {
             respondedPosts.map((post) => {
               const repliesData = postRepliesData[post.id] || { comments: [], totalUnreplied: 0 };
               const isExpanded = expandedPosts[post.id];
-              const needsAttention = repliesData.totalUnreplied > 0;
+              // Use dismissal-aware count
+              const activeUnreplied = getActiveUnrepliedCount(repliesData.comments);
+              const needsAttention = activeUnreplied > 0;
 
               return (
                 <div key={post.id} id={`reply-post-${post.id}`} style={{ marginBottom: '8px' }}>
@@ -2204,13 +2256,14 @@ function App() {
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ ...styles.subreddit, textDecoration: 'none' }}
+                          className="devscout-subreddit"
                           onClick={(e) => e.stopPropagation()}
                         >
                           r/{post.subreddit}
                         </a>
                         {needsAttention && (
                           <span style={styles.unrepliedBadge}>
-                            {repliesData.totalUnreplied} unreplied
+                            {activeUnreplied} unreplied
                           </span>
                         )}
                         {repliesData.comments.length > 0 && !needsAttention && (
@@ -2276,7 +2329,9 @@ function App() {
                             {/* Replies to this comment */}
                             {comment.replies.length > 0 && (
                               <div style={{ marginLeft: '8px' }}>
-                                {comment.replies.map((reply) => (
+                                {comment.replies
+                                  .filter(reply => !dismissedReplies.includes(reply.id) || reply.hasUserReply)
+                                  .map((reply) => (
                                   <div
                                     key={reply.id}
                                     id={!reply.hasUserReply ? `unreplied-${reply.id}` : undefined}
@@ -2320,7 +2375,7 @@ function App() {
                                                 marginBottom: '8px',
                                               }}
                                             />
-                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                               <button
                                                 data-btn="regenerate"
                                                 style={{ ...styles.btn, ...styles.btnRegenerate }}
@@ -2344,10 +2399,18 @@ function App() {
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
                                                 {copied[`gen_${reply.id}`] ? 'Copied! Opening...' : 'Reply on Reddit'}
                                               </button>
+                                              <button
+                                                data-btn="skip"
+                                                style={{ ...styles.btn, ...styles.btnSkip }}
+                                                onClick={() => handleDismissReply(reply.id)}
+                                                title="Dismiss this reply (won't notify again)"
+                                              >
+                                                Dismiss
+                                              </button>
                                             </div>
                                           </>
                                         ) : (
-                                          <div style={{ display: 'flex', gap: '8px' }}>
+                                          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                             <button
                                               data-btn="primary"
                                               style={{ ...styles.btn, ...styles.btnPrimary }}
@@ -2366,6 +2429,14 @@ function App() {
                                               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
                                               Reply on Reddit
                                             </a>
+                                            <button
+                                              data-btn="skip"
+                                              style={{ ...styles.btn, ...styles.btnSkip }}
+                                              onClick={() => handleDismissReply(reply.id)}
+                                              title="Dismiss this reply (won't notify again)"
+                                            >
+                                              Dismiss
+                                            </button>
                                           </div>
                                         )}
                                       </div>
