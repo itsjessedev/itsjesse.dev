@@ -68,7 +68,7 @@ export default function ProjectsPage() {
               </svg>
             </a>
             <a
-              href="/resume.pdf"
+              href="/resume.html"
               className="text-sm px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
             >
               Resume

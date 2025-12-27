@@ -1,6 +1,6 @@
 # WARM LEADS (Score 5-14, competitors excluded)
-Scraped: 2025-12-26 22:00
-Found: 27 posts
+Scraped: 2025-12-26 23:00
+Found: 26 posts
 
 ## 1. Financial Statements Analysis 101
 - Author: BkKeepingPros
@@ -14,83 +14,83 @@ Found: 27 posts
 - Date: 2025-12-25 | Score: 2 | Comments: 3
 - Preview: I inherited a traditional business that had been running completely offline—no website, no digital presence at all.  I decided to change that and built a simple but decent website to get started.  After launching it, I shared the site on social media to get feedback. Friends pointed out issues with ...
 
-## 3. State-by-State incentives that can lower your tax burden as a business owner
+## 3. I will not promote- how to get funding
+- Author: Unusual_Vacationn
+- URL: https://reddit.com/r/startups/comments/1psdzfs/i_will_not_promote_how_to_get_funding/
+- Date: 2025-12-21 | Score: 0 | Comments: 11
+- Preview: Hi,  I have developed an AI mvp and i am looking to present to someone from Microsoft or Amazon to get funding or get some ideas.  Is there a way to do that?  I am from India, currently in Canada.  I can reachout to the person in LinkedIn from these companies to get started, but i dont know whom to ...
+
+## 4. State-by-State incentives that can lower your tax burden as a business owner
 - Author: JaredRJM
 - URL: https://reddit.com/r/Entrepreneur/comments/1pusu8z/statebystate_incentives_that_can_lower_your_tax/
 - Date: 2025-12-24 | Score: 1 | Comments: 1
 - Preview: Compiled  state by state incentives offered to small businesses  that you may want to include in your tax exemption strategy. This may be a lengthy post  Would love to hear what exemption incentives, you have positively leveraged in your business and which ones I may have missed  Alabama: You’ll nee...
 
-## 4. I built a "Tinder for Photos" app to fix my storage anxiety. Just cleaned 1.5k photos effortlessy.
+## 5. I built a "Tinder for Photos" app to fix my storage anxiety. Just cleaned 1.5k photos effortlessy.
 - Author: alidoganyeniacun
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptxynv/i_built_a_tinder_for_photos_app_to_fix_my_storage/
 - Date: 2025-12-23 | Score: 0 | Comments: 8
 - Preview: I got tired of the constant friction when trying to clean up my camera roll. Scrolling, selecting, and confirming deletion takes too long.  I built **Swypic** with Flutter to solve this. It turns gallery cleaning into a swipe game.  **Why I made it:**  * Traditional gallery apps are too slow for bul...
 
-## 5. Shipped 5 updates in 6 weeks for my side project - v2.1 just went live on Christmas Day
+## 6. Shipped 5 updates in 6 weeks for my side project - v2.1 just went live on Christmas Day
 - Author: robin_3850
 - URL: https://reddit.com/r/Entrepreneur/comments/1pvcg6l/shipped_5_updates_in_6_weeks_for_my_side_project/
-- Date: 2025-12-25 | Score: 1 | Comments: 6
+- Date: 2025-12-25 | Score: 1 | Comments: 7
 - Preview: Hey r/Entrepreneur   Quick win I wanted to share: Just shipped v2.1 of my macOS AI assistant on Christmas Day. That's 5 major updates in 6 weeks while working a full-time job.  **Why I'm sharing this:** Not because the product is perfect (it's not), but because I'm learning that **consistent shippin...
 
-## 6. How do you calculate cloud compute cost when estimating cost/revenue model for a new idea?
+## 7. How do you calculate cloud compute cost when estimating cost/revenue model for a new idea?
 - Author: Vymir_IT
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptr1kr/how_do_you_calculate_cloud_compute_cost_when/
 - Date: 2025-12-23 | Score: 3 | Comments: 5
 - Preview: I'm running multiple ideas for monetization strategies/ business models / MVPs for my vision currently - and lately I've started to finally shape it in a less chaotic manner using such frameworks as Lean canvas and RICE.  And while they are exceptionally good for helping me form early chaotic ideas ...
 
-## 7. Is studying in Germany worth it only for startup networking?
+## 8. Is studying in Germany worth it only for startup networking?
 - Author: Olive-Zero-Chicken
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptkki1/is_studying_in_germany_worth_it_only_for_startup/
 - Date: 2025-12-22 | Score: 1 | Comments: 3
 - Preview: I’m an iOS developer with experience working at a product-focused service company.   Recently, I’ve been very interested in building AI-powered products, both web SaaS and mobile apps, and my long-term goal is to start my own startup.  What I really want is to build something with like-minded people...
 
-## 8. China's digital ecosystem is advanced but hard for foreigners to access. I built a free web app to bridge the gap for payments, travel, and language
+## 9. China's digital ecosystem is advanced but hard for foreigners to access. I built a free web app to bridge the gap for payments, travel, and language
 - Author: Smooth_Astronomer709
 - URL: https://reddit.com/r/Entrepreneur/comments/1pths0d/chinas_digital_ecosystem_is_advanced_but_hard_for/
-- Date: 2025-12-22 | Score: 5 | Comments: 9
+- Date: 2025-12-22 | Score: 6 | Comments: 9
 - Preview: Hi everyone,  I’m originally from China but live abroad. Recently, I noticed a huge friction point for international tourists visiting home. The local digital ecosystem (WeChat, Alipay, booking apps) is advanced, but it’s completely alien if you don't read Chinese.  I saw travelers getting stranded ...
 
-## 9. We shifted from automating tasks to automating management decisions. Here's what we learned.
+## 10. We shifted from automating tasks to automating management decisions. Here's what we learned.
 - Author: Framework_Friday
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptodha/we_shifted_from_automating_tasks_to_automating/
-- Date: 2025-12-23 | Score: 0 | Comments: 14
+- Date: 2025-12-23 | Score: 2 | Comments: 14
 - Preview: We run several businesses that do about $250M combined revenue. Over the past few months we've been testing AI in a way that's different from what most people talk about.  Instead of automating execution (writing content, drafting emails, that kind of thing), we started automating the management lay...
 
-## 10. broken promo code cost us 63k in one weekend, now obsessed with testing checkout
+## 11. broken promo code cost us 63k in one weekend, now obsessed with testing checkout
 - Author: sychophantt
 - URL: https://reddit.com/r/ecommerce/comments/1pwli6z/broken_promo_code_cost_us_63k_in_one_weekend_now/
-- Date: 2025-12-26 | Score: 3 | Comments: 2
+- Date: 2025-12-26 | Score: 2 | Comments: 6
 - Preview: We run a dtc skincare brand doing around 3m annually. Launched a labor day sale last year and the promo code logic had a bug where it stacked with our existing customer discount.  Didn't notice until sunday afternoon because we were all at a barbecue. By then we'd processed 220 orders at basically 7...
 
-## 11. scaling ecommerce ops: how do you stay ahead of post-purchase problems without babysitting everything?
+## 12. scaling ecommerce ops: how do you stay ahead of post-purchase problems without babysitting everything?
 - Author: letstakeplunge
 - URL: https://reddit.com/r/ecommerce/comments/1pvsp83/scaling_ecommerce_ops_how_do_you_stay_ahead_of/
 - Date: 2025-12-25 | Score: 4 | Comments: 6
 - Preview: **Update:** got a few DMs pointing me to Keeyu (keeyu.com) - looks like it does exactly this kind of proactive monitoring. Has anyone in here tried it? They even have a blueprint: ([keeyu.com/download-playbook](http://www.keeyu.com/download-playbook))      our store has been picking up steam this ye...
 
-## 12. Here's what is happening in the world of DTC / e-commerce - Newsletter December 23rd
+## 13. Here's what is happening in the world of DTC / e-commerce - Newsletter December 23rd
 - Author: yeramian55
 - URL: https://reddit.com/r/ecommerce/comments/1pu39tx/heres_what_is_happening_in_the_world_of_dtc/
 - Date: 2025-12-23 | Score: 3 | Comments: 1
 - Preview: This is a weekly newsletter I write and share every Tuesday. I spend the week collecting news, trends, and other content that I think would be interesting to e-commerce founders, operators and CMOs. Normally I share links to the articles itself but since I can't do that in this thread, feel free to ...
 
-## 13. At what revenue point did you realize your warehouse management software couldn't keep up
+## 14. At what revenue point did you realize your warehouse management software couldn't keep up
 - Author: Ok_Kangaroo2140
 - URL: https://reddit.com/r/ecommerce/comments/1ptkzoj/at_what_revenue_point_did_you_realize_your/
 - Date: 2025-12-22 | Score: 2 | Comments: 14
 - Preview: I'm the VP of Operations for a DTC brand that's grown from about 30M to 65M in annual revenue over the last two years, and we're starting to hit serious operational bottlenecks with our current warehouse management software that's making it clear we need to upgrade but I'm trying to understand if we...
 
-## 14. Review issues on shop pay
+## 15. Review issues on shop pay
 - Author: arutkay26
 - URL: https://reddit.com/r/shopify/comments/1pwimdy/review_issues_on_shop_pay/
-- Date: 2025-12-26 | Score: 3 | Comments: 3
+- Date: 2025-12-26 | Score: 4 | Comments: 4
 - Preview: I had a faulty product issue we were notified of by customer and the customer is upset (a little too upset for a very fast $28 and apology/offer of replacement etc, if you ask me) but now on top of it is threatening to leave a bad review.   I know shop pay orders usually favor the customer- even if ...
-
-## 15. My Shopify store was taken down after a Canadian Competition Bureau complaint — resolved, but concerning
-- Author: Area_Inevitable
-- URL: https://reddit.com/r/shopify/comments/1pum6nf/my_shopify_store_was_taken_down_after_a_canadian/
-- Date: 2025-12-24 | Score: 20 | Comments: 35
-- Preview: First thing I wanna say is, I used ChatGPT to edit this post, to check for spelling and make sure it was grammatically correct and easy to read. I did write it myself first but then fed it through the AI, just wanna be up front.  The Canadian Competition Bureau reported my website to Shopify. Shopif...
 
 ## 16. Show HN: MinuteShark Time Tracking for Freelancers
 - Author: a-abit
@@ -113,7 +113,7 @@ Found: 27 posts
 ## 19. Crosspost Automatically between X and Bluesky
 - Author: ProgrammerByDay
 - URL: https://news.ycombinator.com/item?id=46398454
-- Date: 2025-12-26 | Score: 1 | Comments: 1
+- Date: 2025-12-26 | Score: 1 | Comments: 2
 
 ## 20. OGhidra: Automating dataflow analysis and vulnerability discovery via local LLMs
 - Author: rmast
@@ -131,31 +131,25 @@ Found: 27 posts
 - Date: 2025-12-20 | Score: 1 | Comments: 2
 - Preview: The security-industrial complex peddles spreadsheets of vibes. Severity badges. Ritual scans. Then, at the moment of truth, it refuses the simple, adult question: can you actually pwn it?<p>Shannon said yes. It did the unfashionable thing: try the exploit, ship receipts, or shut up. No exploit, no r...
 
-## 23. I will not promote- how to get funding
-- Author: Unusual_Vacationn
-- URL: https://reddit.com/r/startups/comments/1psdzfs/i_will_not_promote_how_to_get_funding/
-- Date: 2025-12-21 | Score: 0 | Comments: 10
-- Preview: Hi,  I have developed an AI mvp and i am looking to present to someone from Microsoft or Amazon to get funding or get some ideas.  Is there a way to do that?  I am from India, currently in Canada.  I can reachout to the person in LinkedIn from these companies to get started, but i dont know whom to ...
-
-## 24. 100,000x scale, same memory – cryptographic proof of O(1) AI memory
+## 23. 100,000x scale, same memory – cryptographic proof of O(1) AI memory
 - Author: LexiCoAS
 - URL: https://news.ycombinator.com/item?id=46365372
 - Date: 2025-12-23 | Score: 2 | Comments: 2
 - Preview: With O(n) memory, scaling 100,000x should require 100,000x more RAM.<p>I scaled from 1,000 to 100,000,000 tasks. Memory stayed at ~3GB the entire time.<p>Here&#x27;s the cryptographic proof.<p>The benchmark: - 1K tasks: ~3GB memory - 100K tasks: ~3GB memory - 1M tasks: ~3GB memory - 10M tasks: ~3GB ...
 
-## 25. Show HN: A GPT Image 1.5 UI for developers tired of rewriting prompts
+## 24. Show HN: A GPT Image 1.5 UI for developers tired of rewriting prompts
 - Author: Zeos3154
 - URL: https://news.ycombinator.com/item?id=46361640
 - Date: 2025-12-22 | Score: 1 | Comments: 0
 - Preview: Hey HN,<p><pre><code>  After burning through dozens of credits rephrasing the same prompt in different AI image tools, I built gpt2image.io - a conversational interface for GPT Image 1.5.    **The core idea:**   Instead of prompt archaeology (&quot;was it &#x27;modern minimalist&#x27; or &#x27;conte...
 
-## 26. Show HN: Locolle – A bookmark manager for real-world locations
+## 25. Show HN: Locolle – A bookmark manager for real-world locations
 - Author: patrickTTT
 - URL: https://news.ycombinator.com/item?id=46356297
 - Date: 2025-12-22 | Score: 1 | Comments: 0
 - Preview: Hi HN,<p>I’m the developer behind Locolle (<a href="https:&#x2F;&#x2F;locolle.app" rel="nofollow">https:&#x2F;&#x2F;locolle.app</a>). I built it because I was frustrated with how difficult it is to actually &quot;manage&quot; place recommendations.<p>The Problem: My restaurant&#x2F;travel saves were...
 
-## 27. Show HN: ArkhamMirror – CIA's Analysis of Competing Hypotheses, Runs in Browser
+## 26. Show HN: ArkhamMirror – CIA's Analysis of Competing Hypotheses, Runs in Browser
 - Author: ArkhamMirror
 - URL: https://news.ycombinator.com/item?id=46341493
 - Date: 2025-12-20 | Score: 7 | Comments: 1

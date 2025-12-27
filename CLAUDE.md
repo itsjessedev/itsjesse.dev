@@ -147,6 +147,45 @@ scp portfolio/{project}/frontend/dist/index.html junipr-vps:/srv/portfolio-demos
 
 DNS A records point subdomains to 204.152.223.104 (Cloudflare proxied).
 
+## Email (Google Workspace)
+
+**Provider:** Google Workspace
+**Domain:** itsjesse.dev
+**Primary Login:** jesse@junipr.io (all aliases route here)
+
+| Alias | Purpose | Gmail Label |
+|-------|---------|-------------|
+| jesse@ | Personal/direct contact | - |
+| hello@ | General inquiries | - |
+| hire@ | Full-time employment opportunities | Portfolio/Full-Time |
+| projects@ | Freelance/contract project inquiries | Portfolio/Projects |
+
+**Gmail Setup:**
+- Labels: Portfolio (parent), Portfolio/Full-Time, Portfolio/Projects
+- Filters auto-apply labels + IMPORTANT based on To: address
+- No overlap with @junipr.io aliases (separate label hierarchy)
+
+Contact form backend routes submissions to hire@ or projects@ based on inquiry type.
+
+## Contact Form Backend
+
+**Location:** `/home/deploy/itsjesse-contact/`
+**Service:** `itsjesse-contact.service`
+**Port:** 8003
+**URL:** `https://api.itsjesse.dev/contact`
+
+```bash
+# Deploy contact backend
+rsync -avz --exclude '__pycache__' --exclude 'venv' --exclude '.env' \
+  contact-api/ junipr-vps:/home/deploy/itsjesse-contact/
+
+# Restart service
+ssh junipr-vps "sudo systemctl restart itsjesse-contact"
+
+# Check logs
+ssh junipr-vps "sudo journalctl -u itsjesse-contact -f"
+```
+
 ## Cloudflare Zone Info
 
 **itsjesse.dev Zone ID:** `41890a82db39a3d4c0cae401a562d9c5`
@@ -183,3 +222,8 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/zones/41890a82db39a3d4c0ca
 - Added DealScout DNS record and APK download
 - Added resume link to all pages
 - Added cursor:pointer to APK download button
+- Created dual resume system (dark HTML + light PDF)
+- Built contact form backend with spam protection and file uploads
+- Deployed api.itsjesse.dev contact endpoint
+- Created Gmail labels (Portfolio/Full-Time, Portfolio/Projects)
+- Set up Gmail filters for auto-labeling hire@ and projects@ emails

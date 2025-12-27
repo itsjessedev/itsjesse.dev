@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jesse Eldridge - Resume</title>
+    <link rel="icon" href="/favicon.ico">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -12,331 +15,517 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 11pt;
-            line-height: 1.4;
-            color: #1a1a1a;
-            background: white;
-            max-width: 8.5in;
-            margin: 0 auto;
-            padding: 0.5in;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #f5f5f7;
+            background: linear-gradient(180deg, #0a0a0f 0%, #12121a 100%);
+            min-height: 100vh;
         }
 
-        @media print {
-            body {
-                padding: 0;
-                font-size: 10pt;
-            }
-            .no-print {
-                display: none;
-            }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        .download-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 24px;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #a1a1aa;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #f5f5f7;
+        }
+
+        .resume-card {
+            background: #1a1a24;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
         }
 
         header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #2563eb;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+            padding: 32px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         h1 {
-            font-size: 24pt;
+            font-size: 32px;
             font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
+            color: #f5f5f7;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
         .contact-info {
-            color: #4b5563;
-            font-size: 10pt;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            color: #a1a1aa;
+            font-size: 14px;
         }
 
         .contact-info a {
-            color: #2563eb;
+            color: #3b82f6;
             text-decoration: none;
+            transition: color 0.2s;
         }
 
-        .contact-info span {
-            margin: 0 8px;
+        .contact-info a:hover {
+            color: #60a5fa;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .content {
+            padding: 32px;
         }
 
         section {
-            margin-bottom: 18px;
+            margin-bottom: 28px;
+        }
+
+        section:last-child {
+            margin-bottom: 0;
         }
 
         h2 {
-            font-size: 12pt;
-            font-weight: 700;
-            color: #2563eb;
+            font-size: 12px;
+            font-weight: 600;
+            color: #3b82f6;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #e5e7eb;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(59, 130, 246, 0.3);
         }
 
         .summary {
-            color: #374151;
-            text-align: justify;
+            color: #a1a1aa;
+            font-size: 15px;
+            line-height: 1.7;
         }
 
         .skills-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .skill-category {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .skill-category h3 {
-            font-size: 10pt;
+            font-size: 13px;
             font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 4px;
+            color: #f5f5f7;
+            margin-bottom: 8px;
         }
 
         .skill-category p {
-            color: #4b5563;
-            font-size: 10pt;
+            color: #a1a1aa;
+            font-size: 13px;
+            line-height: 1.5;
         }
 
         .project {
-            margin-bottom: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: border-color 0.2s;
+        }
+
+        .project:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .project:last-child {
+            margin-bottom: 0;
         }
 
         .project-header {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 4px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .project-title {
-            font-weight: 700;
-            color: #1f2937;
+            font-weight: 600;
+            color: #f5f5f7;
+            font-size: 15px;
         }
 
         .project-subtitle {
             color: #6b7280;
-            font-style: italic;
+            font-size: 13px;
         }
 
         .project-description {
-            color: #374151;
-            margin-bottom: 4px;
+            color: #a1a1aa;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
 
         .project ul {
-            margin-left: 18px;
-            color: #374151;
+            margin-left: 16px;
+            color: #a1a1aa;
+            font-size: 13px;
         }
 
         .project li {
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+        }
+
+        .project li::marker {
+            color: #3b82f6;
         }
 
         .project-tech {
-            font-size: 9pt;
-            color: #6b7280;
-            font-style: italic;
+            margin-top: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
-        .education-item, .experience-item {
-            margin-bottom: 12px;
+        .tech-tag {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 20px;
+            border-left: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 6px;
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
         }
 
         .item-header {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 4px;
         }
 
         .item-title {
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .item-subtitle {
             font-weight: 600;
-            color: #4b5563;
+            color: #f5f5f7;
+            font-size: 15px;
         }
 
         .item-date {
             color: #6b7280;
-            font-size: 10pt;
+            font-size: 13px;
+        }
+
+        .item-subtitle {
+            color: #a1a1aa;
+            font-size: 14px;
+            margin-bottom: 6px;
         }
 
         .item-details {
-            color: #374151;
-            margin-top: 4px;
+            color: #71717a;
+            font-size: 13px;
         }
 
-        .item-details li {
-            margin-left: 18px;
-            margin-bottom: 2px;
-        }
-
-        .print-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #a1a1aa;
+            text-decoration: none;
             font-size: 14px;
+            margin-bottom: 20px;
+            transition: color 0.2s;
         }
 
-        .print-button:hover {
-            background: #1d4ed8;
+        .back-link:hover {
+            color: #3b82f6;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: #1a1a1a;
+            }
+            .download-bar, .back-link {
+                display: none;
+            }
+            .resume-card {
+                background: white;
+                border: none;
+                box-shadow: none;
+            }
+            header {
+                background: none;
+                border-bottom: 2px solid #3b82f6;
+            }
+            h1 {
+                color: #1a1a1a;
+            }
+            .contact-info {
+                color: #4b5563;
+            }
+            h2 {
+                color: #3b82f6;
+            }
+            h2::after {
+                background: #e5e7eb;
+            }
+            .summary, .project-description, .project li, .skill-category p, .item-subtitle, .item-details {
+                color: #374151;
+            }
+            .project-title, .item-title, .skill-category h3 {
+                color: #1a1a1a;
+            }
+            .project, .skill-category {
+                background: #f9fafb;
+                border-color: #e5e7eb;
+            }
+            .tech-tag {
+                background: #dbeafe;
+                color: #1d4ed8;
+            }
+            .timeline-item {
+                border-left-color: #3b82f6;
+            }
         }
     </style>
 </head>
 <body>
-    <button class="print-button no-print" onclick="window.print()">Save as PDF</button>
+    <div class="container">
+        <a href="/" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Portfolio
+        </a>
 
-    <header>
-        <h1>JESSE ELDRIDGE</h1>
-        <div class="contact-info">
-            Cookeville, TN (Remote)<span>|</span>
-            <a href="mailto:jobs@itsjesse.dev">jobs@itsjesse.dev</a><span>|</span>
-            <a href="https://itsjesse.dev">itsjesse.dev</a><span>|</span>
-            <a href="https://github.com/itsjessedev">github.com/itsjessedev</a>
-        </div>
-    </header>
-
-    <section>
-        <h2>Summary</h2>
-        <p class="summary">
-            Software developer specializing in business automation and system integration. I build custom solutions that connect disparate systems, automate repetitive workflows, and provide real-time visibility into business operations. Portfolio includes 10+ production-ready projects demonstrating API integration, data pipeline development, and full-stack dashboard creation.
-        </p>
-    </section>
-
-    <section>
-        <h2>Technical Skills</h2>
-        <div class="skills-grid">
-            <div class="skill-category">
-                <h3>Languages & Frameworks</h3>
-                <p>Python, JavaScript/TypeScript, SQL, FastAPI, React, Next.js</p>
-            </div>
-            <div class="skill-category">
-                <h3>Data & Infrastructure</h3>
-                <p>PostgreSQL, SQLite, Pandas, Docker, Git, Linux, CI/CD</p>
-            </div>
-            <div class="skill-category">
-                <h3>APIs & Integrations</h3>
-                <p>Salesforce, Shopify, Amazon SP-API, HubSpot, QuickBooks, Google Cloud, Slack, Twilio, Stripe</p>
-            </div>
-            <div class="skill-category">
-                <h3>Concepts</h3>
-                <p>Workflow Automation, ETL Pipelines, REST APIs, OAuth 2.0, Webhooks, Sentiment Analysis, OCR</p>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <h2>Projects</h2>
-
-        <div class="project">
-            <div class="project-header">
-                <span class="project-title">OrderHub</span>
-                <span class="project-subtitle">Multi-Platform E-commerce Aggregator</span>
-            </div>
-            <p class="project-description">Unified dashboard aggregating orders from Shopify, Amazon, eBay, and Etsy with real-time inventory sync.</p>
-            <ul>
-                <li>Reduced order processing time by 70%</li>
-                <li>Eliminated overselling through cross-platform inventory synchronization</li>
-            </ul>
-            <p class="project-tech">React, FastAPI, Shopify API, Amazon SP-API, PostgreSQL</p>
+        <div class="download-bar">
+            <a href="/Jesse-Eldridge-Resume.pdf" download class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7,10 12,15 17,10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download PDF
+            </a>
         </div>
 
-        <div class="project">
-            <div class="project-header">
-                <span class="project-title">SyncFlow</span>
-                <span class="project-subtitle">Automated Data Pipeline</span>
-            </div>
-            <p class="project-description">Scheduled sync between Salesforce, Jira, and Google Sheets with conflict resolution and error handling.</p>
-            <ul>
-                <li>Saved 6 hours/week for a 4-person sales team</li>
-                <li>Eliminated manual CSV exports and data entry errors</li>
-            </ul>
-            <p class="project-tech">Python, Salesforce API, Jira API, Google Sheets API</p>
-        </div>
+        <div class="resume-card">
+            <header>
+                <h1>Jesse Eldridge</h1>
+                <div class="contact-info">
+                    <span class="contact-item">Cookeville, TN (Remote)</span>
+                    <a href="mailto:jobs@itsjesse.dev" class="contact-item">jobs@itsjesse.dev</a>
+                    <a href="https://itsjesse.dev" class="contact-item">itsjesse.dev</a>
+                    <a href="https://github.com/itsjessedev" class="contact-item">github.com/itsjessedev</a>
+                </div>
+            </header>
 
-        <div class="project">
-            <div class="project-header">
-                <span class="project-title">InvoiceBot</span>
-                <span class="project-subtitle">Receipt OCR & Expense Automation</span>
-            </div>
-            <p class="project-description">Email or upload receipts → OCR extracts details → AI categorizes → auto-creates entries in QuickBooks.</p>
-            <ul>
-                <li>Reduced expense entry from 2 hours/week to 5 minutes</li>
-                <li>Achieved 98% extraction accuracy</li>
-            </ul>
-            <p class="project-tech">Python, Google Cloud Vision, OpenAI, QuickBooks API</p>
-        </div>
+            <div class="content">
+                <section>
+                    <h2>Summary</h2>
+                    <p class="summary">
+                        Software developer specializing in business automation and system integration. I build solutions that connect disparate systems, automate workflows, and provide real-time visibility into operations. Portfolio includes 15 production-ready projects demonstrating API integration, data pipelines, and full-stack development.
+                    </p>
+                </section>
 
-        <div class="project">
-            <div class="project-header">
-                <span class="project-title">FeedbackPulse</span>
-                <span class="project-subtitle">Review Aggregation & Sentiment Analysis</span>
-            </div>
-            <p class="project-description">Aggregates customer feedback from multiple sources with real-time sentiment analysis and trend alerts.</p>
-            <ul>
-                <li>Identified service issues before ratings dropped</li>
-                <li>Unified view of customer sentiment across platforms</li>
-            </ul>
-            <p class="project-tech">Python, React, OpenAI, Google Places API, Yelp API</p>
-        </div>
-    </section>
+                <section>
+                    <h2>Technical Skills</h2>
+                    <div class="skills-grid">
+                        <div class="skill-category">
+                            <h3>Languages & Frameworks</h3>
+                            <p>Python, TypeScript, SQL, FastAPI, React, Next.js, React Native</p>
+                        </div>
+                        <div class="skill-category">
+                            <h3>Data & Infrastructure</h3>
+                            <p>PostgreSQL, SQLite, Docker, Git, Linux, CI/CD, Cloudflare</p>
+                        </div>
+                        <div class="skill-category">
+                            <h3>APIs & Integrations</h3>
+                            <p>Salesforce, Shopify, Amazon, eBay, HubSpot, QuickBooks, Slack, Twilio</p>
+                        </div>
+                        <div class="skill-category">
+                            <h3>AI & Automation</h3>
+                            <p>OpenAI, Google Gemini, RAG, OCR, Sentiment Analysis, Workflow Automation</p>
+                        </div>
+                    </div>
+                </section>
 
-    <section>
-        <h2>Education</h2>
-        <div class="education-item">
-            <div class="item-header">
-                <span class="item-title">Western Governors University</span>
-                <span class="item-date">Expected 2025</span>
-            </div>
-            <div class="item-subtitle">Bachelor of Science, Computer Science</div>
-        </div>
-    </section>
+                <section>
+                    <h2>Featured Projects</h2>
 
-    <section>
-        <h2>Work Experience</h2>
+                    <div class="project">
+                        <div class="project-header">
+                            <span class="project-title">OrderHub</span>
+                            <span class="project-subtitle">E-commerce Aggregator</span>
+                        </div>
+                        <p class="project-description">Unified dashboard aggregating orders from Shopify, Amazon, eBay, and Etsy with real-time inventory sync.</p>
+                        <ul>
+                            <li>Reduced order processing time by 70% through unified interface</li>
+                            <li>Eliminated overselling with cross-platform inventory synchronization</li>
+                        </ul>
+                        <div class="project-tech">
+                            <span class="tech-tag">React</span>
+                            <span class="tech-tag">FastAPI</span>
+                            <span class="tech-tag">Shopify API</span>
+                            <span class="tech-tag">Amazon SP-API</span>
+                        </div>
+                    </div>
 
-        <div class="experience-item">
-            <div class="item-header">
-                <span class="item-title">Spark Driver</span>
-                <span class="item-date">July 2024 – Present</span>
-            </div>
-            <div class="item-subtitle">Delivery Driver</div>
-            <ul class="item-details">
-                <li>Self-directed gig work requiring route optimization, time management, and consistent customer service</li>
-            </ul>
-        </div>
+                    <div class="project">
+                        <div class="project-header">
+                            <span class="project-title">DealScout</span>
+                            <span class="project-subtitle">AI Deal Discovery</span>
+                        </div>
+                        <p class="project-description">Mobile app that monitors marketplace alerts, uses AI to classify items, and calculates flip profit potential.</p>
+                        <ul>
+                            <li>Gemini AI classifies items and extracts product details automatically</li>
+                            <li>eBay API integration for real-time market value comparison</li>
+                        </ul>
+                        <div class="project-tech">
+                            <span class="tech-tag">React Native</span>
+                            <span class="tech-tag">FastAPI</span>
+                            <span class="tech-tag">Gemini AI</span>
+                            <span class="tech-tag">eBay API</span>
+                        </div>
+                    </div>
 
-        <div class="experience-item">
-            <div class="item-header">
-                <span class="item-title">Amazon</span>
-                <span class="item-date">January 2023 – July 2024</span>
-            </div>
-            <div class="item-subtitle">FC Associate, MQY1</div>
-            <ul class="item-details">
-                <li>Met productivity quotas in high-volume fulfillment environment; demonstrated reliability in fast-paced operations</li>
-            </ul>
-        </div>
+                    <div class="project">
+                        <div class="project-header">
+                            <span class="project-title">DocuMind</span>
+                            <span class="project-subtitle">RAG Document Intelligence</span>
+                        </div>
+                        <p class="project-description">Document Q&A system using retrieval-augmented generation for accurate answers from uploaded files.</p>
+                        <ul>
+                            <li>Semantic search across document collections with source citations</li>
+                            <li>Supports PDF, Word, and text file ingestion with vector embeddings</li>
+                        </ul>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">OpenAI</span>
+                            <span class="tech-tag">ChromaDB</span>
+                            <span class="tech-tag">FastAPI</span>
+                        </div>
+                    </div>
+                </section>
 
-        <div class="experience-item">
-            <div class="item-header">
-                <span class="item-title">Eldridge Signing</span>
-                <span class="item-date">January 2022 – December 2022</span>
+                <section>
+                    <h2>Education</h2>
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <span class="item-title">Western Governors University</span>
+                            <span class="item-date">Expected 2025</span>
+                        </div>
+                        <div class="item-subtitle">Bachelor of Science, Computer Science</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Experience</h2>
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <span class="item-title">Independent Developer</span>
+                            <span class="item-date">2024 – Present</span>
+                        </div>
+                        <div class="item-subtitle">Automation & Integration Consulting</div>
+                        <p class="item-details">Building custom automation solutions for small businesses. 15 portfolio projects spanning e-commerce, AI/ML, mobile apps, and workflow automation.</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="item-header">
+                            <span class="item-title">Amazon</span>
+                            <span class="item-date">2023 – 2024</span>
+                        </div>
+                        <div class="item-subtitle">Fulfillment Center Associate</div>
+                        <p class="item-details">High-volume operations experience with strict productivity metrics and quality standards.</p>
+                    </div>
+                </section>
             </div>
-            <div class="item-subtitle">Loan Signing Agent (Self-Employed)</div>
-            <ul class="item-details">
-                <li>Managed client scheduling, legal document verification, and compliance requirements for loan signings</li>
-            </ul>
         </div>
-    </section>
+    </div>
 </body>
 </html>
