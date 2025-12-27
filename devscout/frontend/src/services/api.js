@@ -289,17 +289,23 @@ async function fetchLobsters() {
 }
 
 // Fetch from Reddit only (client-side)
-export async function fetchFromReddit(onProgress = null) {
+// Supports resume via startIndex and incremental progress via onPartialResults
+export async function fetchFromReddit(onProgress = null, onPartialResults = null, startIndex = 0) {
   const allPosts = [];
   const totalSources = TARGET_SUBREDDITS.length;
 
   // Fetch from Reddit subreddits
-  for (let i = 0; i < TARGET_SUBREDDITS.length; i++) {
+  for (let i = startIndex; i < TARGET_SUBREDDITS.length; i++) {
     const subreddit = TARGET_SUBREDDITS[i];
     if (onProgress) onProgress(i + 1, totalSources, `r/${subreddit}`);
 
     const posts = await fetchSubreddit(subreddit);
     allPosts.push(...posts);
+
+    // Save incremental progress
+    if (onPartialResults) {
+      onPartialResults([...allPosts], i + 1);
+    }
 
     // Small delay to be nice to Reddit
     if (i < TARGET_SUBREDDITS.length - 1) {
@@ -310,6 +316,11 @@ export async function fetchFromReddit(onProgress = null) {
   // Sort by relevance
   allPosts.sort((a, b) => b.relevance_score - a.relevance_score);
   return allPosts;
+}
+
+// Get total subreddit count for progress display
+export function getPostsSubredditCount() {
+  return TARGET_SUBREDDITS.length;
 }
 
 // Fetch from Dev.to

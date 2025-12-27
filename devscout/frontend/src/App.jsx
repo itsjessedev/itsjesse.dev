@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, generateNewsResponse, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, getProspectSearchCount, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES } from './services/api';
+import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, generateNewsResponse, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, getProspectSearchCount, getPostsSubredditCount, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES } from './services/api';
 
 const styles = {
   container: {
@@ -121,11 +121,12 @@ const styles = {
     display: 'inline-block',
     background: '#333',
     color: '#4ade80',
-    padding: '2px 8px',
-    borderRadius: '10px',
-    fontSize: '12px',
+    padding: '1px 6px',
+    borderRadius: '8px',
+    fontSize: '11px',
     fontWeight: '500',
     lineHeight: '1',
+    verticalAlign: 'middle',
   },
   score: {
     background: '#2563eb',
@@ -873,6 +874,10 @@ function App() {
   const [expandedPosts, setExpandedPosts] = useState({}); // postId -> boolean
   const [pollingActive, setPollingActive] = useState(false);
   const pollingInterval = useRef(null);
+  // Notification banner visibility (auto-fades after 10s of no new activity)
+  const [notificationVisible, setNotificationVisible] = useState(true);
+  const lastUnreadCount = useRef(0);
+  const notificationFadeTimer = useRef(null);
   // Engage tab state
   const [engageSubreddit, setEngageSubreddit] = useState('');
   const [engageCategory, setEngageCategory] = useState('all');
@@ -1024,19 +1029,38 @@ function App() {
     return () => clearInterval(interval);
   }, [mode, posts, checkPostsForUserComments]);
 
-  const handleFetch = async () => {
+  const handleFetch = async (resume = false) => {
     setFetching(true);
-    setFetchProgress({ current: 0, total: 0, subreddit: 'Clearing old posts...' });
-    try {
-      // Clear non-responded posts first
-      await clearStalePosts();
 
+    // Check for resume capability
+    const savedProgress = loadPersistedData('posts_progress', null);
+    const startIndex = resume && savedProgress ? savedProgress.completedSubreddits : 0;
+
+    if (startIndex === 0) {
+      setFetchProgress({ current: 0, total: 0, subreddit: 'Clearing old posts...' });
+      // Clear non-responded posts first (only on fresh fetch)
+      await clearStalePosts();
+    } else {
+      console.log(`[DevScout] Resuming posts fetch from subreddit ${startIndex + 1}`);
+    }
+
+    try {
       // Fetch from Reddit directly (browser-side)
-      const redditPosts = await fetchFromReddit((current, total, subreddit) => {
-        setFetchProgress({ current, total, subreddit });
-      });
+      const redditPosts = await fetchFromReddit(
+        // Progress callback
+        (current, total, subreddit) => {
+          setFetchProgress({ current, total, subreddit });
+        },
+        // Partial results callback - save incrementally
+        (partialResults, completedSubreddits) => {
+          savePersistedData('posts_progress', { completedSubreddits, total: getPostsSubredditCount() });
+        },
+        // Start from index (for resume)
+        startIndex
+      );
 
       if (redditPosts.length === 0) {
+        localStorage.removeItem('devscout_posts_progress');
         return;
       }
 
@@ -1046,6 +1070,8 @@ function App() {
       await submitPosts(redditPosts);
       // Clear the auto-check cache so new posts get checked for user comments
       hasCheckedPosts.current.clear();
+      // Clear progress on completion
+      localStorage.removeItem('devscout_posts_progress');
       loadData();
     } catch (err) {
       alert('Failed to fetch: ' + err.message);
@@ -1119,6 +1145,30 @@ function App() {
   useEffect(() => {
     savePersistedData('dismissed_replies', dismissedReplies);
   }, [dismissedReplies]);
+
+  // Auto-resume Prospects fetch on mount if there's saved progress
+  const hasAutoResumedProspects = useRef(false);
+  useEffect(() => {
+    if (hasAutoResumedProspects.current) return;
+    const savedProgress = loadPersistedData('prospects_progress', null);
+    if (savedProgress && savedProgress.completedSearches < savedProgress.total) {
+      hasAutoResumedProspects.current = true;
+      console.log(`[DevScout] Auto-resuming prospects fetch from ${savedProgress.completedSearches}/${savedProgress.total}`);
+      handleFetchProspects(true);
+    }
+  }, []);
+
+  // Auto-resume Posts fetch on mount if there's saved progress
+  const hasAutoResumedPosts = useRef(false);
+  useEffect(() => {
+    if (hasAutoResumedPosts.current) return;
+    const savedProgress = loadPersistedData('posts_progress', null);
+    if (savedProgress && savedProgress.completedSubreddits < savedProgress.total) {
+      hasAutoResumedPosts.current = true;
+      console.log(`[DevScout] Auto-resuming posts fetch from ${savedProgress.completedSubreddits}/${savedProgress.total}`);
+      handleFetch(true);
+    }
+  }, []);
 
   // Dismiss a reply (removes from notification count, persists across refresh)
   const handleDismissReply = (replyId) => {
@@ -1457,6 +1507,34 @@ function App() {
     }, 0);
   };
 
+  // Auto-fade notification banner after 10s of no new activity
+  useEffect(() => {
+    const currentCount = getTotalUnreadReplies();
+
+    // Show notification when count increases or on initial load with unread
+    if (currentCount > 0 && currentCount >= lastUnreadCount.current) {
+      setNotificationVisible(true);
+
+      // Clear existing timer
+      if (notificationFadeTimer.current) {
+        clearTimeout(notificationFadeTimer.current);
+      }
+
+      // Start new 10-second fade timer
+      notificationFadeTimer.current = setTimeout(() => {
+        setNotificationVisible(false);
+      }, 10000);
+    }
+
+    lastUnreadCount.current = currentCount;
+
+    return () => {
+      if (notificationFadeTimer.current) {
+        clearTimeout(notificationFadeTimer.current);
+      }
+    };
+  }, [postRepliesData, dismissedReplies]);
+
   // Background polling for replies on ALL pages (for global notification)
   const backgroundPollingInterval = useRef(null);
 
@@ -1554,8 +1632,8 @@ function App() {
 
   return (
     <div style={styles.container} className="devscout-container">
-      {/* Global Notification Badge - visible on all pages */}
-      {getTotalUnreadReplies() > 0 && mode !== 'replies' && (
+      {/* Global Notification Badge - visible on all pages, auto-fades after 10s */}
+      {getTotalUnreadReplies() > 0 && mode !== 'replies' && notificationVisible && (
         <div
           style={styles.globalNotification}
           onClick={handleNotificationClick}
@@ -2107,14 +2185,6 @@ function App() {
                 : 'Fetching...'
               : 'Find Hot Prospects'}
           </button>
-          {!prospectsFetching && getProspectsResumeInfo() && (
-            <button
-              style={{ ...styles.btn, ...styles.btnSuccess }}
-              onClick={() => handleFetchProspects(true)}
-            >
-              Resume ({getProspectsResumeInfo().completedSearches}/{getProspectsResumeInfo().total})
-            </button>
-          )}
           {prospects.length > 0 && !prospectsFetching && (
             <button
               style={{ ...styles.btn, ...styles.btnSecondary }}
