@@ -121,11 +121,11 @@ const styles = {
     display: 'inline-block',
     background: '#333',
     color: '#4ade80',
-    padding: '4px 10px',
-    borderRadius: '12px',
+    padding: '2px 8px',
+    borderRadius: '10px',
     fontSize: '12px',
     fontWeight: '500',
-    lineHeight: '1.2',
+    lineHeight: '1',
   },
   score: {
     background: '#2563eb',
@@ -2165,7 +2165,7 @@ function App() {
                   </h3>
 
                   <div style={styles.postMeta}>
-                    {prospect.source === 'hackernews' ? prospect.author : `u/${prospect.author}`} · {formatTime(prospect.created_utc)}
+                    {prospect.source === 'hackernews' ? prospect.author : `u/${prospect.author}`} · {formatTime(new Date(prospect.created_utc * 1000).toISOString())}
                     {prospect.source !== 'hackernews' && ` · ${prospect.num_comments} comments · ${prospect.ups || prospect.score} upvotes`}
                   </div>
 

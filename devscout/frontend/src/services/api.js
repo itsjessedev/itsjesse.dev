@@ -1320,11 +1320,46 @@ function scoreProspect(post) {
 async function searchSubreddit(subreddit, query) {
   try {
     const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&sort=new&t=week&limit=15`;
-    const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    let data = null;
 
-    if (!response.ok) return [];
+    // Method 1: Try direct fetch
+    try {
+      const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (response.ok) {
+        data = await response.json();
+      }
+    } catch (e) {
+      // Direct fetch failed, try proxy
+    }
 
-    const data = await response.json();
+    // Method 2: Try corsproxy.io
+    if (!data) {
+      try {
+        const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        const response = await fetch(corsProxyUrl, { headers: { 'Accept': 'application/json' } });
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (e) {
+        // corsproxy failed
+      }
+    }
+
+    // Method 3: Try allorigins.win
+    if (!data) {
+      try {
+        const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const response = await fetch(allOriginsUrl);
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (e) {
+        // allorigins failed
+      }
+    }
+
+    if (!data) return [];
+
     const posts = [];
 
     for (const child of data?.data?.children || []) {
