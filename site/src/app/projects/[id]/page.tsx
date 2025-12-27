@@ -76,6 +76,7 @@ const projectDetails: Record<
       "Daily sales reports across all channels",
     ],
     demoUrl: "https://orderhub.itsjesse.dev",
+    videoUrl: "/videos/orderhub-demo.webm",
     screenshots: [
       "/projects/orderhub/dashboard.png",
       "/projects/orderhub/orders.png",
@@ -96,6 +97,7 @@ const projectDetails: Record<
       "Direct sync to QuickBooks Online",
       "Audit-ready expense reports on demand",
     ],
+    videoUrl: "/videos/invoicebot-demo.webm",
     screenshots: [
       "/projects/invoicebot/dashboard.png",
       "/projects/invoicebot/upload.png",
@@ -116,6 +118,7 @@ const projectDetails: Record<
       "Priority call lists updated automatically",
       "Integration with HubSpot and major email platforms",
     ],
+    videoUrl: "/videos/leadscore-demo.webm",
     screenshots: [
       "/projects/leadscore/dashboard.png",
       "/projects/leadscore/leads.png",
@@ -137,6 +140,7 @@ const projectDetails: Record<
       "Overstock warnings to prevent cash tied in inventory",
     ],
     demoUrl: "https://stockalert.itsjesse.dev",
+    videoUrl: "/videos/stockalert-demo.webm",
     screenshots: [
       "/projects/stockalert/dashboard.png",
       "/projects/stockalert/inventory.png",
@@ -157,6 +161,7 @@ const projectDetails: Record<
       "Scheduled delivery - daily, weekly, monthly",
       "Historical archive with search",
     ],
+    videoUrl: "/videos/reportgen-demo.webm",
     screenshots: [
       "/projects/reportgen/dashboard.png",
       "/projects/reportgen/templates.png",
@@ -178,6 +183,7 @@ const projectDetails: Record<
       "Competitive comparison with local businesses",
     ],
     demoUrl: "https://feedbackpulse.itsjesse.dev",
+    videoUrl: "/videos/feedbackpulse-demo.webm",
     screenshots: [
       "/projects/feedbackpulse/dashboard.png",
       "/projects/feedbackpulse/reviews.png",
@@ -199,6 +205,7 @@ const projectDetails: Record<
       "Post-appointment review request sequences",
     ],
     demoUrl: "https://bookingsync.itsjesse.dev",
+    videoUrl: "/videos/bookingsync-demo.webm",
     screenshots: [
       "/projects/bookingsync/dashboard.png",
       "/projects/bookingsync/calendar.png",
@@ -219,6 +226,7 @@ const projectDetails: Record<
       "Incremental sync during transition period",
       "Full rollback capability if anything goes wrong",
     ],
+    videoUrl: "/videos/databridge-demo.webm",
     screenshots: [
       "/projects/databridge/dashboard.png",
       "/projects/databridge/sources.png",
@@ -239,6 +247,7 @@ const projectDetails: Record<
       "Status tracking and reminders",
       "Complete audit trail for compliance",
     ],
+    videoUrl: "/videos/workflowbot-demo.webm",
     screenshots: [
       "/projects/workflowbot/dashboard.png",
       "/projects/workflowbot/workflows.png",
@@ -246,6 +255,113 @@ const projectDetails: Record<
       "/projects/workflowbot/requests.png",
       "/projects/workflowbot/approvals.png",
       "/projects/workflowbot/settings.png",
+    ],
+  },
+  dealscout: {
+    whatItDoes:
+      "DealScout monitors marketplace alerts, uses AI to classify items, fetches real-time eBay prices, and tracks the complete flip lifecycle from purchase to sale.",
+    howItHelps:
+      "Stop missing profitable deals and struggling to track profits. DealScout gives you instant profit calculations on new deals and helps you track ROI across all your flips.",
+    keyFeatures: [
+      "AI-powered item classification",
+      "Real-time eBay market price lookups",
+      "Push notifications for high-ROI opportunities",
+      "Complete flip lifecycle tracking",
+    ],
+    videoUrl: "/videos/dealscout-demo.webm",
+    screenshots: [
+      "/projects/dealscout/deals.png",
+      "/projects/dealscout/detail.png",
+      "/projects/dealscout/flips.png",
+      "/projects/dealscout/profits.png",
+      "/projects/dealscout/notifications.png",
+      "/projects/dealscout/settings.png",
+    ],
+  },
+  documind: {
+    whatItDoes:
+      "DocuMind uses Retrieval Augmented Generation to search across your document collections and answer natural language questions with source citations.",
+    howItHelps:
+      "Finding information across hundreds of documents is time-consuming. DocuMind lets you ask questions in plain English and get accurate answers with links to the source.",
+    keyFeatures: [
+      "Semantic search across all documents",
+      "Natural language Q&A interface",
+      "Source attribution for every answer",
+      "Multiple document format support",
+    ],
+    demoUrl: "https://documind.itsjesse.dev",
+    videoUrl: "/videos/documind-demo.webm",
+    screenshots: [
+      "/projects/documind/dashboard.png",
+      "/projects/documind/documents.png",
+      "/projects/documind/search.png",
+      "/projects/documind/chat.png",
+      "/projects/documind/analytics.png",
+      "/projects/documind/settings.png",
+    ],
+  },
+  smartclassify: {
+    whatItDoes:
+      "SmartClassify is an ML pipeline that categorizes text into categories, analyzes sentiment, and extracts keywords using trained machine learning models.",
+    howItHelps:
+      "Manual text review doesn't scale. SmartClassify processes thousands of documents automatically, categorizing and analyzing them with confidence scores.",
+    keyFeatures: [
+      "7-category text classification",
+      "Sentiment analysis with confidence scores",
+      "Batch processing for high volume",
+      "RESTful API for integration",
+    ],
+    demoUrl: "https://smartclassify.itsjesse.dev",
+    videoUrl: "/videos/smartclassify-demo.webm",
+    screenshots: [
+      "/projects/smartclassify/dashboard.png",
+      "/projects/smartclassify/classify.png",
+      "/projects/smartclassify/batch.png",
+      "/projects/smartclassify/categories.png",
+      "/projects/smartclassify/analytics.png",
+      "/projects/smartclassify/api.png",
+    ],
+  },
+  fieldops: {
+    whatItDoes:
+      "FieldOps is a native mobile app for field service teams to manage tasks, track locations, capture photos, and work offline in areas with poor connectivity.",
+    howItHelps:
+      "Paper-based field service leads to missed appointments and poor documentation. FieldOps digitizes the entire workflow with offline support.",
+    keyFeatures: [
+      "GPS tracking and route optimization",
+      "Task management with priorities",
+      "Photo documentation",
+      "Offline-first architecture",
+    ],
+    videoUrl: "/videos/fieldops-demo.webm",
+    screenshots: [
+      "/projects/fieldops/dashboard.png",
+      "/projects/fieldops/tasks.png",
+      "/projects/fieldops/task-detail.png",
+      "/projects/fieldops/map.png",
+      "/projects/fieldops/photos.png",
+      "/projects/fieldops/schedule.png",
+    ],
+  },
+  "itsjesse-mobile": {
+    whatItDoes:
+      "This portfolio website converted to a true native Flutter app that pulls from the same JSON API, demonstrating website-to-app conversion.",
+    howItHelps:
+      "Businesses want mobile presence without webview wrappers. This demonstrates how to build a true native app that syncs with website content.",
+    keyFeatures: [
+      "True native performance and feel",
+      "Auto-sync with website content",
+      "Offline caching of portfolio data",
+      "Demonstrates Website-to-App service",
+    ],
+    videoUrl: "/videos/itsjesse-mobile-demo.webm",
+    screenshots: [
+      "/projects/itsjesse-mobile/dashboard.png",
+      "/projects/itsjesse-mobile/projects.png",
+      "/projects/itsjesse-mobile/project-detail.png",
+      "/projects/itsjesse-mobile/services.png",
+      "/projects/itsjesse-mobile/about.png",
+      "/projects/itsjesse-mobile/contact.png",
     ],
   },
 };
