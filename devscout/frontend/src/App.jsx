@@ -790,6 +790,28 @@ const injectStyles = () => {
         border-left-width: 2px !important;
       }
 
+      /* Global notification - mobile friendly */
+      .devscout-global-notification {
+        left: 12px !important;
+        right: 12px !important;
+        top: 12px !important;
+        max-width: none !important;
+      }
+
+      /* Ensure nothing overflows */
+      .devscout-container {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+      }
+
+      /* Post text wrap */
+      .devscout-post-body,
+      .devscout-post-title,
+      .devscout-response-textarea {
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+      }
+
       /* Disable hover effects on touch */
       @media (hover: none) {
         button:hover:not(:disabled), a.btn-hover:hover {
@@ -807,24 +829,35 @@ const injectStyles = () => {
       }
 
       .devscout-mode-btn {
-        padding: 6px 10px !important;
-        font-size: 12px !important;
+        padding: 6px 8px !important;
+        font-size: 11px !important;
       }
 
       .devscout-post {
-        padding: 12px !important;
+        padding: 10px !important;
       }
 
       .devscout-actions button {
         padding: 8px 10px !important;
-        font-size: 12px !important;
-        min-width: 80px !important;
+        font-size: 11px !important;
+        min-width: unset !important;
+        flex: 1 1 45% !important;
       }
 
       .devscout-controls button {
-        min-width: 100px !important;
+        min-width: unset !important;
         padding: 10px 12px !important;
-        font-size: 13px !important;
+        font-size: 12px !important;
+        flex: 1 1 100% !important;
+      }
+
+      .devscout-title {
+        font-size: 18px !important;
+      }
+
+      .devscout-global-notification {
+        font-size: 12px !important;
+        padding: 10px 12px !important;
       }
     }
   `;
@@ -1637,7 +1670,7 @@ function App() {
         <div
           style={styles.globalNotification}
           onClick={handleNotificationClick}
-          className="devscout-notification-badge"
+          className="devscout-global-notification"
         >
           <div style={styles.notificationDot}></div>
           <span>{getTotalUnreadReplies()} new {getTotalUnreadReplies() === 1 ? 'reply' : 'replies'} to your comments</span>
