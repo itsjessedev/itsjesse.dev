@@ -17,6 +17,33 @@
         background: #0f0f0f;
         color: #e0e0e0;
         line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+      }
+      /* Prevent iOS zoom on input focus */
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+      /* Touch-friendly tap targets */
+      button, a {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      /* Smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+      /* Better touch scrolling */
+      * {
+        -webkit-overflow-scrolling: touch;
+      }
+      /* Hide scrollbars on mobile but allow scrolling */
+      @media (max-width: 768px) {
+        ::-webkit-scrollbar {
+          width: 0;
+          height: 0;
+        }
       }
     </style>
   </head>
