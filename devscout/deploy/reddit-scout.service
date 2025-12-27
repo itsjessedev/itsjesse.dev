@@ -1,0 +1,15 @@
+[Unit]
+Description=Reddit Scout API
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/home/deploy/reddit-scout/backend
+Environment="PATH=/home/deploy/reddit-scout/backend/venv/bin"
+ExecStart=/home/deploy/reddit-scout/backend/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8004
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

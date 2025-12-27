@@ -492,8 +492,8 @@ export default function Home() {
             <a href="https://github.com/itsjessedev" className="hover:text-[var(--text-primary)] transition-colors">
               GitHub
             </a>
-            <a href="mailto:jesse@itsjesse.dev" className="hover:text-[var(--text-primary)] transition-colors">
-              Email
+            <a href="#contact" className="hover:text-[var(--text-primary)] transition-colors">
+              Contact
             </a>
           </div>
         </div>
