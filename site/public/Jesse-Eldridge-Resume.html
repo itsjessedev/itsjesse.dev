@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jesse Eldridge - Resume</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: Letter;
+            margin: 0.4in 0.5in;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 9.5pt;
+            line-height: 1.35;
+            color: #1a1a1a;
+            background: white;
+            max-width: 8.5in;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        h1 {
+            font-size: 22pt;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-info {
+            color: #4b5563;
+            font-size: 9pt;
+        }
+
+        .contact-info a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .contact-info span {
+            margin: 0 6px;
+            color: #9ca3af;
+        }
+
+        section {
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 9pt;
+            font-weight: 700;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary {
+            color: #374151;
+            text-align: left;
+            font-size: 9.5pt;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 16px;
+        }
+
+        .skill-category h3 {
+            font-size: 9pt;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+
+        .skill-category p {
+            color: #4b5563;
+            font-size: 8.5pt;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .project {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .project-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 9.5pt;
+            margin-bottom: 2px;
+        }
+
+        .project-subtitle {
+            color: #6b7280;
+            font-size: 8pt;
+            margin-bottom: 4px;
+        }
+
+        .project-description {
+            color: #4b5563;
+            font-size: 8pt;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .project-tech {
+            font-size: 7.5pt;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .timeline-item {
+            margin-bottom: 10px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 9.5pt;
+        }
+
+        .item-date {
+            color: #6b7280;
+            font-size: 8.5pt;
+        }
+
+        .item-subtitle {
+            color: #4b5563;
+            font-size: 9pt;
+            margin-bottom: 2px;
+        }
+
+        .item-details {
+            color: #6b7280;
+            font-size: 8.5pt;
+            line-height: 1.3;
+        }
+
+        .footer-note {
+            margin-top: 14px;
+            padding-top: 8px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 8pt;
+        }
+
+        .footer-note a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Jesse Eldridge</h1>
+        <div class="contact-info">
+            Cookeville, TN (Remote)<span>|</span>
+            <a href="mailto:jobs@itsjesse.dev">jobs@itsjesse.dev</a><span>|</span>
+            <a href="https://itsjesse.dev">itsjesse.dev</a><span>|</span>
+            <a href="https://github.com/itsjessedev">github.com/itsjessedev</a>
+        </div>
+    </header>
+
+    <section>
+        <h2>Summary</h2>
+        <p class="summary">
+            Software developer specializing in business automation and system integration. I build solutions that connect disparate systems, automate workflows, and provide real-time visibility into operations. Portfolio includes 15 production-ready projects demonstrating API integration, data pipelines, and full-stack development.
+        </p>
+    </section>
+
+    <section>
+        <h2>Technical Skills</h2>
+        <div class="skills-grid">
+            <div class="skill-category">
+                <h3>Languages & Frameworks</h3>
+                <p>Python, TypeScript, SQL, FastAPI, React, Next.js, React Native</p>
+            </div>
+            <div class="skill-category">
+                <h3>Data & Infrastructure</h3>
+                <p>PostgreSQL, SQLite, Docker, Git, Linux, CI/CD, Cloudflare</p>
+            </div>
+            <div class="skill-category">
+                <h3>APIs & Integrations</h3>
+                <p>Salesforce, Shopify, Amazon, eBay, HubSpot, QuickBooks, Slack, Twilio</p>
+            </div>
+            <div class="skill-category">
+                <h3>AI & Automation</h3>
+                <p>OpenAI, Google Gemini, RAG, OCR, Sentiment Analysis, Webhooks</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Featured Projects</h2>
+        <div class="projects-grid">
+            <div class="project">
+                <div class="project-title">OrderHub</div>
+                <div class="project-subtitle">E-commerce Aggregator</div>
+                <p class="project-description">Unified dashboard for Shopify, Amazon, eBay orders with real-time inventory sync. Reduced processing time 70%.</p>
+                <div class="project-tech">React, FastAPI, Shopify API</div>
+            </div>
+            <div class="project">
+                <div class="project-title">DealScout</div>
+                <div class="project-subtitle">AI Deal Discovery</div>
+                <p class="project-description">Mobile app using Gemini AI to classify marketplace items and calculate flip profit via eBay price lookup.</p>
+                <div class="project-tech">React Native, Gemini, eBay API</div>
+            </div>
+            <div class="project">
+                <div class="project-title">DocuMind</div>
+                <div class="project-subtitle">RAG Document Intelligence</div>
+                <p class="project-description">Document Q&A with retrieval-augmented generation. Semantic search with source citations.</p>
+                <div class="project-tech">Python, OpenAI, ChromaDB</div>
+            </div>
+            <div class="project">
+                <div class="project-title">SyncFlow</div>
+                <div class="project-subtitle">Automated Data Pipeline</div>
+                <p class="project-description">Scheduled sync between Salesforce, Jira, and Google Sheets. Saved 6 hrs/week for sales team.</p>
+                <div class="project-tech">Python, Salesforce, Jira API</div>
+            </div>
+            <div class="project">
+                <div class="project-title">InvoiceBot</div>
+                <div class="project-subtitle">Receipt OCR Automation</div>
+                <p class="project-description">Email receipts → OCR extraction → AI categorization → QuickBooks entry. 98% accuracy.</p>
+                <div class="project-tech">Python, Cloud Vision, OpenAI</div>
+            </div>
+            <div class="project">
+                <div class="project-title">FieldOps</div>
+                <div class="project-subtitle">Field Service Mobile App</div>
+                <p class="project-description">React Native app for technicians: job dispatch, GPS tracking, photo uploads, offline sync.</p>
+                <div class="project-tech">React Native, Expo, FastAPI</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="two-column">
+        <section>
+            <h2>Education</h2>
+            <div class="timeline-item">
+                <div class="item-header">
+                    <span class="item-title">Western Governors University</span>
+                    <span class="item-date">Expected 2025</span>
+                </div>
+                <div class="item-subtitle">B.S. Computer Science</div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Experience</h2>
+            <div class="timeline-item">
+                <div class="item-header">
+                    <span class="item-title">Independent Developer</span>
+                    <span class="item-date">2024 – Present</span>
+                </div>
+                <div class="item-subtitle">Automation & Integration Consulting</div>
+                <p class="item-details">Building custom automation solutions. 15 portfolio projects spanning e-commerce, AI/ML, and mobile.</p>
+            </div>
+            <div class="timeline-item">
+                <div class="item-header">
+                    <span class="item-title">Amazon</span>
+                    <span class="item-date">2023 – 2024</span>
+                </div>
+                <div class="item-subtitle">Fulfillment Center Associate</div>
+                <p class="item-details">High-volume operations with strict productivity metrics.</p>
+            </div>
+        </section>
+    </div>
+
+    <div class="footer-note">
+        Full portfolio with live demos and source code: <a href="https://itsjesse.dev">itsjesse.dev</a>
+    </div>
+</body>
+</html>

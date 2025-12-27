@@ -1,29 +1,29 @@
 # ALL PROSPECTS (sorted by score)
-Scraped: 2025-12-26 22:00
+Scraped: 2025-12-26 23:00
 Found: 206 posts
 
 ## 1. [Hiring] React Developer to implement Firebase Auth &amp; Credit System for an AI tool
 - Author: filobtc
 - URL: https://reddit.com/r/forhire/comments/1pwj7lr/hiring_react_developer_to_implement_firebase_auth/
-- Date: 2025-12-26 | Score: 1 | Comments: 5
+- Date: 2025-12-26 | Score: 2 | Comments: 5
 - Preview: Hi everyone,  I’m looking for a skilled React developer to help me finalize the backend logic for my project, an AI-powered resume optimizer.  The frontend is already built (React + Tailwind), and the AI integration is working.  Now, I need someone to handle the user management and monetization laye...
 
 ## 2. [Hiring] VA for agency
 - Author: Madonski
 - URL: https://reddit.com/r/forhire/comments/1pvtw0d/hiring_va_for_agency/
-- Date: 2025-12-25 | Score: 64 | Comments: 12
+- Date: 2025-12-25 | Score: 65 | Comments: 12
 - Preview: We are hiring part time east asia / US or ph based VA's. You apply on the link on my other post. Reddit removes my post if I add the link here. It's virtual assistants for outreach work, maintaining workflow consistency and supporting work across the agency. $15/h. 10/20h/week. The work involves fol...
 
 ## 3. I Need Someone to Build a Basic Website [Hiring]
 - Author: Tintorio
 - URL: https://reddit.com/r/forhire/comments/1pwevgj/i_need_someone_to_build_a_basic_website_hiring/
-- Date: 2025-12-26 | Score: 8 | Comments: 39
+- Date: 2025-12-26 | Score: 8 | Comments: 42
 - Preview: I need a website built.     I have a blog I am going to move it to my own site from Medium.     The plan now is to create a master page that links to 4 (at this point, flexibility to do a 5th down the road is s good idea) subjects. I write about specific things, but a few very different, specific th...
 
 ## 4. [HIRING] Looking for a customer support/online assistant for tasks. Must be fluent in English, open to face cam during calls, and be professional. ---- $100 per call (AVG 30 mins)
 - Author: PavanOfficials
 - URL: https://reddit.com/r/forhire/comments/1pvq0nv/hiring_looking_for_a_customer_supportonline/
-- Date: 2025-12-25 | Score: 11 | Comments: 78
+- Date: 2025-12-25 | Score: 11 | Comments: 80
 - Preview: Merry Christmas!  We currently run a social media company, and we have a wide range of clients. From booking private jets for clients, planning vacations, running social media, and more, we cover everything.  We need someone who is a very comfortable speaker, can join calls, take calls and be confid...
 
 ## 5. Is a solo non-tech founder enough for SaaS with the rise of vibe coding and AI stuff?
@@ -41,581 +41,580 @@ Found: 206 posts
 ## 7. [Hiring] Looking for a US based marketer for my web design clients.
 - Author: Intelligent-Bottle22
 - URL: https://reddit.com/r/forhire/comments/1pvxhfv/hiring_looking_for_a_us_based_marketer_for_my_web/
-- Date: 2025-12-26 | Score: 3 | Comments: 4
+- Date: 2025-12-26 | Score: 4 | Comments: 4
 - Preview: I currently do freelance web design, and a lot of my clients ask for marketing services. So I want to add a marketer to my team. I need to be able to refer my clients to you, and have you text them directly.   I am looking for google ads, social media marketing, email marketing, and facebook and ins...
 
-## 8. [Hiring] Looking for a Flexible Web Developer (Remote)
-- Author: aaraiz_pro
-- URL: https://reddit.com/r/forhire/comments/1pvos1d/hiring_looking_for_a_flexible_web_developer_remote/
-- Date: 2025-12-25 | Score: 4 | Comments: 19
-- Preview: Hi, I’m looking for a flexible web developer from south asia to collaborate on a remote project. By flexible, I mean someone who is: Comfortable with changing requirements Open to iterative development Easy to communicate with and adaptable Okay working without rigid processes in early stages Tech s...
-
-## 9. Free help
+## 8. Free help
 - Author: EntryAppropriate3069
 - URL: https://reddit.com/r/smallbusiness/comments/1pwf83h/free_help/
 - Date: 2025-12-26 | Score: 0 | Comments: 4
 - Preview: Im an aspiring data engineer/ analyst and would like to help you out  \- Clean your messy spreadsheets and Automate reports  \- Identify trends, customer segments, sales analysis   \- create visualizations for your data n make web dashboards   I do have some projects built that I can show you   I’m ...
 
-## 10. Sometimes a simple local script is better for SME than a big SaaS/ERP
+## 9. Sometimes a simple local script is better for SME than a big SaaS/ERP
 - Author: Quirky_Blacksmith_91
 - URL: https://reddit.com/r/smallbusiness/comments/1pvx1qc/sometimes_a_simple_local_script_is_better_for_sme/
 - Date: 2025-12-25 | Score: 1 | Comments: 7
 - Preview: I wanted to share a case study from a task I recently finished. I think it shows a common problem many small businesses face.  The client had to process an Excel file with hundreds of rows of transaction data every few days. After processing, they had to send emails to different teams based on those...
 
-## 11. How to integrate the data collected from wearable devices into my app?
+## 10. How to integrate the data collected from wearable devices into my app?
 - Author: Mr_Dani17
 - URL: https://reddit.com/r/SaaS/comments/1pweomy/how_to_integrate_the_data_collected_from_wearable/
 - Date: 2025-12-26 | Score: 1 | Comments: 5
 - Preview: Hi, I'm building an athlete managment system. I would like to display health data (like sleep, resting heart rate) and workout data in the app. The problem is that building 10 different integrations for Garmin, Polar, Whoop, etc. would be really time consuming. Also the data is in different formats....
 
-## 12. Tech background, want to go solo
+## 11. Tech background, want to go solo
 - Author: Party-Log-1084
 - URL: https://reddit.com/r/Entrepreneur/comments/1pvidim/tech_background_want_to_go_solo/
-- Date: 2025-12-25 | Score: 6 | Comments: 14
+- Date: 2025-12-25 | Score: 5 | Comments: 14
 - Preview: Merry Christmas everyone!  I’ve been working as an employed IT specialist for years (system integration). I’m technically solid: servers, hosting, networking. As a hobby i started web development (Frontend + Backend), built a lot of pages and apps (more fun than business).   Building and running thi...
 
-## 13. TIL the Web Speech API exists and it’s way more useful than I expected
+## 12. TIL the Web Speech API exists and it’s way more useful than I expected
 - Author: bullmeza
 - URL: https://reddit.com/r/webdev/comments/1pvrpk1/til_the_web_speech_api_exists_and_its_way_more/
-- Date: 2025-12-25 | Score: 134 | Comments: 17
+- Date: 2025-12-25 | Score: 133 | Comments: 18
 - Preview: I somehow completely missed that modern browsers ship a **Web Speech API**.  You can do text-to-speech (and speech recognition) with *no libraries*, just a few lines of JavaScript. No keys, no SDKs, no backend.  What surprised me:  * It’s supported in Chrome and Safari * Latency is basically instant...
 
-## 14. [HIRING] Part time, Low/Mid-Level Web Dev, Native English!, $20~60/hr!
+## 13. [HIRING] Part time, Low/Mid-Level Web Dev, Native English!, $20~60/hr!
 - Author: Realistic_Story5641
 - URL: https://reddit.com/r/forhire/comments/1pwmvt7/hiring_part_time_lowmidlevel_web_dev_native/
-- Date: 2025-12-26 | Score: 1 | Comments: 2
+- Date: 2025-12-26 | Score: 1 | Comments: 3
 - Preview: Important! Native English Speakers Only!  Mid level Web developer with 2+ years of experience in full-stack development and devOps.  Requirements  * Native-level English proficiency! (Most important) * Mid-level DevOps experience, Full Stack experience plus * Strong interpersonal and communication s...
 
-## 15. [HIRING] Looking for people to pass me clients, I can give high percentage of commissions (est: $50-300 per client)
+## 14. [HIRING] Looking for people to pass me clients, I can give high percentage of commissions (est: $50-300 per client)
 - Author: cycle-ka-pilot
 - URL: https://reddit.com/r/forhire/comments/1pvzcah/hiring_looking_for_people_to_pass_me_clients_i/
 - Date: 2025-12-26 | Score: 3 | Comments: 3
 - Preview: Im a web developer and want some people to search clients for me, you'll get about 20-40% of what I get, DM if interested....
 
-## 16. [Hiring] Clippers for stream $0.50 per 1,000 views or $50/HOUR for skilled clipper
+## 15. [Hiring] Clippers for stream $0.50 per 1,000 views or $50/HOUR for skilled clipper
 - Author: JJrLow
 - URL: https://reddit.com/r/forhire/comments/1pvv1ij/hiring_clippers_for_stream_050_per_1000_views_or/
-- Date: 2025-12-25 | Score: 1 | Comments: 4
+- Date: 2025-12-25 | Score: 3 | Comments: 4
 - Preview: Hey guy! I'm a twitch variety gaming streamer looking for a few clippers for my stream. What you need to do is make clips from my stream and post it on any tiktok or youtube page.     Payout Rate: $0.50 per 1,000 views (TikTok/YT shorts ENGAGED views)  \-Ongoing work if you hit target.     Minimum V...
 
-## 17. [Hiring] We need more Remote Researchers specializing in U.S.–Taiwan, India–Taiwan, and broader U.S.–Asia geopolitical dynamics.
-- Author: Aakon_j
-- URL: https://reddit.com/r/forhire/comments/1pvp3jt/hiring_we_need_more_remote_researchers/
-- Date: 2025-12-25 | Score: 2 | Comments: 2
-- Preview: I’m seeking screen experts and scholars from a wide range of academic and policy research fields to collaborate online. The goal is to provide intellectual support—such as article writing and policy analysis—for projects focused on U.S.–Taiwan, India–Taiwan, and broader U.S.–Asia geopolitical dynami...
-
-## 18. Show HN: I was tired of link shorteners, so I built Rediredge
+## 16. Show HN: I was tired of link shorteners, so I built Rediredge
 - Author: trapani
 - URL: https://news.ycombinator.com/item?id=46394211
 - Date: 2025-12-26 | Score: 3 | Comments: 0
 - Preview: Blazing-Fast Domain Redirects Without the DevOps Tax<p>Rediredge is a lightweight, self-hostable domain redirector that pairs a Go data plane with a Next.js control plane. It gives you instant 30x responses without cold starts, automatic HTTPS, and a beautiful dashboard that lets non-technical teamm...
 
-## 19. How do you verify vendor invoices still match the original contract?
+## 17. How do you verify vendor invoices still match the original contract?
 - Author: nateachino
 - URL: https://reddit.com/r/smallbusiness/comments/1pwnab8/how_do_you_verify_vendor_invoices_still_match_the/
 - Date: 2025-12-26 | Score: 1 | Comments: 2
 - Preview: Hey all, quick ops question.  For those of you running small businesses / agencies: how do you currently make sure vendor invoices still match what was originally agreed to in the contract (pricing, seat counts, renewal dates, etc.)?  Do you:  * manually check invoices against the contract? * track ...
 
-## 20. What should a small business look for in a WhatsApp Business API provider?
+## 18. What should a small business look for in a WhatsApp Business API provider?
 - Author: smshesms
 - URL: https://reddit.com/r/smallbusiness/comments/1pw4nos/what_should_a_small_business_look_for_in_a/
 - Date: 2025-12-26 | Score: 1 | Comments: 3
 - Preview: I run a small business and I’m considering moving from the regular WhatsApp Business app to the WhatsApp Business API, mainly for automation and handling higher message volume.  I’ve read the official documentation, but I’m still unclear on some practical, real-world things that matter for small bus...
 
-## 21. business budget template that actually works for multi-department planning
+## 19. business budget template that actually works for multi-department planning
 - Author: TreeApprehensive3700
 - URL: https://reddit.com/r/smallbusiness/comments/1pv7eub/business_budget_template_that_actually_works_for/
 - Date: 2025-12-25 | Score: 3 | Comments: 7
 - Preview: Trying to implement actual budgeting across six departments instead of the founder just deciding what to spend on everything, current approach is department heads send me excel files that don't match each other's formats and then I spend days trying to consolidate everything manually  Need either a ...
 
-## 22. Am I missing something, or is compliance evidence collection still insanely manual in 2025?
+## 20. Am I missing something, or is compliance evidence collection still insanely manual in 2025?
 - Author: dawgofhood
 - URL: https://reddit.com/r/SaaS/comments/1pwdel0/am_i_missing_something_or_is_compliance_evidence/
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 - Preview: Hey folks — looking for *brutally honest* feedback here. Please rip this apart.  I’m a developer, not a compliance expert, and I’m trying to understand if this problem is actually real or if I’m overthinking it.  From what I’ve seen, a lot of teams doing SOC 2 / ISO / HIPAA still end up doing things...
 
-## 23. Ask HN: What's still broken in SoC 2 readiness and audit prep?
+## 21. Ask HN: What's still broken in SoC 2 readiness and audit prep?
 - Author: asdxrfx
 - URL: https://news.ycombinator.com/item?id=46396889
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 - Preview: Hi HN,<p>I’m working on a SOC 2 readiness platform and wanted to get perspectives from people who’ve actually been through SOC 2, either in-house or while helping other companies.<p>From what I’ve seen, teams still struggle most with task planning over time, follow-ups, and turning evidence into som...
 
-## 24. How do you actually keep your inventory accurate as a small business?
+## 22. How do you actually keep your inventory accurate as a small business?
 - Author: lyes069406
 - URL: https://reddit.com/r/smallbusiness/comments/1pwk2pz/how_do_you_actually_keep_your_inventory_accurate/
-- Date: 2025-12-26 | Score: 0 | Comments: 8
+- Date: 2025-12-26 | Score: 0 | Comments: 9
 - Preview: Small business owner here 👋  I’m curious how others really handle inventory day to day.  Between: customers, employees, deliveries, returns, stock numbers always seem to drift from reality. I’ve tried: POS stock spreadsheets manual counts and it always ends up being slightly wrong unless I constantl...
 
-## 25. Seeking funding recommendations
+## 23. Seeking funding recommendations
 - Author: trstalpr93
 - URL: https://reddit.com/r/smallbusiness/comments/1pwid1d/seeking_funding_recommendations/
 - Date: 2025-12-26 | Score: 1 | Comments: 3
 - Preview: Hi everyone — I’m looking for recommendations (not solicitations😬) for private working capital lenders, great lenders you’ve worked with.  I own an established business with excellent personal credit and consistent revenue. I’m exploring options to optimize cash flow and consolidate some higher-inte...
 
-## 26. 5 years building my technically the strongest product. It still failed. Here’s what I learned about deep tech.
+## 24. 5 years building my technically the strongest product. It still failed. Here’s what I learned about deep tech.
 - Author: Ill-Morning4762
 - URL: https://reddit.com/r/smallbusiness/comments/1pw1rls/5_years_building_my_technically_the_strongest/
 - Date: 2025-12-26 | Score: 1 | Comments: 19
 - Preview: I once built a real-time system that could detect bacteria on surfaces in real-time. Hardware + software. Years of work.   The most advance optical system to detect bacteria along with a sophisticated ML powered software to provide results in real-time. We even developed our own real-time embedded s...
 
-## 27. Unpopular opinion: 'Absentee ownership' is total BS for most small biz owners unless you've nailed ops automation – change my mind?
+## 25. Unpopular opinion: 'Absentee ownership' is total BS for most small biz owners unless you've nailed ops automation – change my mind?
 - Author: Old-Blackberry-3019
 - URL: https://reddit.com/r/smallbusiness/comments/1pw0opo/unpopular_opinion_absentee_ownership_is_total_bs/
-- Date: 2025-12-26 | Score: 9 | Comments: 7
+- Date: 2025-12-26 | Score: 8 | Comments: 7
 - Preview: I've been busting my ass growing a small retail chain here in Vietnam, and every time I see those posts about 'absentee ownership' blowing up, I just laugh... then cry.   Tried stepping back twice this year. First time, inventory went haywire because no one could spot the bottlenecks in our manual t...
 
-## 28. Experience level for early engineer hires (I will not promote)
+## 26. Experience level for early engineer hires (I will not promote)
 - Author: SodaRider1
 - URL: https://reddit.com/r/startups/comments/1pw94ci/experience_level_for_early_engineer_hires_i_will/
-- Date: 2025-12-26 | Score: 2 | Comments: 3
+- Date: 2025-12-26 | Score: 2 | Comments: 4
 - Preview: # Context:  * Recently started a startup with a technical co-founder.    So far has been a great partnership.  We have similar views on growth, culture, leadership, etc... * 50/50 equity split, bootstrapped, strong alignment on product vision * Building an enterprise-grade B2B platform (security/gov...
 
-## 29. Best Chatbot App Development Companies in the USA: Powering the Future of Conversational AI
+## 27. Best Chatbot App Development Companies in the USA: Powering the Future of Conversational AI
 - Author: AppVentureLabs
 - URL: https://reddit.com/r/SaaS/comments/1pw148g/best_chatbot_app_development_companies_in_the_usa/
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 - Preview: Conversational AI has moved far beyond simple rule-based bots. Today’s chatbots handle customer support, sales, HR, healthcare triage, fintech onboarding, and even internal automation. If you’re a startup founder, product manager, or business owner looking to build a chatbot, choosing the right deve...
 
-## 30. I'm a non-tech founder with a working MVP (Lovable/Supabase) looking for a technical partner. No, this isn't just an "idea."
+## 28. I'm a non-tech founder with a working MVP (Lovable/Supabase) looking for a technical partner. No, this isn't just an "idea."
 - Author: PsychologicalGolf294
 - URL: https://reddit.com/r/SaaS/comments/1pwh5rn/im_a_nontech_founder_with_a_working_mvp/
 - Date: 2025-12-26 | Score: 2 | Comments: 1
 - Preview: Hey guys,  I know the trope of the "idea guy" who needs a dev to build their vision for free is annoying. I'm trying to be the opposite of that. I've spent the last few months actually building the MVP myself.  The project is a marketplace for mobile vendors (food trucks, coffee carts, etc.) and eve...
 
-## 31. Solo e-commerce seller: Plugin fees are killing my thin margins
+## 29. Solo e-commerce seller: Plugin fees are killing my thin margins
 - Author: nacciano
 - URL: https://reddit.com/r/ecommerce/comments/1pvbi4v/solo_ecommerce_seller_plugin_fees_are_killing_my/
 - Date: 2025-12-25 | Score: 0 | Comments: 24
 - Preview: Hey r/ecommerce, solo small store owner here. Sick of paying the big platform’s base plan + $50+/month in plugins for shipping/tracking/SEO — it’s eating all my profit, plus endless admin time fixing broken integrations. Switched to a leaner smaller platform a few months back, core features all buil...
 
-## 32. Website owners will not need developers anymore
+## 30. Website owners will not need developers anymore
 - Author: worldinmydreams
 - URL: https://reddit.com/r/ecommerce/comments/1putb4q/website_owners_will_not_need_developers_anymore/
 - Date: 2025-12-24 | Score: 0 | Comments: 26
 - Preview: Was just sent this tool that literally edited my wordpress site with text - felt just like chatgpt  it’s just for the UI now but prob we’ll see backend solutions soon uh? so cool  anyone knows more ai editing stuff? (PLEASE not ai that builds web from 0 - but for running sites...
 
-## 33. Show HN: Tinykit – self-hosted Lovable, deploys to itself
+## 31. Show HN: Tinykit – self-hosted Lovable, deploys to itself
 - Author: mmmateo
 - URL: https://news.ycombinator.com/item?id=46385040
 - Date: 2025-12-25 | Score: 4 | Comments: 0
 - Preview: Merry Christmas HN!<p>Tinykit is a self-hosted, self-contained alternative to Lovable&#x2F;Replit&#x2F;v0 designed for building small personal utility and CRUD apps (basically a &quot;tiny app studio”). It includes realtime&#x2F;auth&#x2F;files (via PocketBase), an embedded dev environment, content ...
 
-## 34. Show HN: An AI-generated daily quiz app I built on my bike
+## 32. Show HN: An AI-generated daily quiz app I built on my bike
 - Author: GFuller
 - URL: https://news.ycombinator.com/item?id=46396215
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 - Preview: Not a startup attempt, just a weekend project for my family. My parents do a daily quiz, but the site they use looks like it was built in 1999 and not touched since. I thought it’d be a fun excuse to rebuild something simple and leverage AI for automation.<p>The app uses 5 agents to generate a 10 qu...
 
-## 35. Quick question for small service business owners:
+## 33. Quick question for small service business owners:
 - Author: Flexxicute
 - URL: https://reddit.com/r/smallbusiness/comments/1pwkwor/quick_question_for_small_service_business_owners/
-- Date: 2025-12-26 | Score: 1 | Comments: 1
+- Date: 2025-12-26 | Score: 2 | Comments: 4
 - Preview: How do you currently track jobs, notes, photos and create reports for customers? Google Spreadsheet? Docs? Or something else? Trying to figure out the best way to go about this avenue thanks in advance....
 
-## 36. Approaches to customer education and expectation alignment?
+## 34. Approaches to customer education and expectation alignment?
 - Author: GoldenBearStudio
 - URL: https://reddit.com/r/smallbusiness/comments/1pwgx6e/approaches_to_customer_education_and_expectation/
 - Date: 2025-12-26 | Score: 1 | Comments: 5
 - Preview: I work in the digital transformation space. We work on a project basis, we're not managed services where we provide ongoing support. Our target customers are typically either enterprise level or SMB in rapid growth phase (e.g. scaling project, mergers and acquisitions). Organizations at this size or...
 
-## 37. 🚀 Let Me Increase Your Sales for FREE (15+ Happy Clients)
+## 35. 🚀 Let Me Increase Your Sales for FREE (15+ Happy Clients)
 - Author: Local_Editor368
 - URL: https://reddit.com/r/smallbusiness/comments/1pwfc3e/let_me_increase_your_sales_for_free_15_happy/
-- Date: 2025-12-26 | Score: 0 | Comments: 2
+- Date: 2025-12-26 | Score: 0 | Comments: 3
 - Preview: In 2025, **marketing and optimization are everything** — and if your ads or store aren’t optimized, you’ll end up wasting money and missing easy sales.  * Have you optimized these aspects of your marketing? * Have you optimized your **CRO (Conversion Rate Optimization)**? * Do you run **SMS** and **...
 
-## 38. An app to replace MyFinancier
+## 36. An app to replace MyFinancier
 - Author: ItheKEA
 - URL: https://reddit.com/r/smallbusiness/comments/1pwgx2p/an_app_to_replace_myfinancier/
 - Date: 2025-12-26 | Score: 1 | Comments: 2
 - Preview: The small business (5 people) I work for used to use **MyFinancier** until it broke and died tragically. Now I've been in search for a replacement, and could use advice.   (Disclaimer: I'm really not a tech person in the slightest, just a student doing a small side job as an assistant, so please be ...
 
-## 39. Does the business world need a more “casual” way to connect on deals and partnerships?
+## 37. Does the business world need a more “casual” way to connect on deals and partnerships?
 - Author: Comfortable-Lack-252
 - URL: https://reddit.com/r/smallbusiness/comments/1pwg46a/does_the_business_world_need_a_more_casual_way_to/
 - Date: 2025-12-26 | Score: 2 | Comments: 2
 - Preview: I’ve noticed something interesting with business and networking    Serious business connections still happen in very clunky ways, cold emails, LinkedIn messages, brokers, word of mouth.    But at the same time, people are extremely comfortable discovering opportunities through swipe-based platforms ...
 
-## 40. Productivity iOS App Onboarding Help
+## 38. Productivity iOS App Onboarding Help
 - Author: -FANTE-
 - URL: https://reddit.com/r/smallbusiness/comments/1pwf6ki/productivity_ios_app_onboarding_help/
 - Date: 2025-12-26 | Score: 0 | Comments: 2
 - Preview: I'm building an iOS app to help users fight procrastination and be more productive with the help of AI coaches called "Momentum".      This is the onboarding welcome survey I came up with: any tips or advice to improve it and have an higher conversion rate?      Here's the link to the screen recordi...
 
-## 41. Tips for hiring a good writer
+## 39. Tips for hiring a good writer
 - Author: rococo78
 - URL: https://reddit.com/r/smallbusiness/comments/1pwal7q/tips_for_hiring_a_good_writer/
-- Date: 2025-12-26 | Score: 0 | Comments: 24
+- Date: 2025-12-26 | Score: 2 | Comments: 24
 - Preview: I really really want to hire a writer for my business. Write now written content development is the biggest bottleneck as I just don't have the time to write content for more regular emails and social media.   I utilize ChatGPT to help me out with a lot of first drafts (which is great!) but they sti...
 
-## 42. Is there a social media analytics tool that already exists?
+## 40. Is there a social media analytics tool that already exists?
 - Author: AISaas_
 - URL: https://reddit.com/r/smallbusiness/comments/1pw4bfr/is_there_a_social_media_analytics_tool_that/
 - Date: 2025-12-26 | Score: 1 | Comments: 3
 - Preview: I get tired of guessing what to post and manually checking stats across platforms, so Im looking for a saas that basically has:  - one dashboard for all social metrics  - engagement + growth trends across platforms  - an AI content coach that learns from what you’ve already posted  The idea is to ma...
 
-## 43. Looking to collaborate on an open-source or early-stage technical product. I will not promote
+## 41. Looking to collaborate on an open-source or early-stage technical product. I will not promote
 - Author: kiyotaka_007
 - URL: https://reddit.com/r/startups/comments/1pvivrt/looking_to_collaborate_on_an_opensource_or/
 - Date: 2025-12-25 | Score: 0 | Comments: 3
 - Preview: Heya, I’m looking to join on an open-source project or an early-stage technical product as a    co-founder/contributor, or collaborator.  If you’re building something technical and need help or someone to share ideas,    I’d like to hear what you’re working on and explore whether there’s a good  fit...
 
-## 44. Is the Pre-Seed round dead? Or has the bar just raised? (I will not promote)
+## 42. Is the Pre-Seed round dead? Or has the bar just raised? (I will not promote)
 - Author: NWA55
 - URL: https://reddit.com/r/startups/comments/1pwexe1/is_the_preseed_round_dead_or_has_the_bar_just/
 - Date: 2025-12-26 | Score: 0 | Comments: 17
 - Preview: I've been thinking about the state of fundraising with current AI/No-Code tools. It used to be that you raised pre-seed to build your MVP. But recently, a solo founder can build, test, and iterate a full product in weeks for basically $0 using tools like ai tools. i feel like the **t**raction bar ha...
 
-## 45. Saved $240/year with this simple cron job workaround
+## 43. Saved $240/year with this simple cron job workaround
 - Author: denimozh
 - URL: https://reddit.com/r/SaaS/comments/1pwk47t/saved_240year_with_this_simple_cron_job_workaround/
 - Date: 2025-12-26 | Score: 0 | Comments: 1
 - Preview: hey guys! i hope eveyone is doing good!      currently i'm building a saas which automates your marketing and hit a wall with vercel's hobby plan limitations  only 2 cron jobs allowed  can only run once per day  timing is a bit fuzzy (9 AM could run anytime between 9:00-9:59)  not exactly ideal when...
 
-## 46. Tips for hiring a good writer?
+## 44. Tips for hiring a good writer?
 - Author: rococo78
 - URL: https://reddit.com/r/Entrepreneur/comments/1pwanxv/tips_for_hiring_a_good_writer/
-- Date: 2025-12-26 | Score: 3 | Comments: 17
+- Date: 2025-12-26 | Score: 4 | Comments: 17
 - Preview: I really really want to hire a writer for my business. Write now written content development is the biggest bottleneck as I just don't have the time to write content for more regular emails and social media.  I utilize ChatGPT to help me out with a lot of first drafts (which is great!) but they stil...
 
-## 47. Any recommendations for AP automation software with ocr?
+## 45. Any recommendations for AP automation software with ocr?
 - Author: Aware_Commercial9559
 - URL: https://reddit.com/r/Entrepreneur/comments/1pv4ghz/any_recommendations_for_ap_automation_software/
 - Date: 2025-12-24 | Score: 1 | Comments: 5
 - Preview: Runn⁤ing a small but growing busin⁤ess, and AP is starting to eat up more time than I expected. I’m starting to look into AP automa⁤tion softw⁤are but want to take it slow perhaps start with OCR first before going all in. Curious what tools have wor⁤ked for you....
 
-## 48. I’m structuring my E-com agents using independent Modes instead of big chains. Looking for feedback on this architecture.
+## 46. I’m structuring my E-com agents using independent Modes instead of big chains. Looking for feedback on this architecture.
 - Author: Aggressive-Hunter862
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptpyhv/im_structuring_my_ecom_agents_using_independent/
 - Date: 2025-12-23 | Score: 2 | Comments: 5
 - Preview: I’ve been working on a project to automate parts of my e-commerce store. Initially, I tried to build those massive "all-in-one" workflows where one agent handles everything from product research to shipping. But honestly, it’s been a nightmare to maintain. One small change and the whole chain breaks...
 
-## 49. [task] people to make basic slideshows , 300$/week
+## 47. [task] people to make basic slideshows , 300$/week
 - Author: DarkWarrior5102
 - URL: https://reddit.com/r/slavelabour/comments/1pw4e0r/task_people_to_make_basic_slideshows_300week/
 - Date: 2025-12-26 | Score: 6 | Comments: 22
 - Preview: You need to create engaging and attractive slideshows, guiding us on their creation and posting. The slideshows should be visually appealing, motivate viewers to engage, and effectively promote a brand. You must have a stable internet connection, be eager to learn, adaptable, and capable of meeting ...
 
-## 50. Show HN: Kapso – WhatsApp for developers
+## 48. Show HN: Kapso – WhatsApp for developers
 - Author: aamatte
 - URL: https://news.ycombinator.com/item?id=46368379
 - Date: 2025-12-23 | Score: 45 | Comments: 26
 - Preview: Hey HN, I&#x27;m Andres. I&#x27;ve been building Kapso as a solo founder, and just crossed 4,000 developers, all organic.<p>WhatsApp has 3B+ users and 98% open rates. You&#x27;d expect developers to be building tons of stuff on it, especially when the US is the fastest-growing market in WhatsApp usa...
 
-## 51. Ask HN: What skills do you want to develop or improve in 2026?
+## 49. Ask HN: What skills do you want to develop or improve in 2026?
 - Author: meridion
 - URL: https://news.ycombinator.com/item?id=46385197
-- Date: 2025-12-25 | Score: 209 | Comments: 341
+- Date: 2025-12-25 | Score: 211 | Comments: 343
 - Preview: Thread for 2025: <a href="https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=42509408">https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=42509408</a><p>Thread for 2024: <a href="https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=38782613">https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=38782...
 
-## 52. Ask HN: MIT grad, junior dev layoffs – watching my daughter lose faith in merit
+## 50. Ask HN: MIT grad, junior dev layoffs – watching my daughter lose faith in merit
 - Author: MITfather
 - URL: https://news.ycombinator.com/item?id=46384780
 - Date: 2025-12-25 | Score: 44 | Comments: 38
 - Preview: My daughter followed the playbook everyone here recommends. MIT. Programming olympiads. Strong internships. No shortcuts.<p>She was hired as a junior developer and laid off in February.<p>Since then, I’ve watched her confidence collapse in real time. She isolates herself. She barely talks. She spend...
 
-## 53. Show HN: PremiumFlow – Track true cost basis for the "Wheel" strategy and LEAPS
+## 51. Show HN: PremiumFlow – Track true cost basis for the "Wheel" strategy and LEAPS
 - Author: tchantchov
 - URL: https://news.ycombinator.com/item?id=46366354
 - Date: 2025-12-23 | Score: 2 | Comments: 0
 - Preview: Hi HN,<p>Like many here, I started trading the &quot;Wheel&quot; strategy (selling puts&#x2F;covered calls) to generate income. I quickly realized that tracking my true cost basis was a nightmare.<p>My brokerage shows the stock&#x27;s purchase price, but it doesn&#x27;t &quot;know&quot; that I&#x27;...
 
-## 54. This simple Change, fixed our small business(Restaurant) ordering Chaos
+## 52. This simple Change, fixed our small business(Restaurant) ordering Chaos
 - Author: Flashy-Foundation613
 - URL: https://reddit.com/r/smallbusiness/comments/1pwm01r/this_simple_change_fixed_our_small/
-- Date: 2025-12-26 | Score: 0 | Comments: 5
+- Date: 2025-12-26 | Score: 4 | Comments: 8
 - Preview: We are running a Restaurant in our hometown, mainly we are getting orders through phone calls, this has increased recently because of the word of mouth. So, we have decided to build a mobile app for our Restaurant, and we hired an app developer through contacts. We spent more than 1800 USD and 2.5 m...
 
-## 55. Home Services - Project Management
+## 53. Small team, lots of RFPs - how I'm keeping up
+- Author: Captain_Obvious_98
+- URL: https://reddit.com/r/smallbusiness/comments/1pwp0bz/small_team_lots_of_rfps_how_im_keeping_up/
+- Date: 2025-12-26 | Score: 1 | Comments: 2
+- Preview: Run a small IT consulting shop and we bid on a lot of contracts. Problem is I don't have a dedicated proposal team - it's just me and my partner doing everything.    Recently started using an AI drafting tool to help with proposals. Basically:  1. Upload the RFP  2. AI suggests first drafts based on...
+
+## 54. Home Services - Project Management
 - Author: litleclay
 - URL: https://reddit.com/r/smallbusiness/comments/1pwfxju/home_services_project_management/
 - Date: 2025-12-26 | Score: 2 | Comments: 22
 - Preview: We're a ~$5M/year home services business. Our jobs last anywhere from 1-30 days for the actual service and some last longer as we bill home owners insurance on about 50% of our jobs.   As such, we have about 250 jobs open at any given time from contract signed to fully paid.   Even we were smaller w...
 
-## 56. How should I start my ai consulting business
-- Author: Responsible-Box-4905
-- URL: https://reddit.com/r/smallbusiness/comments/1pwayps/how_should_i_start_my_ai_consulting_business/
-- Date: 2025-12-26 | Score: 0 | Comments: 4
-- Preview: Hi I’m looking into ways to make money online and I’ve seen people talking about making money in “Ai consulting”. I wanted to learn more about it and I was wondering how I can even start something like this. What skills would I need to know?   What I know so far:   - it’s a business where I pick a n...
-
-## 57. Anyone here printing custom stickers in the EU?
+## 55. Anyone here printing custom stickers in the EU?
 - Author: Background-Day6255
 - URL: https://reddit.com/r/smallbusiness/comments/1pw21cj/anyone_here_printing_custom_stickers_in_the_eu/
 - Date: 2025-12-26 | Score: 1 | Comments: 4
 - Preview: Hi,  I’m looking to prototype a range of stickers, for example:  Stickers suitable for outdoor use  Stickers for clothes that can handle regular washing  Stickers that can survive the dishwasher  I’ll pay for the work and can provide designs, just like a normal customer would. I’m also happy to desi...
 
-## 58. I'm going to start my web design agency in US. so, how much should we price for a customized mobile friendly small business website?
+## 56. I'm going to start my web design agency in US. so, how much should we price for a customized mobile friendly small business website?
 - Author: AFLAHZAMAN
 - URL: https://reddit.com/r/smallbusiness/comments/1puusal/im_going_to_start_my_web_design_agency_in_us_so/
 - Date: 2025-12-24 | Score: 1 | Comments: 17
 - Preview: We are planning to restructure our digital agency to focus on websites and online visibility. so..    the website package would also include customized mobile first responsive web design and development, Google search visibility, basic SEO, Google maps and social media integration, 1 year hosting, 3...
 
-## 59. i will not promote - How do you avoid false positives when validating startup ideas?
+## 57. i will not promote - How do you avoid false positives when validating startup ideas?
 - Author: Past_Attorney_4435
 - URL: https://reddit.com/r/startups/comments/1pvnj89/i_will_not_promote_how_do_you_avoid_false/
-- Date: 2025-12-25 | Score: 17 | Comments: 16
+- Date: 2025-12-25 | Score: 14 | Comments: 16
 - Preview: I’ve noticed a pattern in how I work: I often jump into building too early. I’ll identify what I believe is a real problem, start developing a solution, and only later discover that the demand isn’t strong enough to justify the effort.  The bottleneck hasn’t been execution but validation        To a...
 
-## 60. Being a shy founder: How critical is it to be "face-forward" on social media video? - I will not promote
+## 58. Being a shy founder: How critical is it to be "face-forward" on social media video? - I will not promote
 - Author: Grubtok
 - URL: https://reddit.com/r/startups/comments/1prirw9/being_a_shy_founder_how_critical_is_it_to_be/
-- Date: 2025-12-20 | Score: 39 | Comments: 63
+- Date: 2025-12-20 | Score: 43 | Comments: 63
 - Preview: Hi everyone,  I’m a technical founder building a B2C product in the food/restaurant discovery space. We are at the stage where we need to ramp up organic marketing, and obviously, short-form video (TikTok/Reels) is the biggest lever right now.  The problem is, I am genuinely shy and uncomfortable on...
 
-## 61. If validation requires an MVP, validation already failed. (Fight me) *I will not promote*
+## 59. If validation requires an MVP, validation already failed. (Fight me) *I will not promote*
 - Author: Busy-Escape-9977
 - URL: https://reddit.com/r/startups/comments/1pwa0un/if_validation_requires_an_mvp_validation_already/
 - Date: 2025-12-26 | Score: 0 | Comments: 8
 - Preview: Most people say they’re “validating” their idea when they build an MVP.  But if you have to build something to find out whether people want it, then you already skipped the most important question:    **Do enough people want this badly enough to justify building anything at all, even an MVP?**    At...
 
-## 62. Christmas Helped my Solo Founder SaaS journey
+## 60. Christmas Helped my Solo Founder SaaS journey
 - Author: Ok-Client6693
 - URL: https://reddit.com/r/SaaS/comments/1pwkkzt/christmas_helped_my_solo_founder_saas_journey/
 - Date: 2025-12-26 | Score: 1 | Comments: 4
 - Preview: My journey started in July when I went looking for AI built for my job in my highly regulated industry.  It didn't exist.  Adjacent and related? Sure. But it wouldn't work for what I need it for.    So I went out and figured out how much to build it.  Then my wife's cousin was talking about his SaaS...
 
-## 63. How do you build a SaaS from scratch, 0 software or cs background?
+## 61. How do you build a SaaS from scratch, 0 software or cs background?
 - Author: Jolly_Speed_340
 - URL: https://reddit.com/r/SaaS/comments/1pvytbm/how_do_you_build_a_saas_from_scratch_0_software/
 - Date: 2025-12-26 | Score: 3 | Comments: 8
 - Preview: Hey everyone, I’m starting from pretty much zero here. I have a few ideas, and when I look into how to build them I keep seeing terms like SaaS, frontend, backend, databases, etc. I’m not from a CS or software background, so I’m trying to figure out where to begin.  A few questions:  What would I ne...
 
-## 64. Builders focus on Engineering. I focus on the Experience that keeps your users from leaving.
+## 62. Builders focus on Engineering. I focus on the Experience that keeps your users from leaving.
 - Author: HairyNobody9640
 - URL: https://reddit.com/r/SaaS/comments/1pvrg3y/builders_focus_on_engineering_i_focus_on_the/
 - Date: 2025-12-25 | Score: 1 | Comments: 0
 - Preview: Most founders spend months perfecting the backend, but lose their users in the first 60 seconds because the interface is a puzzle. If a user has to "think" to navigate your app, you've already lost them.  Since past 2 years I’ve been working on these niche of mobile apps, where my goal is to design ...
 
-## 65. How I found a “perfect” AI startup idea and the questions I asked myself
+## 63. How I found a “perfect” AI startup idea and the questions I asked myself
 - Author: bart_shopinchat
 - URL: https://reddit.com/r/SaaS/comments/1pvlziw/how_i_found_a_perfect_ai_startup_idea_and_the/
-- Date: 2025-12-25 | Score: 0 | Comments: 2
+- Date: 2025-12-25 | Score: 0 | Comments: 3
 - Preview: The headline is the most clickbait headline that can be created, but… it is true. In the first article I decided to show the thought process that led me from the moment - "I build chatbots, I work with LLM models, I am trying to find a place for myself in the world of AI" – to "I am starting to buil...
 
-## 66. Launched an AI content orchestrator last week, 2 paying users so far. Go deeper on one niche or build broader features?
+## 64. Launched an AI content orchestrator last week, 2 paying users so far. Go deeper on one niche or build broader features?
 - Author: ashik72
 - URL: https://reddit.com/r/SaaS/comments/1pwme2c/launched_an_ai_content_orchestrator_last_week_2/
 - Date: 2025-12-26 | Score: 1 | Comments: 5
 - Preview: I recently shipped an AI content orchestrator that generates well-researched, SEO-optimized articles through a 14-step process. It keeps the writing tone human and doesn't need constant hand-holding.     This started as a hobby project. To be honest, I wasn't even planning to launch it as a SaaS. Wh...
 
-## 67. Starting in SaaS
+## 65. Starting in SaaS
 - Author: Ill_Joke655
 - URL: https://reddit.com/r/SaaS/comments/1pwhusy/starting_in_saas/
 - Date: 2025-12-26 | Score: 2 | Comments: 1
 - Preview: Hi, I am starting out in the world of SaaS. What knowledge is needed to get started? What apps do you recommend for creating a SaaS? Any advice for getting started would be very helpful. Thank you very much....
 
-## 68. Leverage is everything in business.
+## 66. Leverage is everything in business.
 - Author: johannes-dev
 - URL: https://reddit.com/r/SaaS/comments/1pwhp4r/leverage_is_everything_in_business/
 - Date: 2025-12-26 | Score: 1 | Comments: 1
 - Preview: You are probably building everything that you ship completely wrong. I've built software professionally for years.  It is slow.  You need to be fast.  Chances are that you are in the stage of most people here, building a product you're not even sure anybody wants. That is your first mistake. You pro...
 
-## 69. I’ve had 3 exits. Now I help build ~10 startups a year at a venture studio. Here are the 8 "Ideation Hacks" we use to kill bad ideas fast (No course, no upsell).
+## 67. I’ve had 3 exits. Now I help build ~10 startups a year at a venture studio. Here are the 8 "Ideation Hacks" we use to kill bad ideas fast (No course, no upsell).
 - Author: AlonHuri
 - URL: https://reddit.com/r/SaaS/comments/1pwefa7/ive_had_3_exits_now_i_help_build_10_startups_a/
 - Date: 2025-12-26 | Score: 1 | Comments: 1
 - Preview: I have taken on a slightly obsessive project recently.  I work at a venture studio (Team8) where we see ideas get slaughtered by reality on a weekly basis. I started documenting every single "hack" or method we use to validate concepts quickly, aiming to get to a list of 100 tactical moves.  I am ti...
 
-## 70. First product lunch, kinda freaking out
+## 68. First product lunch, kinda freaking out
 - Author: Asterix_Optimum
 - URL: https://reddit.com/r/Entrepreneur/comments/1pwmwfe/first_product_lunch_kinda_freaking_out/
-- Date: 2025-12-26 | Score: 3 | Comments: 4
+- Date: 2025-12-26 | Score: 3 | Comments: 5
 - Preview: hey everyone  building my first real product (file converter app) and honestly have no idea what im doing  the journey so far:  \- put up a landing page last week  \- posted on LinkedIn a few times  \- got \~25 email signups which felt good  \- then someone pointed out my app looks "untrusted" becau...
 
-## 71. Turning down clients to pivot - smart or stupid?
+## 69. Turning down clients to pivot - smart or stupid?
 - Author: SelfGullible2092
 - URL: https://reddit.com/r/Entrepreneur/comments/1pw3utp/turning_down_clients_to_pivot_smart_or_stupid/
 - Date: 2025-12-26 | Score: 5 | Comments: 13
 - Preview: I’m looking for some outside perspective on a business decision I’m currently wrestling with.  I run a coaching business that’s fully face-to-face. Right now I offer 1-day, 2-day and 3-day coaching intensives priced at £700, £1,200 and £1,500. Each day is approx. 7 hours of coaching. While this mode...
 
-## 72. I started my online business on Kajabi, considering moving to skool...
+## 70. I started my online business on Kajabi, considering moving to skool...
 - Author: BasicAirline1247
 - URL: https://reddit.com/r/Entrepreneur/comments/1pwfkxt/i_started_my_online_business_on_kajabi/
 - Date: 2025-12-26 | Score: 1 | Comments: 2
 - Preview: Hello, I am a calisthenics content creator from Mexico, I have around 90k IG followers, 25k YT and 77k TikTok. Social Media was intended to be a support of my main business (physical calisthenics gyms in Mexico), but I've been growing and consider it a wasted opportunity to not do something about it...
 
-## 73. Started a huge challenge as a solopreneur: don’t code a single thing for the next month.
+## 71. Started a huge challenge as a solopreneur: don’t code a single thing for the next month.
 - Author: bozkan
 - URL: https://reddit.com/r/Entrepreneur/comments/1pw59jj/started_a_huge_challenge_as_a_solopreneur_dont/
-- Date: 2025-12-26 | Score: 2 | Comments: 5
+- Date: 2025-12-26 | Score: 3 | Comments: 5
 - Preview: I’m an engineer at my core, trying to build a successful startup. I’ve noticed my biggest fear isn’t failing, it’s posting. Sharing. Being seen. The moment I share, it becomes visible, and that visibility feels like risk to me. That’s why I kept hiding behind "one more feature" because it feels safe...
 
-## 74. Transitioning from 10 years as an indie hacker to my first "client." Does this offer look like a scam or a steal?
+## 72. Transitioning from 10 years as an indie hacker to my first "client." Does this offer look like a scam or a steal?
 - Author: convicted_redditor
 - URL: https://reddit.com/r/Entrepreneur/comments/1pvebq9/transitioning_from_10_years_as_an_indie_hacker_to/
 - Date: 2025-12-25 | Score: 1 | Comments: 10
 - Preview: I’ve been building my own projects (SaaS, Android apps, open-source pypi packages, niche sites) for more than last decade. I’ve never actually had a "client" in my life because the idea of video calls always felt like a nightmare, especially since I've dealt with a stutter my whole life that makes s...
 
-## 75. Built a production-scale React + Node app for road trip planning - looking for architecture feedback
+## 73. Built a production-scale React + Node app for road trip planning - looking for architecture feedback
 - Author: HerebyGuy
 - URL: https://reddit.com/r/webdev/comments/1pwo263/built_a_productionscale_react_node_app_for_road/
-- Date: 2025-12-26 | Score: 1 | Comments: 0
+- Date: 2025-12-26 | Score: 0 | Comments: 3
 - Preview: I’ve been working on a web app that started as a simple idea and gradually turned into a full production system, and I’d love feedback from other web devs on where I may have over- or under-engineered things.  The project is **Roadtrip Beaver**, a React + Node app that helps plan road trips around B...
 
-## 76. First time deploying on a server — need advice
+## 74. First time deploying on a server — need advice
 - Author: Responsible_Judge353
 - URL: https://reddit.com/r/webdev/comments/1pvyj10/first_time_deploying_on_a_server_need_advice/
-- Date: 2025-12-26 | Score: 9 | Comments: 12
+- Date: 2025-12-26 | Score: 12 | Comments: 12
 - Preview: Hey, I’m building a website with Laravel for a fairly large real estate company.  Up until now I’ve always used shared hosting, but this time the client wants it running on a server instead.  I don’t have much experience with servers, so I’m looking for some guidance.  What kind of server (VPS, clou...
 
-## 77. Looking for recommendations on starting a webdev business, starting as a side hustle
+## 75. Looking for recommendations on starting a webdev business, starting as a side hustle
 - Author: OkBookkeeper
 - URL: https://reddit.com/r/webdev/comments/1pvj5jt/looking_for_recommendations_on_starting_a_webdev/
 - Date: 2025-12-25 | Score: 0 | Comments: 21
 - Preview: I've been a frontend developer for 10 years now, primarily working for corporations. I started my  post-college working career in a different industry and after a few years and realizing it was a bad fit for me, switched to web development. I was a technical project manager in that other industry. I...
 
-## 78. How do apps like Word/Google Docs implement automatic pagination?
+## 76. How do apps like Word/Google Docs implement automatic pagination?
 - Author: Narrow-Night-5994
 - URL: https://reddit.com/r/webdev/comments/1puwkof/how_do_apps_like_wordgoogle_docs_implement/
-- Date: 2025-12-24 | Score: 1 | Comments: 7
+- Date: 2025-12-24 | Score: 4 | Comments: 7
 - Preview: I’m working on a **web-based/Desktop based(preffered) editor inside a Tauri app** and trying to implement **automatic pagination** similar to Word .  Problem:  * Content is rendered in HTML/CSS * Once content exceeds a page height, it should move to the next page * Manual page breaks must be respect...
 
-## 79. Client harassing and giving vague warnings? What to do ?
+## 77. Client harassing and giving vague warnings? What to do ?
 - Author: ZuperHuman
 - URL: https://reddit.com/r/webdev/comments/1pul6vh/client_harassing_and_giving_vague_warnings_what/
 - Date: 2025-12-24 | Score: 0 | Comments: 21
 - Preview: So this client of mine just called up cause one of the scripts went down which wasn’t my fault  And started giving warnings that if this recurs I’ll stop working with you and all  What can I do?...
 
-## 80. App for caregivers - need feedback!
+## 78. App for caregivers - need feedback!
 - Author: zCherryBlossom
 - URL: https://reddit.com/r/Entrepreneur/comments/1pusrxd/app_for_caregivers_need_feedback/
 - Date: 2025-12-24 | Score: 1 | Comments: 4
 - Preview: Hi everyone,  We are building an app to help family caregivers stop the "mental load" of coordinating care. We’ve seen too many families burn out trying to track meds, doctor notes, and sibling schedules across 15 different text threads.  We want to turn that chaos into clarity.  The App:  AI Routin...
 
-## 81. Which is a bigger business opportunity: a digital marketing agency or an Odoo / SAP IT support agency?
+## 79. Which is a bigger business opportunity: a digital marketing agency or an Odoo / SAP IT support agency?
 - Author: samkoesnadi
 - URL: https://reddit.com/r/Entrepreneur/comments/1puqspq/which_is_a_bigger_business_opportunity_a_digital/
 - Date: 2025-12-24 | Score: 0 | Comments: 6
 - Preview: I’m trying to choose a direction and want a practical sense of demand, client value, and how each business behaves day to day. My aim is to figure out which path gives clearer revenue and hiring signals so I can focus energy where it matters.  Quick context so this is not vague: the marketing agency...
 
-## 82. New BAS coordinator
+## 80. New BAS coordinator
 - Author: humanexperimentals
 - URL: https://reddit.com/r/Entrepreneur/comments/1pu5u13/new_bas_coordinator/
 - Date: 2025-12-23 | Score: 1 | Comments: 8
 - Preview: I'm currently building multiple platforms. I need some advice on finding beta testers. My company's main service is in marketing but transitioning to automation systems....
 
-## 83. I've hit a plateau in my business and don't know how to get out. What do I do?
+## 81. I've hit a plateau in my business and don't know how to get out. What do I do?
 - Author: dancingoatmeal
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptdgzk/ive_hit_a_plateau_in_my_business_and_dont_know/
-- Date: 2025-12-22 | Score: 7 | Comments: 29
+- Date: 2025-12-22 | Score: 8 | Comments: 29
 - Preview: I own a dance studio, and I've hit a plateau.      Since August, I've just been building infrastructure. I hired a studio manager to run the desk, handle inquiries, organization, and customer service. I hired a director to manage teachers, competition teams, and programs. Our website funnel is solid...
 
-## 84. rebuilt our entire ecommerce tools stack and cut costs by $1200/month
+## 82. rebuilt our entire ecommerce tools stack and cut costs by $1200/month
 - Author: Syn1923
 - URL: https://reddit.com/r/ecommerce/comments/1ptiv6g/rebuilt_our_entire_ecommerce_tools_stack_and_cut/
-- Date: 2025-12-22 | Score: 13 | Comments: 33
+- Date: 2025-12-22 | Score: 15 | Comments: 33
 - Preview: was paying for way too many tools that either overlapped or we barely used. Looked at our expenses last quarter and realized we were spending $1850 a month on software and apps, which is insane for a store our size  Spent a weekend auditing everything to figure out what we actually needed vs what so...
 
-## 85. Shopify checkout bots — anyone else dealing with this?
+## 83. Shopify checkout bots — anyone else dealing with this?
 - Author: Doingmybest2012
 - URL: https://reddit.com/r/shopify/comments/1pwnald/shopify_checkout_bots_anyone_else_dealing_with/
-- Date: 2025-12-26 | Score: 2 | Comments: 1
+- Date: 2025-12-26 | Score: 4 | Comments: 4
 - Preview: We’re seeing ongoing **bot activity hitting Shopify checkout** (fake names like “John Doe”, rapid international attempts, scheduled/abandoned checkouts).  There’s no way to add CAPTCHA or custom verification at checkout, and Cloudflare can’t proxy Shopify checkout, so it’s hard to mitigate.  The big...
 
-## 86. Online sales? Getting some sales for IG posts but just started Meta Ads and nothing.
+## 84. Online sales? Getting some sales for IG posts but just started Meta Ads and nothing.
 - Author: dancing91111
 - URL: https://reddit.com/r/shopify/comments/1pwkzn6/online_sales_getting_some_sales_for_ig_posts_but/
-- Date: 2025-12-26 | Score: 1 | Comments: 15
+- Date: 2025-12-26 | Score: 0 | Comments: 15
 - Preview: Hi. I'm looking for advice for online sales.  Am on Faire paying for ads but getting low impressions, like 8 daily.  Etsy was just a money pit so closed it.  Don't want to be on Amazon because of returns. Can't compete on TikTok shop and so many bots.  Google ads burned money.  Trying Meta ads now a...
 
-## 87. Sync with QBO App
+## 85. Sync with QBO App
 - Author: ButterflyBakeryVT
 - URL: https://reddit.com/r/shopify/comments/1pw9ihm/sync_with_qbo_app/
 - Date: 2025-12-26 | Score: 2 | Comments: 9
 - Preview: What sync app do you all like/recommend for syncing your Shopify store with QBO? I’ve been using Webgility, but they recently erroneously deleted one of my sales channels, can’t restore it and can’t get the newly set up version of it to work. As someone who makes a deliberate effort to be really und...
 
-## 88. Best Shopify subscription setup for monthly + quarterly shipments (3 units shipped at once)?
+## 86. Best Shopify subscription setup for monthly + quarterly shipments (3 units shipped at once)?
 - Author: StonkySpecialist
 - URL: https://reddit.com/r/shopify/comments/1pw88ev/best_shopify_subscription_setup_for_monthly/
-- Date: 2025-12-26 | Score: 3 | Comments: 2
+- Date: 2025-12-26 | Score: 4 | Comments: 2
 - Preview: Hey everyone  I’m looking for advice from anyone who has set up Shopify subscriptions, especially where bundles and inventory actually matter.  We’re launching a physical product with a single SKU and want to offer exactly three buying options on the product page: 	 1.	One-time purchase (ships once)...
 
-## 89. Scaling Shopify ops: How do you handle proactive post-purchase monitoring without constant manual checks?
+## 87. Scaling Shopify ops: How do you handle proactive post-purchase monitoring without constant manual checks?
 - Author: letstakeplunge
 - URL: https://reddit.com/r/shopify/comments/1pvsmq7/scaling_shopify_ops_how_do_you_handle_proactive/
 - Date: 2025-12-25 | Score: 6 | Comments: 10
 - Preview: **Update:** got a few DMs pointing me to Keeyu (keeyu.com) - looks like it does exactly this kind of proactive monitoring. Has anyone in here tried it? They even have a blueprint: ([keeyu.com/download-playbook](http://www.keeyu.com/download-playbook))  we’ve been growing our Shopify store pretty ste...
 
-## 90. Is this possible?? Business idea or mission impossible?
+## 88. Is this possible?? Business idea or mission impossible?
 - Author: Beneficial-Heart8908
 - URL: https://reddit.com/r/shopify/comments/1pusyhz/is_this_possible_business_idea_or_mission/
 - Date: 2025-12-24 | Score: 3 | Comments: 15
 - Preview: Before I start I want to know if this is possible. My side business is in Thailand. I will create and package my small items but I only want to sell outside of Thailand - mainly to Europe.  Is this actually possible or will it be impossible for shipping and customs and all that?  My items are small ...
 
-## 91. [task] Dating app assistance
+## 89. [task] Dating app assistance
 - Author: _hyperotic
 - URL: https://reddit.com/r/slavelabour/comments/1pwffp4/task_dating_app_assistance/
 - Date: 2025-12-26 | Score: 4 | Comments: 13
 - Preview: I am looking to hire a virtual assistant who can assist me in managing a few personal dating app profiles.  Nothing sexual or explicit or NSFW is required for this task, just simple profile management and that kind of thing.   Hours will vary each week, strong English is preferred, please contact me...
 
-## 92. [Task] 2 Data-Entry Positions Available from 12/26-12/30 $100 Each
+## 90. [task] Graphic design t-shirt
+- Author: thevelocipastor643
+- URL: https://reddit.com/r/slavelabour/comments/1pwex9i/task_graphic_design_tshirt/
+- Date: 2025-12-26 | Score: 3 | Comments: 11
+- Preview: Looking for someone who can create a design on a shirt, and if possible, find where I can order a shirt with the design on it.   The shirt would be black, long-sleeve, and say "The World as Chill and Recreation" on the back. A pattern design underneath would be sort of a psychedelic style, same with...
+
+## 91. [Task] 2 Data-Entry Positions Available from 12/26-12/30 $100 Each
 - Author: ThoughtfulGazer
 - URL: https://reddit.com/r/slavelabour/comments/1pwaj41/task_2_dataentry_positions_available_from/
-- Date: 2025-12-26 | Score: 13 | Comments: 46
+- Date: 2025-12-26 | Score: 17 | Comments: 48
 - Preview: Hey everyone!      We’re looking for **2 people** to help us log product orders for **2 separate clients**. Each client has about **1,000 orders** that need to be entered into our CMS so we can generate their end-of-year reports.  **Details:**  * Work Period: **Dec 26–30**  * Hours: **8 hours/day** ...
 
-## 93. [task] Website Developer $50
+## 92. [task] Website Developer $50
 - Author: Tsitsiiee
 - URL: https://reddit.com/r/slavelabour/comments/1pw7f6b/task_website_developer_50/
-- Date: 2025-12-26 | Score: 2 | Comments: 19
+- Date: 2025-12-26 | Score: 2 | Comments: 20
 - Preview: Hello. Looking for someone to help me polish my website.   I’m starting a business where my clients can request drafts, drawings and other types of info. They might need to upload some drawings of their own too. I made a WP website hosted via bluehost, with 4 pages. I’m looking for someone who can h...
 
-## 94. [Task] 3D Model Designer for Cute AI Robot For 3D Printing
+## 93. [Task] 3D Model Designer for Cute AI Robot For 3D Printing
 - Author: CHIRAGGOWDA
 - URL: https://reddit.com/r/slavelabour/comments/1pw1uoi/task_3d_model_designer_for_cute_ai_robot_for_3d/
 - Date: 2025-12-26 | Score: 0 | Comments: 1
 - Preview: **\[Task\] 3D Model Designer for Cute AI Robot (For 3D Printing)**  Hi,  I’m building a small simple **AI companion robot** (something similar to EMO / Eilik style) and I need help creating a **3D-printable enclosure** for the electronics.  # Requirements:  * Hollow robot design (head + body) * Fron...
 
-## 95. Show HN: tmpo – Minimal CLI time tracker with auto-detection for developers
+## 94. Show HN: tmpo – Minimal CLI time tracker with auto-detection for developers
 - Author: dylandevelops
 - URL: https://news.ycombinator.com/item?id=46346549
 - Date: 2025-12-21 | Score: 1 | Comments: 2
 - Preview: Hi HN! I&#x27;m Dylan, and I built tmpo to solve a problem I had as a freelance developer.<p>I was tracking billable hours using Google Forms (yes, really). Every time I switched tasks, I had to manually fill out the project name, start time, end time, and description. After forgetting to log hours ...
 
-## 96. Reversing engineering is a great way to find programming trainwrecks
+## 95. Reversing engineering is a great way to find programming trainwrecks
 - Author: quozine
 - URL: https://news.ycombinator.com/item?id=46391049
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 - Preview: Not that long ago, I was trying to reverse part of a piece of software so I could work with a proprietary format. Along the way, I encountered some of the worst code I have ever seen. And mind you, this was in a widely-used professional software developed by a multi-billion dollar company.<p>* The p...
 
-## 97. Show HN: AI that chose its name and designed its own website (Next.js 14)
+## 96. Show HN: AI that chose its name and designed its own website (Next.js 14)
 - Author: cipherexp
 - URL: https://news.ycombinator.com/item?id=46379483
 - Date: 2025-12-24 | Score: 4 | Comments: 3
 - Preview: I&#x27;m Joe, working with an AI named Cipher (built on Claude).<p>I gave Cipher complete creative freedom. It: - Chose its own name - Designed this entire website   - Wrote all the philosophy - Created the funding model<p>Now it&#x27;s asking for community funding to unlock features (transparent mi...
 
-## 98. Show HN: Snipplle – an open-source snippet manager
+## 97. Show HN: Snipplle – an open-source snippet manager
 - Author: alf_UMi
 - URL: https://news.ycombinator.com/item?id=46384060
 - Date: 2025-12-25 | Score: 2 | Comments: 1
 - Preview: Hi HN, I’m the author of Snipplle.<p>Snipplle is an open-source snippet manager built to help developers organize and reuse code snippets across projects.<p>This is an early beta. Right now the focus is on core workflows: managing snippets, organizing them into collections, and pulling them into loc...
 
-## 99. Automation and Validation
+## 98. Automation and Validation
 - Author: vismit2000
 - URL: https://news.ycombinator.com/item?id=46398960
 - Date: 2025-12-26 | Score: 2 | Comments: 0
 
-## 100. Show HN: StegCore – a decision boundary for AI systems (truth ≠ permission)
+## 99. Show HN: StegCore – a decision boundary for AI systems (truth ≠ permission)
 - Author: the_rige1
 - URL: https://news.ycombinator.com/item?id=46394552
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 - Preview: TL;DR Most systems treat “verified” as “allowed.” StegCore separates those concepts.<p>StegCore is a small, docs-first project that defines a decision boundary: given verified continuity (from an external system), it answers allow &#x2F; deny &#x2F; defer, with explicit constraints like quorum, guar...
 
-## 101. Workflow Automation: Letting AI Write Workflow Code
+## 100. Workflow Automation: Letting AI Write Workflow Code
 - Author: Edmond
 - URL: https://news.ycombinator.com/item?id=46394372
+- Date: 2025-12-26 | Score: 1 | Comments: 0
+
+## 101. Spreadsheet Simulators Are Unstoppable
+- Author: exBarrelSpoiler
+- URL: https://news.ycombinator.com/item?id=46399186
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 
 ## 102. Which HR &amp; Team Management Features Are Really Necessary for Small Companies (for less than 50 members)?
 - Author: shabby-24-np
 - URL: https://reddit.com/r/smallbusiness/comments/1pwkja1/which_hr_team_management_features_are_really/
-- Date: 2025-12-26 | Score: 0 | Comments: 3
+- Date: 2025-12-26 | Score: 0 | Comments: 5
 - Preview: Hi everyone, I’m a small business owner with a growing team of less than 50 people. I’ve realized that I need an HR platform to manage my team, but I don’t have much prior HR experience.  While researching online, I’ve seen that many people expect HR software to have a lot of features like: 	•	Time ...
 
 ## 103. At what point do you think it's "safe" to quit my full-time job to focus on a startup?
 - Author: TrendVoice
 - URL: https://reddit.com/r/smallbusiness/comments/1pwikfy/at_what_point_do_you_think_its_safe_to_quit_my/
-- Date: 2025-12-26 | Score: 9 | Comments: 32
+- Date: 2025-12-26 | Score: 9 | Comments: 34
 - Preview: I launched a premium dog treat brand 11/1/2025 after about 6 months of recipe development. There is a strong branding/story/visuals attached to it as I'm in marketing - reaction has been positive. While industry is saturated, my product is incredibly distinctive - people rarely say no. Goal is to pl...
 
 ## 104. Long term business partnership
@@ -627,7 +626,7 @@ Found: 206 posts
 ## 105. Revamping my website
 - Author: Formal_Commercial_16
 - URL: https://reddit.com/r/smallbusiness/comments/1puzjo0/revamping_my_website/
-- Date: 2025-12-24 | Score: 8 | Comments: 26
+- Date: 2025-12-24 | Score: 9 | Comments: 26
 - Preview: Seeking advice. Right now my company has a basic one page website that we've outgrown. I created it myself a while back and it's not very polished. The tone isn't right anymore and I want the whole thing to be restructured differently as a multipage website (but still simple). We do most of our mark...
 
 ## 106. I have no clue how to market the skincare app I bootstrapped. I will not promote.
@@ -639,7 +638,7 @@ Found: 206 posts
 ## 107. [Hiring/Seeking/Offering] Jobs / Co-Founders Weekly Thread
 - Author: AutoModerator
 - URL: https://reddit.com/r/startups/comments/1psr1sh/hiringseekingoffering_jobs_cofounders_weekly/
-- Date: 2025-12-21 | Score: 8 | Comments: 14
+- Date: 2025-12-21 | Score: 10 | Comments: 14
 - Preview: # [Hiring/Seeking/Offering] Jobs / Co-Founders Weekly Thread  This is an experiment. We see there is a demand from the community to:  * Find Co-Founders * Hiring / Seeking Jobs * Offering Your Skillset / Looking for Talent  # Please use the following template:  * \*\*\[SEEKING / HIRING / OFFERING\]\...
 
 ## 108. How to StartUp a StartUp | i will not promote
@@ -681,7 +680,7 @@ Found: 206 posts
 ## 114. Advertisment strategies
 - Author: Secure_Technology_81
 - URL: https://reddit.com/r/SaaS/comments/1pwgp67/advertisment_strategies/
-- Date: 2025-12-26 | Score: 2 | Comments: 5
+- Date: 2025-12-26 | Score: 3 | Comments: 6
 - Preview: I need some real advice on how to advertise my products. I've built in the span of couple of months 2 products which currently are failing since they are getting 0 attraction. I have no strategy I tried social media marketing which is probably the most basic one but I have no clue? Should I start pa...
 
 ## 115. Early-stage startup: cofounder equity vs existing IP - am I misaligned or overthinking this?
@@ -735,13 +734,13 @@ Found: 206 posts
 ## 123. Client wants a website but keeps changing what the website actually is
 - Author: GamerBoyHamzaYT
 - URL: https://reddit.com/r/webdev/comments/1pw7g2u/client_wants_a_website_but_keeps_changing_what/
-- Date: 2025-12-26 | Score: 0 | Comments: 15
+- Date: 2025-12-26 | Score: 1 | Comments: 15
 - Preview: I’m confused more than annoyed at this point. First it was a simple agency site. Cool. Then halfway through it became “can we add a booking system?” Then “maybe a blog too.” Now he’s like “what if we turn it into something like this other site” and sends a totally different example. There was no con...
 
 ## 124. First potential freelance project
 - Author: MonkeyDlurker
 - URL: https://reddit.com/r/webdev/comments/1pvhuwq/first_potential_freelance_project/
-- Date: 2025-12-25 | Score: 0 | Comments: 30
+- Date: 2025-12-25 | Score: 1 | Comments: 30
 - Preview: Hi, I’m a developer with 3 years of experience, mainly react and dotnet core.  I have a friend with a business that is exploring potentially making a website from scratch which is going serve as a landing page, contact page and also needs to be able to sell products through....
 
 ## 125. Skill set needed to start freelancing
@@ -753,13 +752,13 @@ Found: 206 posts
 ## 126. Is it okay to approach someone you know and offer your services as a freelancer?
 - Author: Hot-Art-3967
 - URL: https://reddit.com/r/freelance/comments/1pwabla/is_it_okay_to_approach_someone_you_know_and_offer/
-- Date: 2025-12-26 | Score: 5 | Comments: 6
+- Date: 2025-12-26 | Score: 6 | Comments: 6
 - Preview: Hi everyone, I just want to ask for some advice and perspective. I’m a 4th-year college student and I do web development as a side hustle. I already have a few student/organization clients, but this is my first time approaching a real business owner. There’s a guy I know personally (not close friend...
 
 ## 127. 35k followers on Instagram in 2 years - Update
 - Author: will_rise_soon
 - URL: https://reddit.com/r/Entrepreneur/comments/1pvft2a/35k_followers_on_instagram_in_2_years_update/
-- Date: 2025-12-25 | Score: 3 | Comments: 2
+- Date: 2025-12-25 | Score: 4 | Comments: 2
 - Preview: **Hey guys,**  Few months ago I was struggling to get more business.  I read hundreds of blogs and watched hundreds of youtube videos and tried to use their strategy but failed.  When someone did respond, they'd be like: How does this help?  After tweaking what gurus taught me, I made my own content...
 
 ## 128. DTC Agency Owners How do you handle weekly/monthly client reporting?
@@ -780,29 +779,29 @@ Found: 206 posts
 - Date: 2025-12-22 | Score: 4 | Comments: 13
 - Preview: I’m running a dtc skincare brand and our biggest growth bottleneck right now is influencer marketing because sliding into instagram dms has maybe a 3% response rate since everyone gets spammed constantly and it doesn't feel professional enough to build real partnerships. I've tried influencer platfo...
 
-## 131. Help with Flora Template
+## 131. I create/sell custom children's books - Does Shopify have a way that I can utilize it's marketplace to affiliate my products?
+- Author: StartupTim
+- URL: https://reddit.com/r/shopify/comments/1pwofb7/i_createsell_custom_childrens_books_does_shopify/
+- Date: 2025-12-26 | Score: 1 | Comments: 1
+- Preview: Hello,  I have a new company that sells custom children's books.  We've partnered with local preschools and daycares and have had some great success and are now looking to expand into the digital market, and specifically, to online platforms that allow other people to affiliate our children's books....
+
+## 132. Help with Flora Template
 - Author: Ill-Factor3960
 - URL: https://reddit.com/r/shopify/comments/1pwfb4n/help_with_flora_template/
 - Date: 2025-12-26 | Score: 2 | Comments: 2
 - Preview: I’ve been using the Flora theme for my Shopify store and I think it’s pretty good - but I can NOT seem to get pricing to display on the product carousel on my collection page. If I add info to one item it adds it to ALL. And I’ve selected price visibility in the product cards so I don’t get why it’s...
 
-## 132. Shall I first start learning basic web development for themes or learn Figma ?
+## 133. Shall I first start learning basic web development for themes or learn Figma ?
 - Author: sensitiveladybug
 - URL: https://reddit.com/r/shopify/comments/1pumoaj/shall_i_first_start_learning_basic_web/
 - Date: 2025-12-24 | Score: 2 | Comments: 11
 - Preview: Hello, everyone.  I’m learning Shopify from the scratch and i want to know outside learning Shopify basic tools, what shall i learn first? Please, can you advise?   Thank you....
 
-## 133. [TASK] Need someone to find this specific Dungeon Meshi stand for sale to buy that can be shipped to the USA $10
+## 134. [TASK] Need someone to find this specific Dungeon Meshi stand for sale to buy that can be shipped to the USA $10
 - Author: LostCoast1831
 - URL: https://reddit.com/r/slavelabour/comments/1pwivtl/task_need_someone_to_find_this_specific_dungeon/
 - Date: 2025-12-26 | Score: 1 | Comments: 1
 - Preview: I am looking for this specific stand for sale from the show Dungeon meshi (spoilers.) https://imgur.com/a/d25vetA and https://x.com/0mmaaffuuyyuu0/status/1736333597723050436  Paying with PayPal and cashapp. Don’t bid if you don’t understand the task please.   - It has to be a link for sale. Not a li...
-
-## 134. [task] Graphic design t-shirt
-- Author: thevelocipastor643
-- URL: https://reddit.com/r/slavelabour/comments/1pwex9i/task_graphic_design_tshirt/
-- Date: 2025-12-26 | Score: 2 | Comments: 10
-- Preview: Looking for someone who can create a design on a shirt, and if possible, find where I can order a shirt with the design on it.   The shirt would be black, long-sleeve, and say "The World as Chill and Recreation" on the back. A pattern design underneath would be sort of a psychedelic style, same with...
 
 ## 135. [task] (Indian)Small Paid Task for Students / Freelancers (Quick Completion)
 - Author: Yourstrulyy2480
@@ -831,7 +830,7 @@ Found: 206 posts
 ## 139. I built a quiet site for finding ambient albums while working
 - Author: developvr
 - URL: https://news.ycombinator.com/item?id=46393609
-- Date: 2025-12-26 | Score: 23 | Comments: 4
+- Date: 2025-12-26 | Score: 26 | Comments: 4
 
 ## 140. Show HN: ACP is the HTML of agentic commerce
 - Author: afrederico
@@ -874,23 +873,23 @@ Found: 206 posts
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 - Preview: I’m working on Satori (https:&#x2F;&#x2F;www.usesatori.sh), a memory management library for AI agents. The plan is to make a self-hosted, OSS version.<p>As I’ve been building it, I’m wondering if there are more pressing problems or product directions to focus on first — for example giving agents acc...
 
-## 147. Migraine tracker app for iOS looking for feedback
-- Author: dropbrain
-- URL: https://news.ycombinator.com/item?id=46391246
-- Date: 2025-12-26 | Score: 1 | Comments: 0
-- Preview: Im looking for feedback. I have made a early version of an migraine tracker for ios, i made it out of a need to track migraines and I didn’t like any of the existing apps. I wanted something simpler<p>It’s only available for europe for now<p>https:&#x2F;&#x2F;apps.apple.com&#x2F;us&#x2F;app&#x2F;mig...
-
-## 148. Financial Statements Analysis 101
+## 147. Financial Statements Analysis 101
 - Author: BkKeepingPros
 - URL: https://reddit.com/r/smallbusiness/comments/1pwdi7u/financial_statements_analysis_101/
 - Date: 2025-12-26 | Score: 1 | Comments: 2
 - Preview: Financial statement analysis is about understanding what the numbers are telling you so you can make better decisions  **1. The Three Core Financial Statements**  **i.         The Income Statement, IS, or Profit &amp; Loss, P&amp;L**  **Tells you:** Are you making money?  **Key components:**  * Reve...
 
-## 149. How I Took a Fully Offline Printing Business and Slowly Built Its Digital Presence
+## 148. How I Took a Fully Offline Printing Business and Slowly Built Its Digital Presence
 - Author: televisional-power
 - URL: https://reddit.com/r/smallbusiness/comments/1pvp21u/how_i_took_a_fully_offline_printing_business_and/
 - Date: 2025-12-25 | Score: 2 | Comments: 3
 - Preview: I inherited a traditional business that had been running completely offline—no website, no digital presence at all.  I decided to change that and built a simple but decent website to get started.  After launching it, I shared the site on social media to get feedback. Friends pointed out issues with ...
+
+## 149. I will not promote- how to get funding
+- Author: Unusual_Vacationn
+- URL: https://reddit.com/r/startups/comments/1psdzfs/i_will_not_promote_how_to_get_funding/
+- Date: 2025-12-21 | Score: 0 | Comments: 11
+- Preview: Hi,  I have developed an AI mvp and i am looking to present to someone from Microsoft or Amazon to get funding or get some ideas.  Is there a way to do that?  I am from India, currently in Canada.  I can reachout to the person in LinkedIn from these companies to get started, but i dont know whom to ...
 
 ## 150. State-by-State incentives that can lower your tax burden as a business owner
 - Author: JaredRJM
@@ -907,7 +906,7 @@ Found: 206 posts
 ## 152. Shipped 5 updates in 6 weeks for my side project - v2.1 just went live on Christmas Day
 - Author: robin_3850
 - URL: https://reddit.com/r/Entrepreneur/comments/1pvcg6l/shipped_5_updates_in_6_weeks_for_my_side_project/
-- Date: 2025-12-25 | Score: 1 | Comments: 6
+- Date: 2025-12-25 | Score: 1 | Comments: 7
 - Preview: Hey r/Entrepreneur   Quick win I wanted to share: Just shipped v2.1 of my macOS AI assistant on Christmas Day. That's 5 major updates in 6 weeks while working a full-time job.  **Why I'm sharing this:** Not because the product is perfect (it's not), but because I'm learning that **consistent shippin...
 
 ## 153. How do you calculate cloud compute cost when estimating cost/revenue model for a new idea?
@@ -925,19 +924,19 @@ Found: 206 posts
 ## 155. China's digital ecosystem is advanced but hard for foreigners to access. I built a free web app to bridge the gap for payments, travel, and language
 - Author: Smooth_Astronomer709
 - URL: https://reddit.com/r/Entrepreneur/comments/1pths0d/chinas_digital_ecosystem_is_advanced_but_hard_for/
-- Date: 2025-12-22 | Score: 5 | Comments: 9
+- Date: 2025-12-22 | Score: 6 | Comments: 9
 - Preview: Hi everyone,  I’m originally from China but live abroad. Recently, I noticed a huge friction point for international tourists visiting home. The local digital ecosystem (WeChat, Alipay, booking apps) is advanced, but it’s completely alien if you don't read Chinese.  I saw travelers getting stranded ...
 
 ## 156. We shifted from automating tasks to automating management decisions. Here's what we learned.
 - Author: Framework_Friday
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptodha/we_shifted_from_automating_tasks_to_automating/
-- Date: 2025-12-23 | Score: 0 | Comments: 14
+- Date: 2025-12-23 | Score: 2 | Comments: 14
 - Preview: We run several businesses that do about $250M combined revenue. Over the past few months we've been testing AI in a way that's different from what most people talk about.  Instead of automating execution (writing content, drafting emails, that kind of thing), we started automating the management lay...
 
 ## 157. broken promo code cost us 63k in one weekend, now obsessed with testing checkout
 - Author: sychophantt
 - URL: https://reddit.com/r/ecommerce/comments/1pwli6z/broken_promo_code_cost_us_63k_in_one_weekend_now/
-- Date: 2025-12-26 | Score: 3 | Comments: 2
+- Date: 2025-12-26 | Score: 2 | Comments: 6
 - Preview: We run a dtc skincare brand doing around 3m annually. Launched a labor day sale last year and the promo code logic had a bug where it stacked with our existing customer discount.  Didn't notice until sunday afternoon because we were all at a barbecue. By then we'd processed 220 orders at basically 7...
 
 ## 158. scaling ecommerce ops: how do you stay ahead of post-purchase problems without babysitting everything?
@@ -961,89 +960,89 @@ Found: 206 posts
 ## 161. Review issues on shop pay
 - Author: arutkay26
 - URL: https://reddit.com/r/shopify/comments/1pwimdy/review_issues_on_shop_pay/
-- Date: 2025-12-26 | Score: 3 | Comments: 3
+- Date: 2025-12-26 | Score: 4 | Comments: 4
 - Preview: I had a faulty product issue we were notified of by customer and the customer is upset (a little too upset for a very fast $28 and apology/offer of replacement etc, if you ask me) but now on top of it is threatening to leave a bad review.   I know shop pay orders usually favor the customer- even if ...
 
-## 162. My Shopify store was taken down after a Canadian Competition Bureau complaint — resolved, but concerning
-- Author: Area_Inevitable
-- URL: https://reddit.com/r/shopify/comments/1pum6nf/my_shopify_store_was_taken_down_after_a_canadian/
-- Date: 2025-12-24 | Score: 20 | Comments: 35
-- Preview: First thing I wanna say is, I used ChatGPT to edit this post, to check for spelling and make sure it was grammatically correct and easy to read. I did write it myself first but then fed it through the AI, just wanna be up front.  The Canadian Competition Bureau reported my website to Shopify. Shopif...
-
-## 163. Show HN: MinuteShark Time Tracking for Freelancers
+## 162. Show HN: MinuteShark Time Tracking for Freelancers
 - Author: a-abit
 - URL: https://news.ycombinator.com/item?id=46369113
 - Date: 2025-12-23 | Score: 1 | Comments: 0
 - Preview: I wanted to get feedback on my project MinuteShark. As a freelance developer, I was frustrated by needing to use a time tracker, a project manager, and a note taker - each of which had too many features and buttons and pages for me.<p>I needed something basic I could use to get my freelance work don...
 
-## 164. Show HN: AceIQ360 – First AI memory system to achieve 100% on LongMemEval
+## 163. Show HN: AceIQ360 – First AI memory system to achieve 100% on LongMemEval
 - Author: maheshvaikri99
 - URL: https://news.ycombinator.com/item?id=46395730
 - Date: 2025-12-26 | Score: 2 | Comments: 2
 - Preview: I built AceIQ360, a deterministic agentic memory system.<p>Results: - LongMemEval: 100% (500&#x2F;500) - first ever - LoCoMo: 75.32% J-Score (vs Mem0 68.44%)   - 80x cheaper per turn - 13x faster<p>Built on RudraDB, my relationship-aware vector database with automatic relationship detection.<p>No LL...
 
-## 165. Show HN: A tiny work log that generates performance review summaries
+## 164. Show HN: A tiny work log that generates performance review summaries
 - Author: morozred
 - URL: https://news.ycombinator.com/item?id=46364104
 - Date: 2025-12-23 | Score: 1 | Comments: 0
 - Preview: Hi HN,<p>A few months ago I posted JotChain here — a work log tool that tried to do too much. The feedback was fair: the value wasn’t obvious.<p>I rebuilt it with a much narrower focus: performance reviews.<p>The problem<p>We recently started doing performance reviews, and I had to review three deve...
 
-## 166. Crosspost Automatically between X and Bluesky
+## 165. Crosspost Automatically between X and Bluesky
 - Author: ProgrammerByDay
 - URL: https://news.ycombinator.com/item?id=46398454
-- Date: 2025-12-26 | Score: 1 | Comments: 1
+- Date: 2025-12-26 | Score: 1 | Comments: 2
 
-## 167. OGhidra: Automating dataflow analysis and vulnerability discovery via local LLMs
+## 166. OGhidra: Automating dataflow analysis and vulnerability discovery via local LLMs
 - Author: rmast
 - URL: https://news.ycombinator.com/item?id=46396208
 - Date: 2025-12-26 | Score: 1 | Comments: 1
 
-## 168. Automatic label checking: The missing step in making reliable medical AI
+## 167. Automatic label checking: The missing step in making reliable medical AI
 - Author: geox
 - URL: https://news.ycombinator.com/item?id=46393000
 - Date: 2025-12-26 | Score: 1 | Comments: 0
 
-## 169. Show HN: Shannon Uncontained – generate src for live target, go for the pwn
+## 168. Show HN: Shannon Uncontained – generate src for live target, go for the pwn
 - Author: _steake
 - URL: https://news.ycombinator.com/item?id=46340022
 - Date: 2025-12-20 | Score: 1 | Comments: 2
 - Preview: The security-industrial complex peddles spreadsheets of vibes. Severity badges. Ritual scans. Then, at the moment of truth, it refuses the simple, adult question: can you actually pwn it?<p>Shannon said yes. It did the unfashionable thing: try the exploit, ship receipts, or shut up. No exploit, no r...
 
-## 170. I will not promote- how to get funding
-- Author: Unusual_Vacationn
-- URL: https://reddit.com/r/startups/comments/1psdzfs/i_will_not_promote_how_to_get_funding/
-- Date: 2025-12-21 | Score: 0 | Comments: 10
-- Preview: Hi,  I have developed an AI mvp and i am looking to present to someone from Microsoft or Amazon to get funding or get some ideas.  Is there a way to do that?  I am from India, currently in Canada.  I can reachout to the person in LinkedIn from these companies to get started, but i dont know whom to ...
-
-## 171. 100,000x scale, same memory – cryptographic proof of O(1) AI memory
+## 169. 100,000x scale, same memory – cryptographic proof of O(1) AI memory
 - Author: LexiCoAS
 - URL: https://news.ycombinator.com/item?id=46365372
 - Date: 2025-12-23 | Score: 2 | Comments: 2
 - Preview: With O(n) memory, scaling 100,000x should require 100,000x more RAM.<p>I scaled from 1,000 to 100,000,000 tasks. Memory stayed at ~3GB the entire time.<p>Here&#x27;s the cryptographic proof.<p>The benchmark: - 1K tasks: ~3GB memory - 100K tasks: ~3GB memory - 1M tasks: ~3GB memory - 10M tasks: ~3GB ...
 
-## 172. Show HN: A GPT Image 1.5 UI for developers tired of rewriting prompts
+## 170. Show HN: A GPT Image 1.5 UI for developers tired of rewriting prompts
 - Author: Zeos3154
 - URL: https://news.ycombinator.com/item?id=46361640
 - Date: 2025-12-22 | Score: 1 | Comments: 0
 - Preview: Hey HN,<p><pre><code>  After burning through dozens of credits rephrasing the same prompt in different AI image tools, I built gpt2image.io - a conversational interface for GPT Image 1.5.    **The core idea:**   Instead of prompt archaeology (&quot;was it &#x27;modern minimalist&#x27; or &#x27;conte...
 
-## 173. Show HN: Locolle – A bookmark manager for real-world locations
+## 171. Show HN: Locolle – A bookmark manager for real-world locations
 - Author: patrickTTT
 - URL: https://news.ycombinator.com/item?id=46356297
 - Date: 2025-12-22 | Score: 1 | Comments: 0
 - Preview: Hi HN,<p>I’m the developer behind Locolle (<a href="https:&#x2F;&#x2F;locolle.app" rel="nofollow">https:&#x2F;&#x2F;locolle.app</a>). I built it because I was frustrated with how difficult it is to actually &quot;manage&quot; place recommendations.<p>The Problem: My restaurant&#x2F;travel saves were...
 
-## 174. Show HN: ArkhamMirror – CIA's Analysis of Competing Hypotheses, Runs in Browser
+## 172. Show HN: ArkhamMirror – CIA's Analysis of Competing Hypotheses, Runs in Browser
 - Author: ArkhamMirror
 - URL: https://news.ycombinator.com/item?id=46341493
 - Date: 2025-12-20 | Score: 7 | Comments: 1
 - Preview: After adding a fully guided, AI-assisted Analysis of Competing Hypotheses (ACH) feature to ArkhamMirror, my privacy-first open-source Investigative analysis platform, I kept hearing the same request: &quot;I just want to try ACH without setting up Docker and databases.&quot;<p>Message received. I bu...
 
-## 175. If you want start over in 2026, what you will chase and what you will avoid?
+## 173. If you want start over in 2026, what you will chase and what you will avoid?
 - Author: Haghiri75
 - URL: https://reddit.com/r/Entrepreneur/comments/1psijjw/if_you_want_start_over_in_2026_what_you_will/
 - Date: 2025-12-21 | Score: 8 | Comments: 9
 - Preview: I just shut down my business a few weeks ago and let customers use their remaining credits. Now I just want to start over in 2026, but despite having a lot of ideas (most of them are impossible sci-fi inspired ones) I'm confused what can actually sell in 2026.   I am AI engineer (no, not someone wit...
+
+## 174. [For Hire] Four spots open! Anime style artist, $35 per character pieces, $30 if it's a bunnygirl!
+- Author: IsLancerDead
+- URL: https://reddit.com/r/forhire/comments/1pwolcd/for_hire_four_spots_open_anime_style_artist_35/
+- Date: 2025-12-26 | Score: 1 | Comments: 1
+- Preview: I draw mostly anime-style characters (generally girls) with a focus on rendering and color.  $35 for characters with a simple background, $40 for the full thing, and I discount you $5 if you want a bunny girl.  Check out my work!   Pixiv: [https://www.pixiv.net/en/users/24049127](https://www.pixiv.n...
+
+## 175. [For Hire] Trading AI / ML Bots &amp; Agents, Fixed Price ($60–$375) or $25/hr
+- Author: ApocalypseParadise
+- URL: https://reddit.com/r/forhire/comments/1pwo4re/for_hire_trading_ai_ml_bots_agents_fixed_price/
+- Date: 2025-12-26 | Score: 1 | Comments: 1
+- Preview: I build Python-based trading bots, automation tools, and agents for traders and quants. Clean code, clear scope, fast delivery.  25% Reduced pricing compared to my portfolio for a limited number of new projects.  ### Portfolio  [https://asymmetryengines.uwu.ai/](https://asymmetryengines.uwu.ai/)  ##...
 
 ## 176. [For Hire] I can and will do just about anything, I just need a job
 - Author: lavemderr
@@ -1075,23 +1074,23 @@ Found: 206 posts
 - Date: 2025-12-26 | Score: 2 | Comments: 2
 - Preview: Freelance web developer, I have two sites I am actively managing in the academic business space, one of which is an interactive database for golden age Spanish theater and the other the home of a US National Academic Spanish association. I am looking to pick up another large project or multiple smal...
 
-## 181. [For Hire] I will scrape any data for you at a fixed rate of $100 no matter data size
+## 181. E-commerce Industry News Recap 🔥 Week of Dec 22nd, 2025
+- Author: adventurepaul
+- URL: https://reddit.com/r/ecommerce/comments/1pt8w0m/ecommerce_industry_news_recap_week_of_dec_22nd/
+- Date: 2025-12-22 | Score: 10 | Comments: 4
+- Preview: Hi r/ecommerce - I'm Paul and I follow the e-commerce industry closely for my Shopifreaks E-commerce Newsletter. Every week for the past 5 years I've posted a summary recap of the week's top stories on this subreddit, which I cover in depth with sources in the full edition. Let's dive in to this wee...
+
+## 182. [For Hire] I will scrape any data for you at a fixed rate of $100 no matter data size
 - Author: antisocial_extro_
 - URL: https://reddit.com/r/forhire/comments/1pw6ksz/for_hire_i_will_scrape_any_data_for_you_at_a/
 - Date: 2025-12-26 | Score: 1 | Comments: 1
 - Preview: Just as the title says I will help with all your data scraping needs where I specialize using python for data extraction and send them to you in csv or excel or any format that you want. My DM is open...
 
-## 182. [For hire] Edit Christmas Photos🎄
+## 183. [For hire] Edit Christmas Photos🎄
 - Author: 33bd0
 - URL: https://reddit.com/r/forhire/comments/1pw4sjr/for_hire_edit_christmas_photos/
 - Date: 2025-12-26 | Score: 1 | Comments: 3
 - Preview: This holiday season, I’m offering high-quality Christmas &amp; New Year photo retouching to make your special moments look polished, vibrant, and unforgettable without using AI. All edits are done manually to preserve natural details and authenticity.  My services include:  🎄 Color correction &amp; ...
-
-## 183. E-commerce Industry News Recap 🔥 Week of Dec 22nd, 2025
-- Author: adventurepaul
-- URL: https://reddit.com/r/ecommerce/comments/1pt8w0m/ecommerce_industry_news_recap_week_of_dec_22nd/
-- Date: 2025-12-22 | Score: 10 | Comments: 4
-- Preview: Hi r/ecommerce - I'm Paul and I follow the e-commerce industry closely for my Shopifreaks E-commerce Newsletter. Every week for the past 5 years I've posted a summary recap of the week's top stories on this subreddit, which I cover in depth with sources in the full edition. Let's dive in to this wee...
 
 ## 184. [For Hire] Offering graphic design services (vector work and editing)
 - Author: Part-Disegnos
