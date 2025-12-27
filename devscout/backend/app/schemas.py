@@ -35,6 +35,9 @@ class PostResponse(PostBase):
     status: str
     responded_at: Optional[datetime] = None
     discovered_at: datetime
+    my_comment_url: Optional[str] = None
+    last_reply_check: Optional[datetime] = None
+    unread_replies: int = 0
 
     class Config:
         from_attributes = True
@@ -45,6 +48,18 @@ class PostUpdate(BaseModel):
 
     status: Optional[str] = None
     suggested_response: Optional[str] = None
+    my_comment_url: Optional[str] = None
+
+
+class ReplyInfo(BaseModel):
+    """Info about a reply to user's comment."""
+
+    id: str
+    author: str
+    body: str
+    created_utc: datetime
+    score: int
+    permalink: str
 
 
 class GenerateResponseRequest(BaseModel):

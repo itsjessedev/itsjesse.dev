@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { fetchPosts, fetchStats, fetchFromReddit, submitPosts, generateResponse, updatePost, fetchGitHubIssues, formatIssueForClaude } from './services/api';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES } from './services/api';
 
 const styles = {
   container: {
@@ -64,6 +64,10 @@ const styles = {
   },
   btnDanger: {
     background: '#ef4444',
+    color: '#fff',
+  },
+  btnReddit: {
+    background: '#ff4500',
     color: '#fff',
   },
   tabs: {
@@ -250,10 +254,268 @@ const styles = {
     background: '#d97706',
     color: '#fff',
   },
+  // Collapsible UI for Replies tab
+  collapsibleHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    cursor: 'pointer',
+    padding: '16px',
+    background: '#1a1a1a',
+    borderRadius: '12px',
+    border: '1px solid #333',
+    transition: 'all 0.2s',
+  },
+  collapsibleHeaderExpanded: {
+    borderRadius: '12px 12px 0 0',
+    borderBottom: 'none',
+  },
+  collapsibleContent: {
+    background: '#141414',
+    borderRadius: '0 0 12px 12px',
+    border: '1px solid #333',
+    borderTop: 'none',
+    padding: '16px',
+    animation: 'slideDown 0.2s ease-out',
+  },
+  expandIcon: {
+    width: '24px',
+    height: '24px',
+    transition: 'transform 0.2s',
+    color: '#666',
+  },
+  needsAttention: {
+    boxShadow: '0 0 0 2px #ef4444',
+    animation: 'pulse 2s infinite',
+  },
+  unrepliedBadge: {
+    background: '#ef4444',
+    color: '#fff',
+    padding: '4px 10px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: '600',
+    marginLeft: '8px',
+    animation: 'glow 1.5s ease-in-out infinite alternate',
+  },
+  myComment: {
+    background: '#1a2e1a',
+    border: '1px solid #22c55e40',
+    padding: '12px',
+    borderRadius: '8px',
+    marginBottom: '12px',
+  },
+  myCommentLabel: {
+    fontSize: '11px',
+    color: '#22c55e',
+    textTransform: 'uppercase',
+    marginBottom: '6px',
+    fontWeight: '600',
+  },
+  replyItem: {
+    background: '#0f0f0f',
+    padding: '12px',
+    borderRadius: '8px',
+    marginBottom: '8px',
+    marginLeft: '20px',
+    borderLeft: '3px solid #3b82f6',
+  },
+  unrepliedReply: {
+    borderLeft: '3px solid #ef4444',
+    animation: 'fadeIn 0.5s ease-out',
+  },
+  repliedReply: {
+    borderLeft: '3px solid #22c55e',
+    opacity: 0.7,
+  },
+  postBodyFull: {
+    fontSize: '14px',
+    color: '#ccc',
+    background: '#0f0f0f',
+    padding: '16px',
+    borderRadius: '8px',
+    marginBottom: '16px',
+    whiteSpace: 'pre-wrap',
+    lineHeight: '1.6',
+  },
+  generateReplyBtn: {
+    background: '#8b5cf6',
+    color: '#fff',
+    padding: '6px 12px',
+    borderRadius: '4px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '12px',
+    fontWeight: '500',
+  },
+  pollingIndicator: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '12px',
+    color: '#666',
+  },
+  pulsingDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    background: '#22c55e',
+    animation: 'pulse 1.5s infinite',
+  },
+  globalNotification: {
+    position: 'fixed',
+    top: '20px',
+    right: '20px',
+    background: '#ef4444',
+    color: '#fff',
+    padding: '12px 20px',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    boxShadow: '0 4px 20px rgba(239, 68, 68, 0.5)',
+    animation: 'glow 1.5s ease-in-out infinite alternate, fadeIn 0.3s ease-out',
+    zIndex: 1000,
+    fontSize: '14px',
+    fontWeight: '600',
+  },
+  notificationDot: {
+    width: '10px',
+    height: '10px',
+    borderRadius: '50%',
+    background: '#fff',
+    animation: 'pulse 1s infinite',
+  },
+  // Engage tab styles
+  engageContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+  },
+  engageHeader: {
+    display: 'flex',
+    gap: '12px',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  subredditSelect: {
+    padding: '10px 14px',
+    borderRadius: '6px',
+    border: '1px solid #333',
+    background: '#1a1a1a',
+    color: '#fff',
+    fontSize: '14px',
+    minWidth: '200px',
+  },
+  categoryTabs: {
+    display: 'flex',
+    gap: '4px',
+    flexWrap: 'wrap',
+    marginBottom: '16px',
+  },
+  categoryTab: {
+    padding: '6px 12px',
+    borderRadius: '6px',
+    border: 'none',
+    cursor: 'pointer',
+    background: '#1a1a1a',
+    color: '#888',
+    fontSize: '12px',
+    fontWeight: '500',
+    textTransform: 'capitalize',
+  },
+  categoryTabActive: {
+    background: '#3b82f6',
+    color: '#fff',
+  },
+  ideaCard: {
+    background: '#1a1a1a',
+    borderRadius: '12px',
+    padding: '20px',
+    border: '1px solid #333',
+    marginBottom: '12px',
+  },
+  ideaTitle: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: '12px',
+    lineHeight: '1.4',
+  },
+  ideaTags: {
+    display: 'flex',
+    gap: '6px',
+    flexWrap: 'wrap',
+    marginBottom: '12px',
+  },
+  ideaTag: {
+    background: '#3b82f620',
+    color: '#60a5fa',
+    padding: '2px 8px',
+    borderRadius: '4px',
+    fontSize: '11px',
+  },
+  ideaSubreddits: {
+    fontSize: '13px',
+    color: '#888',
+    marginBottom: '12px',
+  },
+  relatedSubreddits: {
+    background: '#0f0f0f',
+    padding: '12px',
+    borderRadius: '8px',
+    marginBottom: '16px',
+  },
+  relatedLabel: {
+    fontSize: '11px',
+    color: '#888',
+    textTransform: 'uppercase',
+    marginBottom: '8px',
+  },
+  relatedList: {
+    display: 'flex',
+    gap: '8px',
+    flexWrap: 'wrap',
+  },
+  relatedChip: {
+    background: '#22c55e20',
+    color: '#22c55e',
+    padding: '4px 10px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    cursor: 'pointer',
+  },
+};
+
+// CSS Keyframes (inject once)
+const injectStyles = () => {
+  if (document.getElementById('devscout-animations')) return;
+  const style = document.createElement('style');
+  style.id = 'devscout-animations';
+  style.textContent = `
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 5px #ef4444; }
+      to { box-shadow: 0 0 15px #ef4444; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; max-height: 0; }
+      to { opacity: 1; max-height: 2000px; }
+    }
+  `;
+  document.head.appendChild(style);
 };
 
 function App() {
-  const [mode, setMode] = useState('posts'); // 'posts' or 'github'
+  const [mode, setMode] = useState('engage'); // 'engage', 'posts', 'news', 'github', 'prospects', 'replies'
   const [posts, setPosts] = useState([]);
   const [stats, setStats] = useState(null);
   const [filter, setFilter] = useState('new');
@@ -265,6 +527,32 @@ function App() {
   const [githubIssues, setGithubIssues] = useState([]);
   const [githubFetching, setGithubFetching] = useState(false);
   const [githubProgress, setGithubProgress] = useState(null);
+  const [prospects, setProspects] = useState([]);
+  const [prospectsFetching, setProspectsFetching] = useState(false);
+  const [prospectsProgress, setProspectsProgress] = useState(null);
+  const [news, setNews] = useState([]);
+  const [newsFetching, setNewsFetching] = useState(false);
+  const [newsProgress, setNewsProgress] = useState(null);
+  // Replies tab state (refactored)
+  const [respondedPosts, setRespondedPosts] = useState([]);
+  const [postRepliesData, setPostRepliesData] = useState({}); // postId -> { comments, totalUnreplied }
+  const [repliesFetching, setRepliesFetching] = useState(false);
+  const [expandedPosts, setExpandedPosts] = useState({}); // postId -> boolean
+  const [pollingActive, setPollingActive] = useState(false);
+  const pollingInterval = useRef(null);
+  // Engage tab state
+  const [engageSubreddit, setEngageSubreddit] = useState('');
+  const [engageCategory, setEngageCategory] = useState('all');
+  const [generatingEngage, setGeneratingEngage] = useState({}); // ideaIdx -> boolean
+  const [generatedEngagePosts, setGeneratedEngagePosts] = useState({}); // ideaIdx -> text
+  // Reply generation state
+  const [generatingReply, setGeneratingReply] = useState({}); // replyId -> boolean
+  const [generatedReplies, setGeneratedReplies] = useState({}); // replyId -> text
+
+  // Inject CSS animations on mount
+  useEffect(() => {
+    injectStyles();
+  }, []);
 
   const loadData = useCallback(async () => {
     try {
@@ -285,25 +573,86 @@ function App() {
     loadData();
   }, [loadData]);
 
+  // Auto-detect if user has commented on "new" posts and mark them as responded
+  const checkPostsForUserComments = useCallback(async (postsToCheck) => {
+    const newPosts = postsToCheck.filter(p => p.status === 'new');
+    if (newPosts.length === 0) return;
+
+    console.log(`[DevScout] Checking ${newPosts.length} new posts for user comments...`);
+
+    for (const post of newPosts) {
+      try {
+        const { comments } = await scrapePostForUserComments(post.url);
+        if (comments && comments.length > 0) {
+          console.log(`[DevScout] Found user comment on post ${post.id}, auto-marking as responded`);
+          await updatePost(post.id, { status: 'responded' });
+        }
+        // Small delay between checks
+        await new Promise(r => setTimeout(r, 300));
+      } catch (err) {
+        console.error(`[DevScout] Error checking post ${post.id}:`, err);
+      }
+    }
+
+    // Reload data if any posts were marked
+    loadData();
+  }, [loadData]);
+
+  // Check for user comments on initial load
+  const hasCheckedPosts = useRef(new Set());
+  useEffect(() => {
+    if (mode !== 'posts') return;
+
+    const uncheckedPosts = posts.filter(p =>
+      p.status === 'new' && !hasCheckedPosts.current.has(p.id)
+    );
+
+    if (uncheckedPosts.length > 0) {
+      // Mark as checked to avoid re-checking this cycle
+      uncheckedPosts.forEach(p => hasCheckedPosts.current.add(p.id));
+      checkPostsForUserComments(uncheckedPosts);
+    }
+  }, [posts, mode, checkPostsForUserComments]);
+
+  // Periodic re-check for auto-marking responded (every 60s when on Posts tab)
+  useEffect(() => {
+    if (mode !== 'posts') return;
+
+    const interval = setInterval(() => {
+      const newPosts = posts.filter(p => p.status === 'new');
+      if (newPosts.length > 0) {
+        console.log(`[DevScout] Periodic check: scanning ${newPosts.length} new posts for user comments`);
+        // Clear the cache so posts get re-checked
+        hasCheckedPosts.current.clear();
+        checkPostsForUserComments(newPosts);
+      }
+    }, 60000); // Check every 60 seconds
+
+    return () => clearInterval(interval);
+  }, [mode, posts, checkPostsForUserComments]);
+
   const handleFetch = async () => {
     setFetching(true);
-    setFetchProgress({ current: 0, total: 0, subreddit: 'Starting...' });
+    setFetchProgress({ current: 0, total: 0, subreddit: 'Clearing old posts...' });
     try {
+      // Clear non-responded posts first
+      await clearStalePosts();
+
       // Fetch from Reddit directly (browser-side)
       const redditPosts = await fetchFromReddit((current, total, subreddit) => {
         setFetchProgress({ current, total, subreddit });
       });
 
       if (redditPosts.length === 0) {
-        alert('No matching posts found');
         return;
       }
 
       setFetchProgress({ current: 0, total: 0, subreddit: 'Submitting to server...' });
 
       // Submit to backend
-      const result = await submitPosts(redditPosts);
-      alert(`Found ${redditPosts.length} posts, added ${result.added} new`);
+      await submitPosts(redditPosts);
+      // Clear the auto-check cache so new posts get checked for user comments
+      hasCheckedPosts.current.clear();
       loadData();
     } catch (err) {
       alert('Failed to fetch: ' + err.message);
@@ -345,6 +694,8 @@ function App() {
     try {
       await updatePost(postId, { status: 'responded' });
       loadData();
+      // Always refresh replies immediately (for global notification and Replies tab)
+      setTimeout(handleFetchReplies, 500);
     } catch (err) {
       alert('Failed to update: ' + err.message);
     }
@@ -367,11 +718,8 @@ function App() {
         setGithubProgress({ current, total, label });
       });
       setGithubIssues(issues);
-      if (issues.length === 0) {
-        alert('No matching issues found');
-      }
     } catch (err) {
-      alert('Failed to fetch GitHub issues: ' + err.message);
+      console.error('Failed to fetch GitHub issues:', err);
     } finally {
       setGithubFetching(false);
       setGithubProgress(null);
@@ -389,6 +737,295 @@ function App() {
     } catch (err) {
       alert('Failed to copy');
     }
+  };
+
+  const handleDismissIssue = (issueId) => {
+    setGithubIssues((prev) => prev.filter((issue) => issue.id !== issueId));
+  };
+
+  const handleFetchProspects = async () => {
+    setProspectsFetching(true);
+    setProspectsProgress({ current: 0, total: 0, search: 'Starting...' });
+    try {
+      const prospectData = await fetchProspects((current, total, search) => {
+        setProspectsProgress({ current, total, search });
+      });
+      setProspects(prospectData);
+    } catch (err) {
+      console.error('Failed to fetch prospects:', err);
+    } finally {
+      setProspectsFetching(false);
+      setProspectsProgress(null);
+    }
+  };
+
+  const handleDismissProspect = (prospectId) => {
+    setProspects((prev) => prev.filter((p) => p.id !== prospectId));
+  };
+
+  const handleFetchNews = async () => {
+    setNewsFetching(true);
+    setNewsProgress({ current: 0, total: 2, source: 'Starting...' });
+    try {
+      const newsData = await fetchNews((current, total, source) => {
+        setNewsProgress({ current, total, source });
+      });
+      setNews(newsData);
+    } catch (err) {
+      console.error('Failed to fetch news:', err);
+    } finally {
+      setNewsFetching(false);
+      setNewsProgress(null);
+    }
+  };
+
+  const handleDismissNews = (newsId) => {
+    setNews((prev) => prev.filter((n) => n.reddit_id !== newsId));
+  };
+
+  // Ref to prevent concurrent fetches
+  const repliesFetchingRef = useRef(false);
+
+  // Fetch all responded posts and scrape for replies
+  const handleFetchReplies = useCallback(async () => {
+    if (repliesFetchingRef.current) {
+      console.log('[DevScout] Skipping fetch - already in progress');
+      return;
+    }
+    repliesFetchingRef.current = true;
+    setRepliesFetching(true);
+
+    console.log('[DevScout] Starting handleFetchReplies...');
+
+    try {
+      // Get responded posts from backend
+      const responded = await fetchPosts('responded');
+      console.log('[DevScout] Got responded posts:', responded?.length || 0);
+
+      // Only scrape if we have posts
+      if (responded && responded.length > 0) {
+        // Scrape each post for user's comments and their replies
+        console.log('[DevScout] Scraping posts for replies...');
+        const repliesData = await scrapeTrackedPostsForReplies(responded);
+        console.log('[DevScout] Scrape results:', repliesData);
+
+        // Auto-cleanup: Remove posts where our comment was autodeleted
+        // If responded > 48 hours ago AND no comments found, revert to skipped
+        const staleThreshold = 48 * 60 * 60 * 1000; // 48 hours in ms
+        const postsToCleanup = [];
+
+        for (const post of responded) {
+          const repliesInfo = repliesData[post.id];
+          const respondedAt = post.responded_at ? new Date(post.responded_at).getTime() : 0;
+          const isStale = respondedAt && (Date.now() - respondedAt) > staleThreshold;
+          const hasNoComments = !repliesInfo?.comments || repliesInfo.comments.length === 0;
+
+          if (isStale && hasNoComments) {
+            console.log(`[DevScout] Auto-cleanup: Post ${post.id} marked responded ${Math.round((Date.now() - respondedAt) / 3600000)}h ago with no comments found - reverting to skipped`);
+            postsToCleanup.push(post.id);
+          }
+        }
+
+        // Cleanup stale posts
+        for (const postId of postsToCleanup) {
+          try {
+            await updatePost(postId, { status: 'skipped' });
+          } catch (err) {
+            console.error(`[DevScout] Failed to cleanup post ${postId}:`, err);
+          }
+        }
+
+        // Filter out cleaned up posts for display
+        const activePosts = responded.filter(p => !postsToCleanup.includes(p.id));
+        setRespondedPosts(activePosts);
+        setPostRepliesData(repliesData || {});
+
+        // Auto-expand posts with unreplied comments
+        const autoExpand = {};
+        for (const [postId, data] of Object.entries(repliesData || {})) {
+          if (data?.totalUnreplied > 0) {
+            autoExpand[postId] = true;
+          }
+        }
+        setExpandedPosts(prev => ({ ...prev, ...autoExpand }));
+
+        // If we cleaned up posts, reload to get fresh data
+        if (postsToCleanup.length > 0) {
+          console.log(`[DevScout] Cleaned up ${postsToCleanup.length} stale posts`);
+        }
+      } else {
+        setRespondedPosts([]);
+        setPostRepliesData({});
+      }
+    } catch (err) {
+      console.error('[DevScout] Failed to fetch replies:', err);
+      setRespondedPosts([]);
+      setPostRepliesData({});
+    } finally {
+      repliesFetchingRef.current = false;
+      setRepliesFetching(false);
+    }
+  }, []); // No dependencies - stable callback
+
+  // Add a custom post URL (for Posts tab - adds posts scraper missed)
+  const [customUrlInput, setCustomUrlInput] = useState('');
+  const [addingCustomPost, setAddingCustomPost] = useState(false);
+  const handleAddCustomUrl = async () => {
+    if (!customUrlInput.trim()) return;
+
+    // Extract info from URL
+    const match = customUrlInput.match(/reddit\.com\/r\/(\w+)\/comments\/(\w+)/);
+    if (!match) {
+      alert('Invalid Reddit post URL');
+      return;
+    }
+
+    setAddingCustomPost(true);
+    try {
+      // Fetch post details from Reddit
+      const response = await fetch(`https://www.reddit.com/comments/${match[2]}.json?limit=1`);
+      if (!response.ok) throw new Error('Failed to fetch post');
+
+      const data = await response.json();
+      const postData = data[0]?.data?.children?.[0]?.data;
+
+      if (!postData) throw new Error('Post not found');
+
+      // Create post object matching backend schema
+      const newPost = {
+        reddit_id: postData.id,
+        subreddit: postData.subreddit,
+        title: postData.title,
+        body: postData.selftext?.slice(0, 2000) || null,
+        url: `https://reddit.com${postData.permalink}`,
+        author: postData.author,
+        score: postData.score,
+        num_comments: postData.num_comments,
+        created_utc: postData.created_utc,
+        relevance_score: 100, // High score since user manually added
+        keywords_matched: ['manual-add'],
+      };
+
+      // Submit to backend
+      await submitPosts([newPost]);
+      setCustomUrlInput('');
+
+      // Reload posts to show the new one
+      loadData();
+    } catch (err) {
+      alert('Failed to add post: ' + err.message);
+    } finally {
+      setAddingCustomPost(false);
+    }
+  };
+
+  // Toggle post expansion
+  const togglePostExpanded = (postId) => {
+    setExpandedPosts(prev => ({ ...prev, [postId]: !prev[postId] }));
+  };
+
+  // Generate a response to a reply
+  const handleGenerateReply = async (replyId, subreddit, myComment, theirReply) => {
+    setGeneratingReply((prev) => ({ ...prev, [replyId]: true }));
+    try {
+      const result = await generateReplyResponse({ subreddit, myComment, theirReply });
+      setGeneratedReplies((prev) => ({ ...prev, [replyId]: result.response }));
+    } catch (err) {
+      alert('Failed to generate: ' + err.message);
+    } finally {
+      setGeneratingReply((prev) => ({ ...prev, [replyId]: false }));
+    }
+  };
+
+  // Generate an engagement post
+  const handleGenerateEngage = async (ideaIdx, subreddit, ideaTemplate, category) => {
+    setGeneratingEngage((prev) => ({ ...prev, [ideaIdx]: true }));
+    try {
+      const result = await generateEngagePost({ subreddit, ideaTemplate, category });
+      setGeneratedEngagePosts((prev) => ({ ...prev, [ideaIdx]: result.response }));
+    } catch (err) {
+      alert('Failed to generate: ' + err.message);
+    } finally {
+      setGeneratingEngage((prev) => ({ ...prev, [ideaIdx]: false }));
+    }
+  };
+
+  // Calculate total unreplied comments across all posts
+  const getTotalUnreadReplies = () => {
+    return Object.values(postRepliesData).reduce((sum, data) => sum + (data?.totalUnreplied || 0), 0);
+  };
+
+  // Background polling for replies on ALL pages (for global notification)
+  const backgroundPollingInterval = useRef(null);
+
+  useEffect(() => {
+    // Initial fetch for notification badge (always run on mount)
+    const initialFetch = setTimeout(() => {
+      handleFetchReplies();
+    }, 500);
+
+    // Background poll every 60s on non-replies pages, 30s on replies page
+    const pollInterval = mode === 'replies' ? 30000 : 60000;
+
+    if (mode === 'replies') {
+      setPollingActive(true);
+    }
+
+    backgroundPollingInterval.current = setInterval(() => {
+      handleFetchReplies();
+    }, pollInterval);
+
+    return () => {
+      clearTimeout(initialFetch);
+      if (backgroundPollingInterval.current) {
+        clearInterval(backgroundPollingInterval.current);
+      }
+    };
+  }, [mode, handleFetchReplies]);
+
+  // Handle notification click - navigate to replies and scroll to first unreplied
+  const handleNotificationClick = () => {
+    setMode('replies');
+    // Find first post with unreplied comments and expand it
+    let firstUnrepliedId = null;
+    for (const [postId, data] of Object.entries(postRepliesData)) {
+      if (data?.totalUnreplied > 0) {
+        setExpandedPosts(prev => ({ ...prev, [postId]: true }));
+        // Find the first unreplied reply ID
+        for (const comment of data.comments || []) {
+          for (const reply of comment.replies || []) {
+            if (!reply.hasUserReply) {
+              firstUnrepliedId = reply.id;
+              break;
+            }
+          }
+          if (firstUnrepliedId) break;
+        }
+        break;
+      }
+    }
+
+    // Scroll to the specific unreplied reply after DOM updates
+    setTimeout(() => {
+      const element = firstUnrepliedId
+        ? document.getElementById(`unreplied-${firstUnrepliedId}`)
+        : null;
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Add a brief highlight effect
+        element.style.transition = 'box-shadow 0.3s';
+        element.style.boxShadow = '0 0 0 3px #ef4444';
+        setTimeout(() => {
+          element.style.boxShadow = '';
+        }, 2000);
+      }
+    }, 200);
+  };
+
+  const getProspectCategory = (score) => {
+    if (score >= 40) return { label: 'HOT', color: '#ef4444', bg: '#ef444420' };
+    if (score >= 20) return { label: 'WARM', color: '#f59e0b', bg: '#f59e0b20' };
+    return { label: 'COOL', color: '#6b7280', bg: '#6b728020' };
   };
 
   const formatTime = (dateStr) => {
@@ -415,8 +1052,19 @@ function App() {
 
   return (
     <div style={styles.container}>
+      {/* Global Notification Badge - visible on all pages */}
+      {getTotalUnreadReplies() > 0 && mode !== 'replies' && (
+        <div
+          style={styles.globalNotification}
+          onClick={handleNotificationClick}
+        >
+          <div style={styles.notificationDot}></div>
+          <span>{getTotalUnreadReplies()} new {getTotalUnreadReplies() === 1 ? 'reply' : 'replies'} to your comments</span>
+        </div>
+      )}
+
       <div style={styles.header}>
-        <h1 style={styles.title}>Scout</h1>
+        <h1 style={styles.title}>DevScout</h1>
         {mode === 'posts' && stats && (
           <div style={styles.stats}>
             <div style={styles.stat}>
@@ -433,6 +1081,14 @@ function App() {
             </div>
           </div>
         )}
+        {mode === 'news' && (
+          <div style={styles.stats}>
+            <div style={styles.stat}>
+              <div style={{ ...styles.statValue, color: '#f97316' }}>{news.length}</div>
+              <div style={styles.statLabel}>Posts</div>
+            </div>
+          </div>
+        )}
         {mode === 'github' && (
           <div style={styles.stats}>
             <div style={styles.stat}>
@@ -441,10 +1097,48 @@ function App() {
             </div>
           </div>
         )}
+        {mode === 'prospects' && (
+          <div style={styles.stats}>
+            <div style={styles.stat}>
+              <div style={{ ...styles.statValue, color: '#ef4444' }}>
+                {prospects.filter(p => p.score >= 40).length}
+              </div>
+              <div style={styles.statLabel}>Hot</div>
+            </div>
+            <div style={styles.stat}>
+              <div style={{ ...styles.statValue, color: '#f59e0b' }}>
+                {prospects.filter(p => p.score >= 20 && p.score < 40).length}
+              </div>
+              <div style={styles.statLabel}>Warm</div>
+            </div>
+            <div style={styles.stat}>
+              <div style={{ ...styles.statValue, color: '#666' }}>{prospects.length}</div>
+              <div style={styles.statLabel}>Total</div>
+            </div>
+          </div>
+        )}
+        {mode === 'replies' && (
+          <div style={styles.stats}>
+            <div style={styles.stat}>
+              <div style={{ ...styles.statValue, color: '#ef4444' }}>{getTotalUnreadReplies()}</div>
+              <div style={styles.statLabel}>Unread</div>
+            </div>
+            <div style={styles.stat}>
+              <div style={{ ...styles.statValue, color: '#666' }}>{respondedPosts.length}</div>
+              <div style={styles.statLabel}>Tracked</div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mode Toggle */}
       <div style={styles.modeToggle}>
+        <button
+          style={{ ...styles.modeBtn, ...(mode === 'engage' ? styles.modeBtnActive : {}), background: mode === 'engage' ? '#22c55e' : 'transparent' }}
+          onClick={() => setMode('engage')}
+        >
+          Engage
+        </button>
         <button
           style={{ ...styles.modeBtn, ...(mode === 'posts' ? styles.modeBtnActive : {}) }}
           onClick={() => setMode('posts')}
@@ -452,15 +1146,60 @@ function App() {
           Posts
         </button>
         <button
+          style={{ ...styles.modeBtn, ...(mode === 'replies' ? styles.modeBtnActive : {}) }}
+          onClick={() => setMode('replies')}
+        >
+          Replies {getTotalUnreadReplies() > 0 && <span style={{ background: '#ef4444', color: '#fff', padding: '2px 6px', borderRadius: '10px', fontSize: '11px', marginLeft: '4px' }}>{getTotalUnreadReplies()}</span>}
+        </button>
+        <button
+          style={{ ...styles.modeBtn, ...(mode === 'news' ? styles.modeBtnActive : {}) }}
+          onClick={() => setMode('news')}
+        >
+          News
+        </button>
+        <button
           style={{ ...styles.modeBtn, ...(mode === 'github' ? styles.modeBtnActive : {}) }}
           onClick={() => setMode('github')}
         >
           GitHub
         </button>
+        <button
+          style={{ ...styles.modeBtn, ...(mode === 'prospects' ? styles.modeBtnActive : {}) }}
+          onClick={() => setMode('prospects')}
+        >
+          Prospects
+        </button>
       </div>
 
       {mode === 'posts' && (
         <>
+          {/* Custom URL Input - add posts scraper missed */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+            <input
+              type="text"
+              value={customUrlInput}
+              onChange={(e) => setCustomUrlInput(e.target.value)}
+              placeholder="Add Reddit post URL manually..."
+              style={{
+                flex: 1,
+                padding: '10px 14px',
+                borderRadius: '6px',
+                border: '1px solid #333',
+                background: '#0f0f0f',
+                color: '#fff',
+                fontSize: '14px',
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddCustomUrl()}
+            />
+            <button
+              style={{ ...styles.btn, ...styles.btnPrimary }}
+              onClick={handleAddCustomUrl}
+              disabled={addingCustomPost}
+            >
+              {addingCustomPost ? 'Adding...' : 'Add Post'}
+            </button>
+          </div>
+
           <div style={styles.controls}>
             <button
               style={{ ...styles.btn, ...styles.btnPrimary }}
@@ -476,7 +1215,7 @@ function App() {
           </div>
 
           <div style={styles.tabs}>
-            {['new', 'responded', 'skipped', 'all'].map((tab) => (
+            {['new', 'skipped', 'all'].map((tab) => (
               <button
                 key={tab}
                 style={{ ...styles.tab, ...(filter === tab ? styles.tabActive : {}) }}
@@ -487,6 +1226,22 @@ function App() {
             ))}
           </div>
         </>
+      )}
+
+      {mode === 'news' && (
+        <div style={styles.controls}>
+          <button
+            style={{ ...styles.btn, ...styles.btnPrimary }}
+            onClick={handleFetchNews}
+            disabled={newsFetching}
+          >
+            {newsFetching
+              ? newsProgress
+                ? `Scanning ${newsProgress.source} (${newsProgress.current}/${newsProgress.total})`
+                : 'Fetching...'
+              : 'Fetch Tech News'}
+          </button>
+        </div>
       )}
 
       {mode === 'github' && (
@@ -510,13 +1265,13 @@ function App() {
         <div style={styles.postList}>
           {posts.length === 0 ? (
             <div style={styles.empty}>
-              No posts found. Click "Fetch New Posts" to scan Reddit, HN, and Lobsters.
+              No posts found. Click "Fetch New Posts" to scan Reddit.
             </div>
           ) : (
             posts.map((post) => (
               <div key={post.id} style={styles.post}>
                 <div style={styles.postHeader}>
-                  <span style={styles.subreddit}>{post.subreddit.startsWith('HN') || post.subreddit.startsWith('Lobsters') ? post.subreddit : `r/${post.subreddit}`}</span>
+                  <a href={`https://reddit.com/r/${post.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }}>r/{post.subreddit}</a>
                   <span style={styles.score}>Score: {Math.round(post.relevance_score)}</span>
                 </div>
 
@@ -551,10 +1306,16 @@ function App() {
                     <div style={styles.response}>{post.suggested_response}</div>
                     <div style={styles.actions}>
                       <button
-                        style={styles.copyBtn}
-                        onClick={() => handleCopy(post.id, post.suggested_response)}
+                        style={{ ...styles.btn, ...styles.btnReddit, display: 'flex', alignItems: 'center', gap: '6px' }}
+                        onClick={async () => {
+                          await navigator.clipboard.writeText(post.suggested_response);
+                          setCopied((prev) => ({ ...prev, [post.id]: true }));
+                          window.open(post.url, '_blank');
+                          setTimeout(() => setCopied((prev) => ({ ...prev, [post.id]: false })), 2000);
+                        }}
                       >
-                        {copied[post.id] ? 'Copied!' : 'Copy'}
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+                        {copied[post.id] ? 'Copied! Opening...' : 'Reply on Reddit'}
                       </button>
                       <button
                         style={{ ...styles.btn, ...styles.btnSuccess }}
@@ -594,6 +1355,84 @@ function App() {
                     </button>
                   </div>
                 )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* News View (HN, Lobsters, Dev.to, Hashnode) */}
+      {mode === 'news' && (
+        <div style={styles.postList}>
+          {news.length === 0 ? (
+            <div style={styles.empty}>
+              No news loaded. Click "Fetch Tech News" to scan HN, Lobsters, Dev.to & Hashnode.
+            </div>
+          ) : (
+            news.map((item) => (
+              <div key={item.reddit_id} style={styles.post}>
+                <div style={styles.postHeader}>
+                  <span style={{ ...styles.subreddit, color: '#f97316' }}>{item.subreddit}</span>
+                  <span style={styles.score}>Score: {Math.round(item.relevance_score)}</span>
+                </div>
+
+                <h3 style={styles.postTitle}>
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.postLink}
+                  >
+                    {item.title}
+                  </a>
+                </h3>
+
+                <div style={styles.postMeta}>
+                  {item.author} · {formatTime(new Date(item.created_utc * 1000).toISOString())} · {item.num_comments} comments · {item.score} points
+                </div>
+
+                {item.body && (
+                  <div style={styles.postBody}>{item.body}</div>
+                )}
+
+                <div style={styles.keywords}>
+                  {item.keywords_matched?.map((kw, i) => (
+                    <span key={i} style={styles.keyword}>{kw}</span>
+                  ))}
+                </div>
+
+                <div style={styles.actions}>
+                  <button
+                    style={{ ...styles.btn, ...styles.btnClaude }}
+                    onClick={() => {
+                      const sourceName = item.subreddit.startsWith('HN') ? 'Hacker News'
+                        : item.subreddit.startsWith('Lobsters') ? 'Lobsters'
+                        : item.subreddit.startsWith('DEV') ? 'Dev.to'
+                        : item.subreddit.startsWith('Hashnode') ? 'Hashnode'
+                        : 'tech community';
+                      const text = `Help me write a response to this ${sourceName} post:\n\nTitle: ${item.title}\n${item.body ? `\nContent: ${item.body}\n` : ''}\nURL: ${item.url}`;
+                      navigator.clipboard.writeText(text);
+                      setCopied((prev) => ({ ...prev, [`news_${item.reddit_id}`]: true }));
+                      setTimeout(() => setCopied((prev) => ({ ...prev, [`news_${item.reddit_id}`]: false })), 2000);
+                    }}
+                  >
+                    {copied[`news_${item.reddit_id}`] ? 'Copied!' : 'Copy for Claude'}
+                  </button>
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ ...styles.btn, ...styles.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
+                  >
+                    View Post
+                  </a>
+                  <button
+                    style={{ ...styles.btn, ...styles.btnSecondary }}
+                    onClick={() => handleDismissNews(item.reddit_id)}
+                  >
+                    Dismiss
+                  </button>
+                </div>
               </div>
             ))
           )}
@@ -662,12 +1501,543 @@ function App() {
                   >
                     View on GitHub
                   </a>
+                  <button
+                    style={{ ...styles.btn, ...styles.btnSecondary }}
+                    onClick={() => handleDismissIssue(issue.id)}
+                  >
+                    Dismiss
+                  </button>
                 </div>
               </div>
             ))
           )}
         </div>
       )}
+
+      {/* Prospects Controls */}
+      {mode === 'prospects' && (
+        <div style={styles.controls}>
+          <button
+            style={{ ...styles.btn, ...styles.btnPrimary }}
+            onClick={handleFetchProspects}
+            disabled={prospectsFetching}
+          >
+            {prospectsFetching
+              ? prospectsProgress
+                ? `Searching ${prospectsProgress.search} (${prospectsProgress.current}/${prospectsProgress.total})`
+                : 'Fetching...'
+              : 'Find Hot Prospects'}
+          </button>
+        </div>
+      )}
+
+      {/* Prospects View */}
+      {mode === 'prospects' && (
+        <div style={styles.postList}>
+          {prospects.length === 0 ? (
+            <div style={styles.empty}>
+              No prospects loaded. Click "Find Hot Prospects" to search Reddit for leads.
+            </div>
+          ) : (
+            [...prospects].sort((a, b) => b.score - a.score).map((prospect) => {
+              const category = getProspectCategory(prospect.score);
+              return (
+                <div key={prospect.id} style={styles.post}>
+                  <div style={styles.postHeader}>
+                    <a href={`https://reddit.com/r/${prospect.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }}>r/{prospect.subreddit}</a>
+                    <span style={{
+                      ...styles.score,
+                      background: category.bg,
+                      color: category.color,
+                    }}>
+                      {category.label} ({prospect.score})
+                    </span>
+                  </div>
+
+                  <h3 style={styles.postTitle}>
+                    <a
+                      href={prospect.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={styles.postLink}
+                    >
+                      {prospect.title}
+                    </a>
+                  </h3>
+
+                  <div style={styles.postMeta}>
+                    u/{prospect.author} · {formatTime(prospect.created_utc)} · {prospect.num_comments} comments · {prospect.ups} upvotes
+                  </div>
+
+                  {prospect.body && (
+                    <div style={styles.postBody}>{prospect.body}</div>
+                  )}
+
+                  {prospect.matchedKeywords && prospect.matchedKeywords.length > 0 && (
+                    <div style={styles.keywords}>
+                      {prospect.matchedKeywords.map((kw, i) => (
+                        <span key={i} style={styles.keyword}>{kw}</span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div style={styles.actions}>
+                    <a
+                      href={prospect.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ ...styles.btn, ...styles.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
+                    >
+                      View Post
+                    </a>
+                    <button
+                      style={{ ...styles.btn, ...styles.btnSecondary }}
+                      onClick={() => handleDismissProspect(prospect.id)}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {/* Replies Controls */}
+      {mode === 'replies' && (
+        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <button
+            style={{ ...styles.btn, ...styles.btnSecondary }}
+            onClick={handleFetchReplies}
+            disabled={repliesFetching}
+          >
+            {repliesFetching ? 'Scanning...' : 'Refresh Now'}
+          </button>
+          {pollingActive && (
+            <div style={styles.pollingIndicator}>
+              <div style={styles.pulsingDot}></div>
+              <span>Auto-refreshing every 30s</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Replies View */}
+      {mode === 'replies' && (
+        <div style={styles.postList}>
+          {respondedPosts.length === 0 ? (
+            <div style={styles.empty}>
+              No responded posts yet. Posts you mark as "Responded" will appear here for reply tracking.
+            </div>
+          ) : (
+            respondedPosts.map((post) => {
+              const repliesData = postRepliesData[post.id] || { comments: [], totalUnreplied: 0 };
+              const isExpanded = expandedPosts[post.id];
+              const needsAttention = repliesData.totalUnreplied > 0;
+
+              return (
+                <div key={post.id} id={`reply-post-${post.id}`} style={{ marginBottom: '8px' }}>
+                  {/* Collapsible Header */}
+                  <div
+                    style={{
+                      ...styles.collapsibleHeader,
+                      ...(isExpanded ? styles.collapsibleHeaderExpanded : {}),
+                      ...(needsAttention ? styles.needsAttention : {}),
+                    }}
+                    onClick={() => togglePostExpanded(post.id)}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                        <a
+                          href={`https://reddit.com/r/${post.subreddit}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ ...styles.subreddit, textDecoration: 'none' }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          r/{post.subreddit}
+                        </a>
+                        {needsAttention && (
+                          <span style={styles.unrepliedBadge}>
+                            {repliesData.totalUnreplied} unreplied
+                          </span>
+                        )}
+                        {repliesData.comments.length > 0 && !needsAttention && (
+                          <span style={{ color: '#22c55e', fontSize: '12px' }}>
+                            ✓ All replied
+                          </span>
+                        )}
+                      </div>
+                      <h3 style={{ ...styles.postTitle, marginBottom: 0 }}>
+                        <a
+                          href={post.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={styles.postLink}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {post.title}
+                        </a>
+                      </h3>
+                      <div style={{ ...styles.postMeta, marginTop: '4px', marginBottom: 0 }}>
+                        Responded {formatTime(post.responded_at)} · {repliesData.comments.length} comment{repliesData.comments.length !== 1 ? 's' : ''} tracked
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        ...styles.expandIcon,
+                        transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                      }}
+                    >
+                      ▼
+                    </div>
+                  </div>
+
+                  {/* Collapsible Content */}
+                  {isExpanded && (
+                    <div style={styles.collapsibleContent}>
+                      {/* Show full post body */}
+                      {post.body && (
+                        <div style={styles.postBodyFull}>
+                          <strong style={{ color: '#fff' }}>Original Post:</strong>
+                          <div style={{ marginTop: '8px' }}>{post.body}</div>
+                        </div>
+                      )}
+
+                      {/* User's comments and their replies */}
+                      {repliesData.comments.length === 0 ? (
+                        <div style={{ color: '#666', textAlign: 'center', padding: '20px' }}>
+                          No comments by u/jessedev_ found on this post yet.
+                        </div>
+                      ) : (
+                        repliesData.comments.map((comment) => (
+                          <div key={comment.id} style={{ marginBottom: '20px' }}>
+                            {/* User's comment */}
+                            <div style={styles.myComment}>
+                              <div style={styles.myCommentLabel}>Your Comment</div>
+                              <div style={{ color: '#e0e0e0', whiteSpace: 'pre-wrap' }}>{comment.body}</div>
+                              <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
+                                {formatTime(new Date(comment.created_utc * 1000).toISOString())} · {comment.score} points ·
+                                <a href={comment.permalink} target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6', marginLeft: '4px' }}>View</a>
+                              </div>
+                            </div>
+
+                            {/* Replies to this comment */}
+                            {comment.replies.length > 0 && (
+                              <div style={{ marginLeft: '8px' }}>
+                                {comment.replies.map((reply) => (
+                                  <div
+                                    key={reply.id}
+                                    id={!reply.hasUserReply ? `unreplied-${reply.id}` : undefined}
+                                    style={{
+                                      ...styles.replyItem,
+                                      ...(reply.hasUserReply ? styles.repliedReply : styles.unrepliedReply),
+                                    }}
+                                  >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                                      <div style={{ fontSize: '12px', color: '#888' }}>
+                                        <strong style={{ color: reply.hasUserReply ? '#22c55e' : '#ef4444' }}>
+                                          u/{reply.author}
+                                        </strong>
+                                        {' · '}{formatTime(new Date(reply.created_utc * 1000).toISOString())} · {reply.score} points
+                                        {reply.hasUserReply && <span style={{ color: '#22c55e', marginLeft: '8px' }}>✓ Replied</span>}
+                                      </div>
+                                    </div>
+                                    <div style={{ color: '#ccc', whiteSpace: 'pre-wrap' }}>{reply.body}</div>
+
+                                    {/* Generate response section - only for unreplied */}
+                                    {!reply.hasUserReply && (
+                                      <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' }}>
+                                        {generatedReplies[reply.id] ? (
+                                          <>
+                                            <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', marginBottom: '6px' }}>
+                                              Generated Response
+                                            </div>
+                                            <textarea
+                                              value={generatedReplies[reply.id]}
+                                              onChange={(e) => setGeneratedReplies((prev) => ({ ...prev, [reply.id]: e.target.value }))}
+                                              style={{
+                                                width: '100%',
+                                                minHeight: '100px',
+                                                padding: '10px',
+                                                borderRadius: '6px',
+                                                border: '1px solid #333',
+                                                background: '#0a0a0a',
+                                                color: '#e0e0e0',
+                                                fontSize: '14px',
+                                                resize: 'vertical',
+                                                marginBottom: '8px',
+                                              }}
+                                            />
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                              <button
+                                                style={{ ...styles.btn, ...styles.btnSecondary }}
+                                                onClick={() => handleGenerateReply(reply.id, post.subreddit, comment.body, reply.body)}
+                                                disabled={generatingReply[reply.id]}
+                                              >
+                                                {generatingReply[reply.id] ? 'Regenerating...' : 'Regenerate'}
+                                              </button>
+                                              <button
+                                                style={{ ...styles.btn, ...styles.btnReddit, display: 'flex', alignItems: 'center', gap: '6px' }}
+                                                onClick={async () => {
+                                                  await navigator.clipboard.writeText(generatedReplies[reply.id]);
+                                                  setCopied((prev) => ({ ...prev, [`gen_${reply.id}`]: true }));
+                                                  window.open(reply.permalink, '_blank');
+                                                  setTimeout(() => setCopied((prev) => ({ ...prev, [`gen_${reply.id}`]: false })), 2000);
+                                                }}
+                                              >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+                                                {copied[`gen_${reply.id}`] ? 'Copied! Opening...' : 'Reply on Reddit'}
+                                              </button>
+                                            </div>
+                                          </>
+                                        ) : (
+                                          <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                              style={{ ...styles.btn, ...styles.btnPrimary }}
+                                              onClick={() => handleGenerateReply(reply.id, post.subreddit, comment.body, reply.body)}
+                                              disabled={generatingReply[reply.id]}
+                                            >
+                                              {generatingReply[reply.id] ? 'Generating...' : 'Generate Response'}
+                                            </button>
+                                            <a
+                                              href={reply.permalink}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              style={{ ...styles.btn, ...styles.btnReddit, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                                            >
+                                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+                                              Reply on Reddit
+                                            </a>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    {/* Already replied - just show link */}
+                                    {reply.hasUserReply && (
+                                      <a href={reply.permalink} target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: '#3b82f6', display: 'block', marginTop: '8px' }}>
+                                        View thread →
+                                      </a>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {comment.replies.length === 0 && (
+                              <div style={{ marginLeft: '20px', color: '#666', fontSize: '13px', fontStyle: 'italic' }}>
+                                No replies to this comment yet
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+
+                      <div style={{ ...styles.actions, marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #333' }}>
+                        <a
+                          href={post.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ ...styles.btn, ...styles.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
+                        >
+                          View Post
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {/* Engage View */}
+      {mode === 'engage' && (
+        <div style={styles.engageContainer}>
+          {/* Subreddit Selection */}
+          <div style={styles.engageHeader}>
+            <select
+              value={engageSubreddit}
+              onChange={(e) => setEngageSubreddit(e.target.value)}
+              style={styles.subredditSelect}
+            >
+              <option value="">Select a subreddit (or random)</option>
+              {getEngagementSubreddits().map((sub) => (
+                <option key={sub} value={sub}>r/{sub}</option>
+              ))}
+            </select>
+            <button
+              style={{ ...styles.btn, ...styles.btnSecondary }}
+              onClick={() => setEngageSubreddit(getRandomEngagementSubreddit())}
+            >
+              Random
+            </button>
+          </div>
+
+          {/* Related Subreddits */}
+          {engageSubreddit && getRelatedSubreddits(engageSubreddit).length > 0 && (
+            <div style={styles.relatedSubreddits}>
+              <div style={styles.relatedLabel}>Also consider posting in:</div>
+              <div style={styles.relatedList}>
+                {getRelatedSubreddits(engageSubreddit).map((sub) => (
+                  <span
+                    key={sub}
+                    style={styles.relatedChip}
+                    onClick={() => setEngageSubreddit(sub)}
+                  >
+                    r/{sub}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Category Tabs */}
+          <div style={styles.categoryTabs}>
+            <button
+              style={{ ...styles.categoryTab, ...(engageCategory === 'all' ? styles.categoryTabActive : {}) }}
+              onClick={() => setEngageCategory('all')}
+            >
+              All Ideas
+            </button>
+            {getEngagementCategories().map((cat) => (
+              <button
+                key={cat}
+                style={{ ...styles.categoryTab, ...(engageCategory === cat ? styles.categoryTabActive : {}) }}
+                onClick={() => setEngageCategory(cat)}
+              >
+                {cat.replace(/_/g, ' ')}
+              </button>
+            ))}
+          </div>
+
+          {/* Post Ideas */}
+          <div style={styles.postList}>
+            {(() => {
+              // Get ideas based on subreddit and category
+              let ideas = engageSubreddit
+                ? getIdeasForSubreddit(engageSubreddit)
+                : getPostIdeas();
+
+              // Filter by category
+              if (engageCategory !== 'all') {
+                if (engageSubreddit) {
+                  ideas = ideas.filter((idea) => idea.category === engageCategory);
+                } else {
+                  ideas = ENGAGEMENT_TEMPLATES[engageCategory] || [];
+                }
+              }
+
+              if (ideas.length === 0) {
+                return (
+                  <div style={styles.empty}>
+                    No ideas found for this combination. Try a different subreddit or category.
+                  </div>
+                );
+              }
+
+              return ideas.map((idea, idx) => {
+                const ideaKey = `${idea.title}_${idx}`;
+                const sub = engageSubreddit || idea.subreddits[0];
+                const category = idea.category || engageCategory;
+
+                return (
+                  <div key={idx} style={styles.ideaCard}>
+                    <div style={styles.ideaTitle}>{idea.title}</div>
+
+                    <div style={styles.ideaTags}>
+                      {idea.tags.map((tag) => (
+                        <span key={tag} style={styles.ideaTag}>{tag}</span>
+                      ))}
+                    </div>
+
+                    <div style={styles.ideaSubreddits}>
+                      Works in: {idea.subreddits.map((s) => `r/${s}`).join(', ')}
+                    </div>
+
+                    {/* Generated content section */}
+                    {generatedEngagePosts[ideaKey] ? (
+                      <div style={{ marginTop: '16px', marginBottom: '16px' }}>
+                        <div style={{ fontSize: '11px', color: '#888', textTransform: 'uppercase', marginBottom: '6px' }}>
+                          Generated Post for r/{sub}
+                        </div>
+                        <textarea
+                          value={generatedEngagePosts[ideaKey]}
+                          onChange={(e) => setGeneratedEngagePosts((prev) => ({ ...prev, [ideaKey]: e.target.value }))}
+                          style={{
+                            width: '100%',
+                            minHeight: '200px',
+                            padding: '12px',
+                            borderRadius: '6px',
+                            border: '1px solid #333',
+                            background: '#0a0a0a',
+                            color: '#e0e0e0',
+                            fontSize: '14px',
+                            resize: 'vertical',
+                            lineHeight: '1.6',
+                            fontFamily: 'inherit',
+                          }}
+                        />
+                        <div style={{ ...styles.actions, marginTop: '12px' }}>
+                          <button
+                            style={{ ...styles.btn, ...styles.btnSuccess }}
+                            onClick={() => {
+                              navigator.clipboard.writeText(generatedEngagePosts[ideaKey]);
+                              setCopied((prev) => ({ ...prev, [`engage_${ideaKey}`]: true }));
+                              setTimeout(() => setCopied((prev) => ({ ...prev, [`engage_${ideaKey}`]: false })), 2000);
+                            }}
+                          >
+                            {copied[`engage_${ideaKey}`] ? 'Copied!' : 'Copy Post'}
+                          </button>
+                          <button
+                            style={{ ...styles.btn, ...styles.btnSecondary }}
+                            onClick={() => handleGenerateEngage(ideaKey, sub, idea.title, category)}
+                            disabled={generatingEngage[ideaKey]}
+                          >
+                            {generatingEngage[ideaKey] ? 'Regenerating...' : 'Regenerate'}
+                          </button>
+                          <a
+                            href={`https://reddit.com/r/${sub}/submit?selftext=true`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ ...styles.btn, ...styles.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
+                          >
+                            Create Post in r/{sub} →
+                          </a>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={styles.actions}>
+                        <button
+                          style={{ ...styles.btn, ...styles.btnPrimary }}
+                          onClick={() => handleGenerateEngage(ideaKey, sub, idea.title, category)}
+                          disabled={generatingEngage[ideaKey]}
+                        >
+                          {generatingEngage[ideaKey] ? 'Generating...' : 'Generate Post'}
+                        </button>
+                        {engageSubreddit && (
+                          <a
+                            href={`https://reddit.com/r/${engageSubreddit}/submit?selftext=true`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ ...styles.btn, ...styles.btnSecondary, textDecoration: 'none', display: 'inline-block' }}
+                          >
+                            Create Post in r/{engageSubreddit}
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
