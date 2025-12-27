@@ -293,6 +293,8 @@ export const projects: Project[] = [
     category: 'automation',
     image: '/projects/dealscout/deals.png',
     githubUrl: 'https://github.com/itsjessedev/dealscout',
+    demoUrl: 'https://dealscout.itsjesse.dev',
+    downloadUrl: '/downloads/dealscout-v1.apk',
     featured: true,
   },
 ];

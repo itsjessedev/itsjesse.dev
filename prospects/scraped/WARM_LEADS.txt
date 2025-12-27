@@ -1,5 +1,5 @@
 # WARM LEADS (Score 5-14, competitors excluded)
-Scraped: 2025-12-26 19:00
+Scraped: 2025-12-26 20:00
 Found: 32 posts
 
 ## 1. Financial Statements Analysis 101
@@ -35,7 +35,7 @@ Found: 32 posts
 ## 6. I built a "Tinder for Photos" app to fix my storage anxiety. Just cleaned 1.5k photos effortlessy.
 - Author: alidoganyeniacun
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptxynv/i_built_a_tinder_for_photos_app_to_fix_my_storage/
-- Date: 2025-12-23 | Score: 0 | Comments: 8
+- Date: 2025-12-23 | Score: 1 | Comments: 8
 - Preview: I got tired of the constant friction when trying to clean up my camera roll. Scrolling, selecting, and confirming deletion takes too long.  I built **Swypic** with Flutter to solve this. It turns gallery cleaning into a swipe game.  **Why I made it:**  * Traditional gallery apps are too slow for bul...
 
 ## 7. Shipped 5 updates in 6 weeks for my side project - v2.1 just went live on Christmas Day
@@ -65,49 +65,49 @@ Found: 32 posts
 ## 11. Have doubts regarding implementing number masking in a web app.
 - Author: Necessary_Hope8316
 - URL: https://reddit.com/r/webdev/comments/1pufvkj/have_doubts_regarding_implementing_number_masking/
-- Date: 2025-12-23 | Score: 3 | Comments: 8
+- Date: 2025-12-23 | Score: 4 | Comments: 8
 - Preview: I am developing a service marketplace website that connects homeowners and trade person. The website flow is simple, trade person lists them as a business in the site, homeowners can contact them directly, request quote directly or they can just post a task which will be automatically sent to the be...
 
 ## 12. We shifted from automating tasks to automating management decisions. Here's what we learned.
 - Author: Framework_Friday
 - URL: https://reddit.com/r/Entrepreneur/comments/1ptodha/we_shifted_from_automating_tasks_to_automating/
-- Date: 2025-12-23 | Score: 1 | Comments: 14
+- Date: 2025-12-23 | Score: 2 | Comments: 14
 - Preview: We run several businesses that do about $250M combined revenue. Over the past few months we've been testing AI in a way that's different from what most people talk about.  Instead of automating execution (writing content, drafting emails, that kind of thing), we started automating the management lay...
 
-## 13. scaling ecommerce ops: how do you stay ahead of post-purchase problems without babysitting everything?
+## 13. broken promo code cost us 63k in one weekend, now obsessed with testing checkout
+- Author: sychophantt
+- URL: https://reddit.com/r/ecommerce/comments/1pwli6z/broken_promo_code_cost_us_63k_in_one_weekend_now/
+- Date: 2025-12-26 | Score: 1 | Comments: 0
+- Preview: We run a dtc skincare brand doing around 3m annually. Launched a labor day sale last year and the promo code logic had a bug where it stacked with our existing customer discount.  Didn't notice until sunday afternoon because we were all at a barbecue. By then we'd processed 220 orders at basically 7...
+
+## 14. scaling ecommerce ops: how do you stay ahead of post-purchase problems without babysitting everything?
 - Author: letstakeplunge
 - URL: https://reddit.com/r/ecommerce/comments/1pvsp83/scaling_ecommerce_ops_how_do_you_stay_ahead_of/
-- Date: 2025-12-25 | Score: 5 | Comments: 6
+- Date: 2025-12-25 | Score: 3 | Comments: 6
 - Preview: **Update:** got a few DMs pointing me to Keeyu (keeyu.com) - looks like it does exactly this kind of proactive monitoring. Has anyone in here tried it? They even have a blueprint: ([keeyu.com/download-playbook](http://www.keeyu.com/download-playbook))      our store has been picking up steam this ye...
 
-## 14. Here's what is happening in the world of DTC / e-commerce - Newsletter December 23rd
+## 15. Here's what is happening in the world of DTC / e-commerce - Newsletter December 23rd
 - Author: yeramian55
 - URL: https://reddit.com/r/ecommerce/comments/1pu39tx/heres_what_is_happening_in_the_world_of_dtc/
 - Date: 2025-12-23 | Score: 3 | Comments: 1
 - Preview: This is a weekly newsletter I write and share every Tuesday. I spend the week collecting news, trends, and other content that I think would be interesting to e-commerce founders, operators and CMOs. Normally I share links to the articles itself but since I can't do that in this thread, feel free to ...
 
-## 15. At what revenue point did you realize your warehouse management software couldn't keep up
+## 16. At what revenue point did you realize your warehouse management software couldn't keep up
 - Author: Ok_Kangaroo2140
 - URL: https://reddit.com/r/ecommerce/comments/1ptkzoj/at_what_revenue_point_did_you_realize_your/
-- Date: 2025-12-22 | Score: 1 | Comments: 14
+- Date: 2025-12-22 | Score: 2 | Comments: 14
 - Preview: I'm the VP of Operations for a DTC brand that's grown from about 30M to 65M in annual revenue over the last two years, and we're starting to hit serious operational bottlenecks with our current warehouse management software that's making it clear we need to upgrade but I'm trying to understand if we...
-
-## 16. Is WooCommerce still the best option for custom client sites
-- Author: ParticularDeal1559
-- URL: https://reddit.com/r/ecommerce/comments/1psx0th/is_woocommerce_still_the_best_option_for_custom/
-- Date: 2025-12-22 | Score: 3 | Comments: 15
-- Preview: I’m a web dev and most of my work for years has been WordPress with WooCommerce. It used to feel flexible and client friendly, but lately it just feels… heavy and messy. Every build turns into a stack of plugins, workarounds and constant updates that can break stuff. Performance, admin UX, random co...
 
 ## 17. Review issues on shop pay
 - Author: arutkay26
 - URL: https://reddit.com/r/shopify/comments/1pwimdy/review_issues_on_shop_pay/
-- Date: 2025-12-26 | Score: 2 | Comments: 1
+- Date: 2025-12-26 | Score: 2 | Comments: 2
 - Preview: I had a faulty product issue we were notified of by customer and the customer is upset (a little too upset for a very fast $28 and apology/offer of replacement etc, if you ask me) but now on top of it is threatening to leave a bad review.   I know shop pay orders usually favor the customer- even if ...
 
 ## 18. My Shopify store was taken down after a Canadian Competition Bureau complaint — resolved, but concerning
 - Author: Area_Inevitable
 - URL: https://reddit.com/r/shopify/comments/1pum6nf/my_shopify_store_was_taken_down_after_a_canadian/
-- Date: 2025-12-24 | Score: 20 | Comments: 35
+- Date: 2025-12-24 | Score: 19 | Comments: 35
 - Preview: First thing I wanna say is, I used ChatGPT to edit this post, to check for spelling and make sure it was grammatically correct and easy to read. I did write it myself first but then fed it through the AI, just wanna be up front.  The Canadian Competition Bureau reported my website to Shopify. Shopif...
 
 ## 19. Chargeback on refunded store credit
@@ -125,13 +125,13 @@ Found: 32 posts
 ## 21. Show HN: AceIQ360 – First AI memory system to achieve 100% on LongMemEval
 - Author: maheshvaikri99
 - URL: https://news.ycombinator.com/item?id=46395730
-- Date: 2025-12-26 | Score: 2 | Comments: 0
+- Date: 2025-12-26 | Score: 2 | Comments: 1
 - Preview: I built AceIQ360, a deterministic agentic memory system.<p>Results: - LongMemEval: 100% (500&#x2F;500) - first ever - LoCoMo: 75.32% J-Score (vs Mem0 68.44%)   - 80x cheaper per turn - 13x faster<p>Built on RudraDB, my relationship-aware vector database with automatic relationship detection.<p>No LL...
 
 ## 22. I built a quiet site for finding ambient albums while working
 - Author: developvr
 - URL: https://news.ycombinator.com/item?id=46393609
-- Date: 2025-12-26 | Score: 19 | Comments: 4
+- Date: 2025-12-26 | Score: 20 | Comments: 4
 
 ## 23. Show HN: A tiny work log that generates performance review summaries
 - Author: morozred
