@@ -511,6 +511,17 @@ export async function generateEngagePost({ subreddit, ideaTemplate, category }) 
   return res.json();
 }
 
+// Generate a response for a news post (HN, Lobsters, Dev.to, Hashnode)
+export async function generateNewsResponse({ title, body, source }) {
+  const res = await fetch(`${API_BASE}/api/posts/generate-news`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, body, source }),
+  });
+  if (!res.ok) throw new Error('Failed to generate response');
+  return res.json();
+}
+
 export async function updatePost(postId, updates) {
   const res = await fetch(`${API_BASE}/api/posts/${postId}`, {
     method: 'PATCH',
@@ -751,26 +762,62 @@ export async function scrapePostForUserComments(postUrl) {
     const postId = match[1];
     console.log(`[DevScout] Extracted post ID: ${postId}`);
 
-    // Fetch the full post with all comments
-    // Using old.reddit.com as it has more reliable JSON API access
-    const apiUrl = `https://old.reddit.com/comments/${postId}.json?limit=500&depth=10`;
-    console.log(`[DevScout] Fetching from: ${apiUrl}`);
+    // Try multiple methods to fetch Reddit data
+    let response;
+    let data;
 
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'DevScout/1.0'
+    // Method 1: Try direct fetch (might work in some browsers/situations)
+    try {
+      const directUrl = `https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`;
+      console.log(`[DevScout] Trying direct fetch: ${directUrl}`);
+      response = await fetch(directUrl, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (response.ok) {
+        data = await response.json();
+        console.log(`[DevScout] Direct fetch succeeded`);
       }
-    });
-
-    console.log(`[DevScout] Response status: ${response.status}`);
-
-    if (!response.ok) {
-      console.error(`[DevScout] Reddit API error: ${response.status} ${response.statusText}`);
-      return { comments: [], error: `Failed to fetch: ${response.status}` };
+    } catch (e) {
+      console.log(`[DevScout] Direct fetch failed: ${e.message}`);
     }
 
-    const data = await response.json();
+    // Method 2: Try corsproxy.io (free CORS proxy)
+    if (!data) {
+      try {
+        const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`)}`;
+        console.log(`[DevScout] Trying corsproxy.io: ${corsProxyUrl}`);
+        response = await fetch(corsProxyUrl, {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          data = await response.json();
+          console.log(`[DevScout] corsproxy.io succeeded`);
+        }
+      } catch (e) {
+        console.log(`[DevScout] corsproxy.io failed: ${e.message}`);
+      }
+    }
+
+    // Method 3: Try allorigins.win
+    if (!data) {
+      try {
+        const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`)}`;
+        console.log(`[DevScout] Trying allorigins: ${allOriginsUrl}`);
+        response = await fetch(allOriginsUrl);
+        if (response.ok) {
+          data = await response.json();
+          console.log(`[DevScout] allorigins succeeded`);
+        }
+      } catch (e) {
+        console.log(`[DevScout] allorigins failed: ${e.message}`);
+      }
+    }
+
+    if (!data) {
+      console.error(`[DevScout] All fetch methods failed for post ${postId}`);
+      return { comments: [], error: 'All fetch methods failed' };
+    }
+
     console.log(`[DevScout] Got response data, array length: ${Array.isArray(data) ? data.length : 'not an array'}`);
 
     // Debug: log the structure

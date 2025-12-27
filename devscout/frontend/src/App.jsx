@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES } from './services/api';
+import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, generateNewsResponse, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES } from './services/api';
 
 const styles = {
   container: {
@@ -48,14 +48,14 @@ const styles = {
     border: 'none',
     cursor: 'pointer',
     fontWeight: '500',
-    transition: 'all 0.2s',
+    transition: 'all 0.2s ease',
   },
   btnPrimary: {
     background: '#3b82f6',
     color: '#fff',
   },
   btnSecondary: {
-    background: '#333',
+    background: '#4b5563',
     color: '#e0e0e0',
   },
   btnSuccess: {
@@ -68,6 +68,14 @@ const styles = {
   },
   btnReddit: {
     background: '#ff4500',
+    color: '#fff',
+  },
+  btnRegenerate: {
+    background: '#8b5cf6',
+    color: '#fff',
+  },
+  btnSkip: {
+    background: '#6b7280',
     color: '#fff',
   },
   tabs: {
@@ -510,6 +518,45 @@ const injectStyles = () => {
       from { opacity: 0; max-height: 0; }
       to { opacity: 1; max-height: 2000px; }
     }
+    /* Button hover effects */
+    button, a.btn-hover {
+      transition: all 0.2s ease !important;
+    }
+    button:hover:not(:disabled), a.btn-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      filter: brightness(1.1);
+    }
+    button:active:not(:disabled), a.btn-hover:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    /* Specific button hover colors */
+    button[data-btn="primary"]:hover:not(:disabled) {
+      background: #2563eb !important;
+    }
+    button[data-btn="reddit"]:hover:not(:disabled) {
+      background: #e03d00 !important;
+    }
+    button[data-btn="regenerate"]:hover:not(:disabled) {
+      background: #7c3aed !important;
+    }
+    button[data-btn="skip"]:hover:not(:disabled) {
+      background: #4b5563 !important;
+    }
+    button[data-btn="success"]:hover:not(:disabled) {
+      background: #16a34a !important;
+    }
+    button[data-btn="secondary"]:hover:not(:disabled) {
+      background: #374151 !important;
+    }
+    button[data-btn="danger"]:hover:not(:disabled) {
+      background: #dc2626 !important;
+    }
   `;
   document.head.appendChild(style);
 };
@@ -533,6 +580,9 @@ function App() {
   const [news, setNews] = useState([]);
   const [newsFetching, setNewsFetching] = useState(false);
   const [newsProgress, setNewsProgress] = useState(null);
+  const [newsResponses, setNewsResponses] = useState({}); // newsId -> response text
+  const [autoMarkStatus, setAutoMarkStatus] = useState(null); // Status message for auto-mark
+  const [generatingNews, setGeneratingNews] = useState({}); // newsId -> boolean
   // Replies tab state (refactored)
   const [respondedPosts, setRespondedPosts] = useState([]);
   const [postRepliesData, setPostRepliesData] = useState({}); // postId -> { comments, totalUnreplied }
@@ -576,16 +626,31 @@ function App() {
   // Auto-detect if user has commented on "new" posts and mark them as responded
   const checkPostsForUserComments = useCallback(async (postsToCheck) => {
     const newPosts = postsToCheck.filter(p => p.status === 'new');
-    if (newPosts.length === 0) return;
+    if (newPosts.length === 0) {
+      console.log(`[DevScout] No new posts to check`);
+      return;
+    }
 
     console.log(`[DevScout] Checking ${newPosts.length} new posts for user comments...`);
+    setAutoMarkStatus(`Checking ${newPosts.length} posts...`);
 
-    for (const post of newPosts) {
+    let markedCount = 0;
+    for (let i = 0; i < newPosts.length; i++) {
+      const post = newPosts[i];
+      setAutoMarkStatus(`Checking post ${i + 1}/${newPosts.length}...`);
       try {
-        const { comments } = await scrapePostForUserComments(post.url);
+        console.log(`[DevScout] Checking post: ${post.url}`);
+        const { comments, error } = await scrapePostForUserComments(post.url);
+        if (error) {
+          console.error(`[DevScout] Error scraping post ${post.id}: ${error}`);
+        }
         if (comments && comments.length > 0) {
-          console.log(`[DevScout] Found user comment on post ${post.id}, auto-marking as responded`);
+          console.log(`[DevScout] ✓ Found user comment on post ${post.id}, auto-marking as responded`);
+          setAutoMarkStatus(`Found comment! Marking post ${i + 1}...`);
           await updatePost(post.id, { status: 'responded' });
+          markedCount++;
+        } else {
+          console.log(`[DevScout] No user comments found on post ${post.id}`);
         }
         // Small delay between checks
         await new Promise(r => setTimeout(r, 300));
@@ -594,8 +659,16 @@ function App() {
       }
     }
 
-    // Reload data if any posts were marked
-    loadData();
+    if (markedCount > 0) {
+      setAutoMarkStatus(`Marked ${markedCount} post(s) as responded!`);
+      // Reload data if any posts were marked
+      loadData();
+    } else {
+      setAutoMarkStatus(null);
+    }
+
+    // Clear status after a delay
+    setTimeout(() => setAutoMarkStatus(null), 3000);
   }, [loadData]);
 
   // Check for user comments on initial load
@@ -626,7 +699,7 @@ function App() {
         hasCheckedPosts.current.clear();
         checkPostsForUserComments(newPosts);
       }
-    }, 60000); // Check every 60 seconds
+    }, 10000); // Check every 10 seconds (debug mode)
 
     return () => clearInterval(interval);
   }, [mode, posts, checkPostsForUserComments]);
@@ -765,7 +838,7 @@ function App() {
 
   const handleFetchNews = async () => {
     setNewsFetching(true);
-    setNewsProgress({ current: 0, total: 2, source: 'Starting...' });
+    setNewsProgress({ current: 0, total: 4, source: 'Starting...' });
     try {
       const newsData = await fetchNews((current, total, source) => {
         setNewsProgress({ current, total, source });
@@ -776,6 +849,23 @@ function App() {
     } finally {
       setNewsFetching(false);
       setNewsProgress(null);
+    }
+  };
+
+  const handleGenerateNewsResponse = async (newsItem) => {
+    const newsId = newsItem.reddit_id;
+    setGeneratingNews((prev) => ({ ...prev, [newsId]: true }));
+    try {
+      const result = await generateNewsResponse({
+        title: newsItem.title,
+        body: newsItem.body,
+        source: newsItem.subreddit,
+      });
+      setNewsResponses((prev) => ({ ...prev, [newsId]: result.response }));
+    } catch (err) {
+      alert('Failed to generate: ' + err.message);
+    } finally {
+      setGeneratingNews((prev) => ({ ...prev, [newsId]: false }));
     }
   };
 
@@ -1202,6 +1292,7 @@ function App() {
 
           <div style={styles.controls}>
             <button
+              data-btn="primary"
               style={{ ...styles.btn, ...styles.btnPrimary }}
               onClick={handleFetch}
               disabled={fetching}
@@ -1212,6 +1303,11 @@ function App() {
                   : 'Fetching...'
                 : 'Fetch New Posts'}
             </button>
+            {autoMarkStatus && (
+              <span style={{ marginLeft: '12px', color: '#4ade80', fontSize: '13px', animation: 'pulse 1s infinite' }}>
+                🔍 {autoMarkStatus}
+              </span>
+            )}
           </div>
 
           <div style={styles.tabs}>
@@ -1306,11 +1402,14 @@ function App() {
                     <div style={styles.response}>{post.suggested_response}</div>
                     <div style={styles.actions}>
                       <button
+                        data-btn="reddit"
                         style={{ ...styles.btn, ...styles.btnReddit, display: 'flex', alignItems: 'center', gap: '6px' }}
                         onClick={async () => {
                           await navigator.clipboard.writeText(post.suggested_response);
                           setCopied((prev) => ({ ...prev, [post.id]: true }));
-                          window.open(post.url, '_blank');
+                          // Add #comments to scroll to comment section
+                          const urlWithAnchor = post.url.includes('#') ? post.url : `${post.url}#comments`;
+                          window.open(urlWithAnchor, '_blank');
                           setTimeout(() => setCopied((prev) => ({ ...prev, [post.id]: false })), 2000);
                         }}
                       >
@@ -1318,20 +1417,23 @@ function App() {
                         {copied[post.id] ? 'Copied! Opening...' : 'Reply on Reddit'}
                       </button>
                       <button
+                        data-btn="success"
                         style={{ ...styles.btn, ...styles.btnSuccess }}
                         onClick={() => handleMarkResponded(post.id)}
                       >
                         Mark Responded
                       </button>
                       <button
-                        style={{ ...styles.btn, ...styles.btnSecondary }}
+                        data-btn="regenerate"
+                        style={{ ...styles.btn, ...styles.btnRegenerate }}
                         onClick={() => handleGenerate(post.id)}
                         disabled={generating[post.id]}
                       >
                         {generating[post.id] ? 'Regenerating...' : 'Regenerate'}
                       </button>
                       <button
-                        style={{ ...styles.btn, ...styles.btnSecondary }}
+                        data-btn="skip"
+                        style={{ ...styles.btn, ...styles.btnSkip }}
                         onClick={() => handleSkip(post.id)}
                       >
                         Skip
@@ -1341,6 +1443,7 @@ function App() {
                 ) : (
                   <div style={styles.actions}>
                     <button
+                      data-btn="primary"
                       style={{ ...styles.btn, ...styles.btnPrimary }}
                       onClick={() => handleGenerate(post.id)}
                       disabled={generating[post.id]}
@@ -1348,7 +1451,8 @@ function App() {
                       {generating[post.id] ? 'Generating...' : 'Generate Response'}
                     </button>
                     <button
-                      style={{ ...styles.btn, ...styles.btnSecondary }}
+                      data-btn="skip"
+                      style={{ ...styles.btn, ...styles.btnSkip }}
                       onClick={() => handleSkip(post.id)}
                     >
                       Skip
@@ -1401,38 +1505,84 @@ function App() {
                   ))}
                 </div>
 
-                <div style={styles.actions}>
-                  <button
-                    style={{ ...styles.btn, ...styles.btnClaude }}
-                    onClick={() => {
-                      const sourceName = item.subreddit.startsWith('HN') ? 'Hacker News'
-                        : item.subreddit.startsWith('Lobsters') ? 'Lobsters'
-                        : item.subreddit.startsWith('DEV') ? 'Dev.to'
-                        : item.subreddit.startsWith('Hashnode') ? 'Hashnode'
-                        : 'tech community';
-                      const text = `Help me write a response to this ${sourceName} post:\n\nTitle: ${item.title}\n${item.body ? `\nContent: ${item.body}\n` : ''}\nURL: ${item.url}`;
-                      navigator.clipboard.writeText(text);
-                      setCopied((prev) => ({ ...prev, [`news_${item.reddit_id}`]: true }));
-                      setTimeout(() => setCopied((prev) => ({ ...prev, [`news_${item.reddit_id}`]: false })), 2000);
-                    }}
-                  >
-                    {copied[`news_${item.reddit_id}`] ? 'Copied!' : 'Copy for Claude'}
-                  </button>
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ ...styles.btn, ...styles.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
-                  >
-                    View Post
-                  </a>
-                  <button
-                    style={{ ...styles.btn, ...styles.btnSecondary }}
-                    onClick={() => handleDismissNews(item.reddit_id)}
-                  >
-                    Dismiss
-                  </button>
-                </div>
+                {/* Generated response section */}
+                {newsResponses[item.reddit_id] ? (
+                  <div style={styles.responseSection}>
+                    <div style={styles.responseLabel}>Generated Response</div>
+                    <textarea
+                      value={newsResponses[item.reddit_id]}
+                      onChange={(e) => setNewsResponses((prev) => ({ ...prev, [item.reddit_id]: e.target.value }))}
+                      style={{
+                        width: '100%',
+                        minHeight: '120px',
+                        padding: '12px',
+                        borderRadius: '6px',
+                        border: '1px solid #333',
+                        background: '#0a0a0a',
+                        color: '#e0e0e0',
+                        fontSize: '14px',
+                        resize: 'vertical',
+                        marginBottom: '8px',
+                      }}
+                    />
+                    <div style={styles.actions}>
+                      <button
+                        data-btn="primary"
+                        style={{ ...styles.btn, ...styles.btnPrimary, display: 'flex', alignItems: 'center', gap: '6px' }}
+                        onClick={async () => {
+                          await navigator.clipboard.writeText(newsResponses[item.reddit_id]);
+                          setCopied((prev) => ({ ...prev, [`news_${item.reddit_id}`]: true }));
+                          window.open(item.url, '_blank');
+                          setTimeout(() => setCopied((prev) => ({ ...prev, [`news_${item.reddit_id}`]: false })), 2000);
+                        }}
+                      >
+                        {copied[`news_${item.reddit_id}`] ? 'Copied! Opening...' : 'Copy & View Post →'}
+                      </button>
+                      <button
+                        data-btn="regenerate"
+                        style={{ ...styles.btn, ...styles.btnRegenerate }}
+                        onClick={() => handleGenerateNewsResponse(item)}
+                        disabled={generatingNews[item.reddit_id]}
+                      >
+                        {generatingNews[item.reddit_id] ? 'Regenerating...' : 'Regenerate'}
+                      </button>
+                      <button
+                        data-btn="skip"
+                        style={{ ...styles.btn, ...styles.btnSkip }}
+                        onClick={() => handleDismissNews(item.reddit_id)}
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={styles.actions}>
+                    <button
+                      data-btn="primary"
+                      style={{ ...styles.btn, ...styles.btnPrimary }}
+                      onClick={() => handleGenerateNewsResponse(item)}
+                      disabled={generatingNews[item.reddit_id]}
+                    >
+                      {generatingNews[item.reddit_id] ? 'Generating...' : 'Generate Response'}
+                    </button>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ ...styles.btn, ...styles.btnSecondary, textDecoration: 'none', display: 'inline-block' }}
+                      className="btn-hover"
+                    >
+                      View Post
+                    </a>
+                    <button
+                      data-btn="skip"
+                      style={{ ...styles.btn, ...styles.btnSkip }}
+                      onClick={() => handleDismissNews(item.reddit_id)}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
               </div>
             ))
           )}
@@ -1772,18 +1922,22 @@ function App() {
                                             />
                                             <div style={{ display: 'flex', gap: '8px' }}>
                                               <button
-                                                style={{ ...styles.btn, ...styles.btnSecondary }}
+                                                data-btn="regenerate"
+                                                style={{ ...styles.btn, ...styles.btnRegenerate }}
                                                 onClick={() => handleGenerateReply(reply.id, post.subreddit, comment.body, reply.body)}
                                                 disabled={generatingReply[reply.id]}
                                               >
                                                 {generatingReply[reply.id] ? 'Regenerating...' : 'Regenerate'}
                                               </button>
                                               <button
+                                                data-btn="reddit"
                                                 style={{ ...styles.btn, ...styles.btnReddit, display: 'flex', alignItems: 'center', gap: '6px' }}
                                                 onClick={async () => {
                                                   await navigator.clipboard.writeText(generatedReplies[reply.id]);
                                                   setCopied((prev) => ({ ...prev, [`gen_${reply.id}`]: true }));
-                                                  window.open(reply.permalink, '_blank');
+                                                  // Add ?context=3 for better context and scroll to comment
+                                                  const replyUrl = reply.permalink.includes('?') ? reply.permalink : `${reply.permalink}?context=3`;
+                                                  window.open(replyUrl, '_blank');
                                                   setTimeout(() => setCopied((prev) => ({ ...prev, [`gen_${reply.id}`]: false })), 2000);
                                                 }}
                                               >
@@ -1795,6 +1949,7 @@ function App() {
                                         ) : (
                                           <div style={{ display: 'flex', gap: '8px' }}>
                                             <button
+                                              data-btn="primary"
                                               style={{ ...styles.btn, ...styles.btnPrimary }}
                                               onClick={() => handleGenerateReply(reply.id, post.subreddit, comment.body, reply.body)}
                                               disabled={generatingReply[reply.id]}
@@ -1802,10 +1957,11 @@ function App() {
                                               {generatingReply[reply.id] ? 'Generating...' : 'Generate Response'}
                                             </button>
                                             <a
-                                              href={reply.permalink}
+                                              href={`${reply.permalink}${reply.permalink.includes('?') ? '' : '?context=3'}`}
                                               target="_blank"
                                               rel="noopener noreferrer"
                                               style={{ ...styles.btn, ...styles.btnReddit, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                                              className="btn-hover"
                                             >
                                               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
                                               Reply on Reddit
@@ -1983,6 +2139,7 @@ function App() {
                         />
                         <div style={{ ...styles.actions, marginTop: '12px' }}>
                           <button
+                            data-btn="success"
                             style={{ ...styles.btn, ...styles.btnSuccess }}
                             onClick={() => {
                               navigator.clipboard.writeText(generatedEngagePosts[ideaKey]);
@@ -1993,7 +2150,8 @@ function App() {
                             {copied[`engage_${ideaKey}`] ? 'Copied!' : 'Copy Post'}
                           </button>
                           <button
-                            style={{ ...styles.btn, ...styles.btnSecondary }}
+                            data-btn="regenerate"
+                            style={{ ...styles.btn, ...styles.btnRegenerate }}
                             onClick={() => handleGenerateEngage(ideaKey, sub, idea.title, category)}
                             disabled={generatingEngage[ideaKey]}
                           >
@@ -2003,7 +2161,8 @@ function App() {
                             href={`https://reddit.com/r/${sub}/submit?selftext=true`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{ ...styles.btn, ...styles.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
+                            style={{ ...styles.btn, ...styles.btnReddit, textDecoration: 'none', display: 'inline-block' }}
+                            className="btn-hover"
                           >
                             Create Post in r/{sub} →
                           </a>
@@ -2012,6 +2171,7 @@ function App() {
                     ) : (
                       <div style={styles.actions}>
                         <button
+                          data-btn="primary"
                           style={{ ...styles.btn, ...styles.btnPrimary }}
                           onClick={() => handleGenerateEngage(ideaKey, sub, idea.title, category)}
                           disabled={generatingEngage[ideaKey]}
@@ -2024,6 +2184,7 @@ function App() {
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ ...styles.btn, ...styles.btnSecondary, textDecoration: 'none', display: 'inline-block' }}
+                            className="btn-hover"
                           >
                             Create Post in r/{engageSubreddit}
                           </a>

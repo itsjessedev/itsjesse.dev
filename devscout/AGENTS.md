@@ -1,7 +1,7 @@
 # Project Instructions (Codex)
 ## Project Overview
 
-DevScout is a credibility-building tool for developers. It finds relevant posts across Reddit, Hacker News, Lobsters, and GitHub where you can provide helpful responses or make contributions.
+DevScout is a credibility-building tool for developers. It finds relevant posts across Reddit, Hacker News, Lobsters, Dev.to, Hashnode, and GitHub where you can provide helpful responses or make contributions.
 
 **URL:** https://devscout.junipr.io
 **Location:** ~/itsjesse.dev/devscout/
@@ -13,15 +13,18 @@ DevScout is a credibility-building tool for developers. It finds relevant posts 
 
 ### Posts Tab (Reddit Only)
 - Scans 75+ subreddits for automation/integration keywords
-- Generates AI responses with friendly mentor tone
+- Generates AI responses with friendly mentor tone (Gemini via OpenRouter)
 - Client-side fetching (bypasses VPS IP blocks)
 - Clears stale posts on fetch (keeps responded)
 - Subreddit badges link to actual subreddit
+- **Auto-mark responded**: 60s periodic check detects user's comments on "new" posts
+- **Reply on Reddit button**: Reddit orange with Snoo icon, copies response + opens link
 
-### News Tab (HN + Lobsters)
-- Separate tab for Hacker News and Lobsters
-- "Copy for Claude" button for response help
-- Same keyword matching as Reddit
+### News Tab (HN, Lobsters, Dev.to, Hashnode)
+- Scans 4 tech community sources for relevant posts
+- **Generate Response button** (Gemini) - replaces Copy for Claude
+- Editable text area for generated responses
+- Copy & View Post button (copies + opens link)
 
 ### GitHub Tab
 - Finds `good-first-issue`, `help-wanted` labeled issues
@@ -31,44 +34,48 @@ DevScout is a credibility-building tool for developers. It finds relevant posts 
 
 ### Prospects Tab (Outreach)
 - Search-based Reddit scraping for hot leads
+- **45+ subreddit/keyword combinations** including:
+  - Direct hiring (forhire, slavelabour, jobbit)
+  - Business owners (smallbusiness, Entrepreneur, startups, indiehackers)
+  - SaaS/NoCode (SaaS, microsaas, nocode, lowcode)
+  - Ecommerce (shopify, woocommerce, Etsy, ecommerce)
+  - Industry verticals (realestateinvesting, accounting, Bookkeeping)
+  - Marketing/Sales (hubspot, Salesforce, marketing)
+  - Productivity tools (zapier, Notion, Airtable)
 - Scores prospects by keyword relevance (HOT/WARM/COOL)
 - Filters out competitor posts
-- Sorted by score (hottest first)
 
-### Replies Tab (Reply Tracking) - Refactored 2025-12-27
+### Replies Tab (Reply Tracking)
 - Auto-scrapes responded posts for user's comments (u/jessedev_)
-- Shows full thread structure: post → my comment → replies → branches
+- Shows full thread structure: post -> my comment -> replies -> branches
 - Collapsible UI for each tracked post
 - Animated red glow for posts needing attention
-- "Generate Response" button for unreplied comments (uses Gemini via OpenRouter)
+- "Generate Response" button for unreplied comments (uses Gemini)
 - Editable text area for generated responses
-- Real-time polling: 30s on Replies tab, 60s background on all other tabs
-- Global notification badge visible on ALL pages when new replies exist
-- Click notification → auto-navigate to Replies and scroll to first unreplied
-- Custom URL input to manually add posts to track
+- **Combined Reply on Reddit button**: copies response + opens link
+- Real-time polling: 30s on Replies tab, 60s background
+- Global notification badge visible on ALL pages
+- Click notification -> navigate to Replies + scroll to first unreplied
+- **Auto-cleanup**: Posts responded >48hrs with no comments found auto-revert to skipped
 
-### Engage Tab (Community Content) - Updated 2025-12-27
-- Post idea templates for starting discussions
-- Categories: experience_sharing, questions_discussions, help_resources, project_feedback, industry_trends, problem_solving, weekly_threads, comparisons
+### Engage Tab (Community Content) - DEFAULT TAB
+- Expert-level post idea templates (no novice content)
+- Categories: deep_dives, hard_lessons, technical_opinions, how_i_debug, war_stories, industry_insights, comparisons
 - Subreddit selector with related subreddit suggestions
-- **"Generate Post" button uses Gemini** to create full post content (not Copy for Claude)
+- "Generate Post" button uses Gemini
 - Editable text area for generated content
 - Direct link to create post on Reddit
-- **DEFAULT TAB** - App now loads to Engage first
 
 ## AI Response Generation
 
-Uses OpenRouter API with Gemini Flash. The prompt detects POST TYPE and responds appropriately:
+Uses OpenRouter API with Gemini Flash (google/gemini-2.0-flash-001).
 
-1. **HELP-SEEKING** - Give specific, actionable advice
-2. **SHARING/JOURNEY** - Engage with ideas, ask questions (don't give unsolicited advice)
-3. **DISCUSSION/OPINION** - Add perspective, build on points
-4. **SHOWCASE** - Give genuine feedback, ask about technical choices
+**Response variety system**: 10 distinct opening styles randomly selected per request:
+- direct_technical, shared_experience, genuine_question, specific_callout
+- practical_advice, acknowledgment_pivot, observation, validation_plus
+- mini_story, contrarian_curious
 
-Key rules:
-- NEVER start with "Ah, ..." (was repetitive)
-- Vary opening styles
-- Match response type to post type
+**Banned phrases**: "Really interesting...", "Ah,", "Great question!", "Cool project!", etc.
 
 ## Architecture
 
@@ -76,6 +83,15 @@ Key rules:
 2. **Frontend filters/scores** - Keyword matching, relevance scoring
 3. **Backend stores posts** - SQLite with deduplication
 4. **AI response generation** - OpenRouter API with Gemini Flash
+
+## IMPORTANT: VPS IP is Blocked by Reddit
+
+**The VPS IP (204.152.223.104) is blocked by Reddit's API.**
+
+- Direct requests from VPS to reddit.com return 403 Forbidden
+- This is why Posts and Prospects fetch client-side (from browser)
+- Auto-mark responded uses CORS proxies (corsproxy.io, allorigins.win) as fallback
+- Never try to proxy Reddit requests through the backend - it won't work
 
 ## Database Schema (posts table)
 
@@ -89,7 +105,7 @@ relevance_score, keywords_matched, suggested_response
 -- Status
 status (new/skipped/responded), responded_at
 
--- Reply tracking (added 2025-12-27)
+-- Reply tracking
 my_comment_url, last_reply_check, unread_replies
 
 -- Timestamps
@@ -99,87 +115,44 @@ discovered_at, updated_at
 ## Common Commands
 
 ```bash
-# Deploy backend
-rsync -avz --exclude '__pycache__' --exclude 'venv' --exclude '*.db' \
-  backend/ junipr-vps:/home/deploy/devscout/backend/
-
-# Deploy frontend
+# Deploy both frontend and backend
 cd frontend && npm run build
-rsync -avz frontend/dist/ junipr-vps:/home/deploy/devscout/frontend/
-
-# Restart service
+rsync -avz --delete frontend/dist/ junipr-vps:/home/deploy/devscout/frontend/
+rsync -avz --exclude '__pycache__' --exclude 'venv' --exclude '*.db' backend/ junipr-vps:/home/deploy/devscout/backend/
 ssh junipr-vps "sudo systemctl restart devscout"
 
 # Check logs
 ssh junipr-vps "sudo journalctl -u devscout -f"
-
-# Run DB migration
-ssh junipr-vps "cd /home/deploy/devscout/backend && sqlite3 devscout.db 'ALTER TABLE...'"
 ```
 
-## Environment Variables (VPS)
+## API Endpoints
 
-Located at `/home/deploy/devscout/backend/.env`:
-- `OPENROUTER_API_KEY` - For AI response generation
+- `POST /api/posts/generate-reply` - Generate response to a reply
+- `POST /api/posts/generate-engage` - Generate engagement post content
+- `POST /api/posts/generate-news` - Generate response for news post (HN/Lobsters/Dev.to/Hashnode)
 
-## Work In Progress (Session: 2025-12-27)
+## Key Files
 
-### Completed This Session
-- ✅ Replies Tab complete refactor (full thread structure, collapsible UI, animations)
-- ✅ Global notification badge for replies (visible on all pages)
-- ✅ Click notification → navigate + scroll to reply
-- ✅ Generate Response button for unreplied comments (with editable text area)
-- ✅ Engage Tab with post idea templates by category
-- ✅ Real-time polling (30s on Replies, 60s background)
-- ✅ Removed "responded" filter from Posts tab (Replies handles it now)
-- ✅ Moved Replies tab next to Posts in navigation
-- ✅ Moved Engage tab to first position in nav (default tab)
-- ✅ Moved custom URL input to Posts tab (for adding posts scraper missed)
-- ✅ Engage tab now uses Gemini generation (not "Copy for Claude")
+- `frontend/src/App.jsx` - Main React app (~1900 lines)
+- `frontend/src/services/api.js` - All API calls, scraping, engagement templates
+- `backend/app/routers/posts.py` - All API endpoints
+- `backend/app/services/response_generator.py` - Gemini prompt engineering with opening styles
 
-### CRITICAL BUG #1 - Replies Not Loading
-**Issue:** Replies tab shows posts but user comments/replies aren't displaying
-- Posts with "responded" status appear in collapsible cards
-- When expanded, shows "No comments by u/jessedev_ found on this post yet"
-- Debug logging added to `handleFetchReplies` and `scrapePostForUserComments`
-- User says replies WERE working before Gemini generation feature was added
-- Need to check browser console for `[DevScout]` logs to debug
+## Session Notes (2025-12-27)
 
-**Debugging approach:**
-1. Check browser console for scraping logs
-2. Verify `scrapePostForUserComments()` is finding comments
-3. Check if Reddit API response structure changed
-4. Verify TARGET_USERNAME = 'jessedev_' matches actual username
-
-### CRITICAL BUG #2 - Posts Not Auto-Marking Responded
-**Issue:** Posts should auto-detect when user has replied on Reddit
-- Currently requires manual "Mark Responded" button click
-- User wants: reply on Reddit → auto-detect → auto-mark as responded
-- The scraping logic (`scrapePostForUserComments`) should find user's comments
-- If scraping worked, could use it to auto-detect responses on Posts tab too
-
-**Solution approach:**
-1. Fix the scraping first (Bug #1)
-2. Then use same scraping to check if user has commented on "new" posts
-3. Auto-mark as responded when user's comment is detected
+### Completed
+- Combined Copy + Reply on Reddit into single button (Replies + Posts tabs)
+- Added Reddit orange (#ff4500) and Snoo icon to Reply buttons
+- Added 60s periodic auto-mark responded on Posts tab
+- Added auto-cleanup for stale posts (48hr no comments -> skipped)
+- Added Dev.to and Hashnode to News tab (now 4 sources)
+- Replaced "Copy for Claude" with Gemini generation on News tab
+- Expanded Prospects with 30+ more subreddit/keyword searches
+- Updated Engage templates to expert-level content (removed novice)
+- Fixed Gemini response variety (10 random opening styles)
+- Added button colors (purple Regenerate, gray Skip) with hover animations
+- Reply on Reddit now scrolls to comments (#comments anchor)
+- Fixed CORS issue with auto-mark by using fallback proxies (corsproxy.io, allorigins.win)
 
 ### Next Up
-- **FIX SCRAPING** - Priority #1 (both bugs depend on this)
-- Add "Dismiss" or "Don't Reply" button to clear reply notifications
-- Auto-detect when user has replied (requires working scraper)
-
-### API Endpoints Added
-- `POST /api/posts/generate-reply` - Generate response to a reply (uses Gemini)
-  - Request: `{ subreddit, my_comment, their_reply }`
-  - Response: `{ response }`
-- `POST /api/posts/generate-engage` - Generate engagement post content (uses Gemini)
-  - Request: `{ subreddit, idea_template, category }`
-  - Response: `{ response }`
-
-### Frontend Functions Added (api.js)
-- `scrapePostForUserComments(postUrl)` - Find user's comments and replies
-- `scrapeTrackedPostsForReplies(posts)` - Batch scrape multiple posts
-- `generateReplyResponse({ subreddit, myComment, theirReply })` - Generate reply via API
-- `generateEngagePost({ subreddit, ideaTemplate, category })` - Generate engage post via API
-- `getEngagementSubreddits()`, `getRelatedSubreddits()`, `getIdeasForSubreddit()` - Engage tab helpers
-- `ENGAGEMENT_TEMPLATES` - Post idea templates by category
+- Add Dismiss button for replies (clear notifications without responding)
