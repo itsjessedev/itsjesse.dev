@@ -103,19 +103,39 @@ function calculateRelevance(post, matchedKeywords) {
 async function fetchSubreddit(subreddit) {
   const posts = [];
   const cutoffTime = Date.now() / 1000 - (MAX_POST_AGE_HOURS * 3600);
+  const url = `https://www.reddit.com/r/${subreddit}/new.json?limit=25`;
 
   try {
-    const response = await fetch(
-      `https://www.reddit.com/r/${subreddit}/new.json?limit=25`,
-      { headers: { 'Accept': 'application/json' } }
-    );
+    let data = null;
 
-    if (!response.ok) {
-      console.warn(`Failed to fetch r/${subreddit}: ${response.status}`);
-      return [];
+    // Method 1: Try corsproxy.io first (most reliable)
+    try {
+      const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+      const response = await fetch(corsProxyUrl, { headers: { 'Accept': 'application/json' } });
+      if (response.ok) {
+        data = await response.json();
+      }
+    } catch (e) {
+      // corsproxy failed
     }
 
-    const data = await response.json();
+    // Method 2: Try allorigins.win as fallback
+    if (!data) {
+      try {
+        const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const response = await fetch(allOriginsUrl);
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (e) {
+        // allorigins failed
+      }
+    }
+
+    if (!data) {
+      console.warn(`Failed to fetch r/${subreddit}: no proxy succeeded`);
+      return [];
+    }
     const children = data?.data?.children || [];
 
     for (const child of children) {
@@ -896,43 +916,27 @@ export async function scrapePostForUserComments(postUrl) {
     const postId = match[1];
     console.log(`[DevScout] Extracted post ID: ${postId}`);
 
-    // Try multiple methods to fetch Reddit data
+    // Try multiple methods to fetch Reddit data (proxy-first for speed)
     let response;
     let data;
+    const redditUrl = `https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`;
 
-    // Method 1: Try direct fetch (might work in some browsers/situations)
+    // Method 1: Try corsproxy.io first (most reliable, avoids CORS failures)
     try {
-      const directUrl = `https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`;
-      console.log(`[DevScout] Trying direct fetch: ${directUrl}`);
-      response = await fetch(directUrl, {
+      const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(redditUrl)}`;
+      console.log(`[DevScout] Trying corsproxy.io: ${corsProxyUrl}`);
+      response = await fetch(corsProxyUrl, {
         headers: { 'Accept': 'application/json' }
       });
       if (response.ok) {
         data = await response.json();
-        console.log(`[DevScout] Direct fetch succeeded`);
+        console.log(`[DevScout] corsproxy.io succeeded`);
       }
     } catch (e) {
-      console.log(`[DevScout] Direct fetch failed: ${e.message}`);
+      console.log(`[DevScout] corsproxy.io failed: ${e.message}`);
     }
 
-    // Method 2: Try corsproxy.io (free CORS proxy)
-    if (!data) {
-      try {
-        const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`)}`;
-        console.log(`[DevScout] Trying corsproxy.io: ${corsProxyUrl}`);
-        response = await fetch(corsProxyUrl, {
-          headers: { 'Accept': 'application/json' }
-        });
-        if (response.ok) {
-          data = await response.json();
-          console.log(`[DevScout] corsproxy.io succeeded`);
-        }
-      } catch (e) {
-        console.log(`[DevScout] corsproxy.io failed: ${e.message}`);
-      }
-    }
-
-    // Method 3: Try allorigins.win
+    // Method 2: Try allorigins.win as fallback
     if (!data) {
       try {
         const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`)}`;
@@ -1270,59 +1274,69 @@ function isCompetitor(title) {
 function scoreProspect(post) {
   if (isCompetitor(post.title)) return 0;
 
-  let score = 0;
   const title = post.title.toLowerCase();
   const text = (post.selftext || '').toLowerCase();
   const combined = title + ' ' + text;
 
-  // [HIRING] or [TASK] tags are gold
-  if (title.includes('[hiring]') || title.includes('[task]')) score += 30;
+  // NEGATIVE signals - stories, tips, advice, discussions (NOT hiring)
+  const notHiringPatterns = [
+    'tips for', 'my experience', 'how i ', 'what i learned', 'advice for',
+    'anyone else', 'is it just me', 'rant', 'story time', 'success story',
+    'how do you', 'what do you', 'do you think', 'thoughts on', 'opinion on',
+    'discussion', 'debate', 'unpopular opinion', 'hot take', 'controversial',
+    'psa:', 'fyi:', 'til ', 'today i learned', 'reminder:', 'warning:',
+    'just launched', 'just released', 'check out my', 'i made', 'i built',
+    'showcase', 'feedback on my', 'roast my', 'rate my', 'review my',
+    'best practices', 'beginner', 'getting started', 'learning',
+  ];
 
-  // HIGHEST value - explicit hiring intent
+  // If title matches non-hiring patterns, return 0 (skip entirely)
+  if (notHiringPatterns.some(p => title.includes(p))) return 0;
+
+  let score = 0;
+
+  // [HIRING] or [TASK] tags are gold - definite hiring
+  if (title.includes('[hiring]') || title.includes('[task]')) score += 40;
+
+  // HIGHEST value - explicit hiring intent (must be in title for high score)
   const goldKeywords = [
     'looking for developer', 'need developer', 'need a developer', 'hire developer',
     'looking for freelancer', 'need freelancer', 'hire freelancer',
     'looking for contractor', 'need contractor',
     'technical cofounder', 'tech cofounder', 'tech partner',
     'looking for programmer', 'need programmer',
+    'pay someone', 'will pay', 'paying for', 'budget is',
   ];
-  goldKeywords.forEach(kw => { if (combined.includes(kw)) score += 15; });
+  goldKeywords.forEach(kw => { if (title.includes(kw)) score += 20; });
+  // Lower score if only in body
+  goldKeywords.forEach(kw => { if (!title.includes(kw) && text.includes(kw)) score += 8; });
 
-  // High-value - pain points and automation needs
-  const highValue = [
-    'spreadsheet', 'automation', 'automate', 'manual data', 'manual entry',
-    'tedious', 'repetitive', 'time consuming', 'hours per week',
-    'csv', 'excel', 'integration', 'api', 'webhook', 'script',
-    'non-technical', 'non technical', 'bottleneck', 'broken process',
-    'copy paste', 'data entry', 'sync data', 'sync inventory',
-    'scrape', 'scraping', 'data extraction',
+  // High-value - explicit need signals (asking for help building)
+  const needSignals = [
+    'need help building', 'need someone to build', 'looking to build',
+    'want to hire', 'want to pay', 'need built', 'can someone build',
+    'who can build', 'who can help', 'anyone available',
   ];
-  highValue.forEach(kw => { if (combined.includes(kw)) score += 10; });
+  needSignals.forEach(kw => { if (combined.includes(kw)) score += 12; });
 
-  // Medium-value - general development needs
-  const midValue = [
-    'software', 'app', 'tool', 'help', 'build', 'create',
-    'cofounder', 'technical', 'programmer', 'developer',
-    'mvp', 'prototype', 'custom', 'limitations', 'workaround',
-    'outsource', 'virtual assistant', 'freelance',
+  // Medium-value - pain points (only if combined with need signals)
+  const painPoints = [
+    'manual data', 'manual entry', 'tedious', 'repetitive', 'time consuming',
+    'hours per week', 'copy paste', 'data entry', 'broken process',
   ];
-  midValue.forEach(kw => { if (combined.includes(kw)) score += 5; });
+  const hasPainPoint = painPoints.some(kw => combined.includes(kw));
+  if (hasPainPoint && score > 0) score += 8; // Only add if already has hiring signal
 
-  // Tool-specific keywords (people hitting limits)
-  const toolPainPoints = [
-    'zapier', 'make.com', 'integromat', 'n8n', 'bubble', 'webflow',
-    'nocode', 'no-code', 'lowcode', 'low-code', 'airtable', 'notion',
-  ];
-  toolPainPoints.forEach(kw => { if (combined.includes(kw)) score += 3; });
+  // Tool-specific (only valuable if asking for help)
+  const toolMentions = ['zapier', 'make.com', 'n8n', 'airtable', 'notion'];
+  const hasToolMention = toolMentions.some(kw => combined.includes(kw));
+  if (hasToolMention && score > 0) score += 5;
 
-  // Engagement signals
-  if (post.num_comments > 10) score += 5;
-  if (post.score > 20) score += 5;
-
-  // Recency bonus
-  const ageHours = (Date.now() / 1000 - post.created_utc) / 3600;
-  if (ageHours <= 24) score += 10;
-  else if (ageHours <= 72) score += 5;
+  // Small recency bonus (only for posts with hiring signals)
+  if (score > 0) {
+    const ageHours = (Date.now() / 1000 - post.created_utc) / 3600;
+    if (ageHours <= 24) score += 5;
+  }
 
   return score;
 }
@@ -1333,30 +1347,18 @@ async function searchSubreddit(subreddit, query) {
     const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&sort=new&t=week&limit=15`;
     let data = null;
 
-    // Method 1: Try direct fetch
+    // Method 1: Try corsproxy.io first (most reliable, avoids CORS)
     try {
-      const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+      const response = await fetch(corsProxyUrl, { headers: { 'Accept': 'application/json' } });
       if (response.ok) {
         data = await response.json();
       }
     } catch (e) {
-      // Direct fetch failed, try proxy
+      // corsproxy failed, try alternatives
     }
 
-    // Method 2: Try corsproxy.io
-    if (!data) {
-      try {
-        const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-        const response = await fetch(corsProxyUrl, { headers: { 'Accept': 'application/json' } });
-        if (response.ok) {
-          data = await response.json();
-        }
-      } catch (e) {
-        // corsproxy failed
-      }
-    }
-
-    // Method 3: Try allorigins.win
+    // Method 2: Try allorigins.win as fallback
     if (!data) {
       try {
         const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
