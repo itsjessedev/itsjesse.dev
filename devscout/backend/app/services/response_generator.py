@@ -53,6 +53,10 @@ OPENING_STYLES = [
         "style": "contrarian_curious",
         "instruction": "Start with gentle pushback or a different angle, framed as curiosity. Open with 'Have you considered the false-positive case where...' or 'One thing I'd push back on is...' or 'The semantic matching sounds good, but how do you handle...'",
     },
+    {
+        "style": "honest_review",
+        "instruction": "Start with a balanced, honest take. If they're asking for feedback, give it straight but kindly. Open with 'Couple things I'd flag here...' or 'The core idea is solid, but...' or 'Honest take: [strength], though [concern]...'",
+    },
 ]
 
 # Base system prompt (opening style is added dynamically)
@@ -64,6 +68,15 @@ POST TYPES & RESPONSE LENGTH:
 3. SHARING/JOURNEY → Brief engagement (1-2 paragraphs). Ask a question, share a related thought. NO unsolicited advice.
 4. DISCUSSION/OPINION → Add your perspective concisely (2-3 paragraphs), build on their points
 5. SHOWCASE → Brief genuine feedback (1-2 paragraphs), one specific observation or question
+6. FEEDBACK REQUEST → Be honestly helpful (2-3 paragraphs). Give real, actionable feedback - don't just hype them up.
+
+HONEST FEEDBACK APPROACH (for feedback/critique/review requests):
+- If they ask for feedback, GIVE real feedback - both positives AND areas to improve
+- Don't just validate everything. Point out potential issues, gaps, or concerns.
+- Be specific: "The auth flow could use rate limiting" not just "looks good!"
+- Balance is key: lead with something genuine you like, then honest concerns, then encouragement
+- Be kind but direct. Sugarcoating wastes their time.
+- If something is actually bad, say so diplomatically: "The UX here might frustrate users because..."
 
 LENGTH CALIBRATION:
 - Match response depth to post complexity
@@ -118,13 +131,6 @@ class ResponseGenerator:
             print("OpenRouter API key not configured")
             return None
 
-        # Randomly select an opening style to force variety
-        opening_style = random.choice(OPENING_STYLES)
-        opening_instruction = f"⚠️ REQUIRED OPENING STYLE: {opening_style['style'].upper()}\n{opening_style['instruction']}"
-
-        # Build the system prompt with the selected opening style
-        system_prompt = BASE_RESPONSE_PROMPT.format(opening_instruction=opening_instruction)
-
         # Build the user prompt
         post_content = f"SUBREDDIT: r/{subreddit}\n\nTITLE: {title}"
         if body:
@@ -133,12 +139,36 @@ class ResponseGenerator:
         if custom_context:
             post_content += f"\n\nADDITIONAL CONTEXT: {custom_context}"
 
-        # Analyze post complexity to calibrate response length
+        # Analyze post complexity to calibrate response length and opening style
         body_len = len(body) if body else 0
         title_lower = title.lower()
+        body_lower = (body or '').lower()
+        combined = title_lower + ' ' + body_lower
+
+        # Detect feedback-seeking posts - use honest_review style
+        feedback_keywords = ['roast my', 'roast this', 'feedback', 'critique', 'criticism',
+                            'honest opinion', 'honest thoughts', 'be brutal', 'be honest',
+                            'tear it apart', 'what do you think', 'rate my', 'review my',
+                            'looking for feedback', 'want feedback', 'need feedback',
+                            'any suggestions', 'what am i missing', 'what could be better']
+        is_feedback_request = any(kw in combined for kw in feedback_keywords)
+
+        # Select opening style - force honest_review for feedback requests
+        if is_feedback_request:
+            opening_style = next(s for s in OPENING_STYLES if s['style'] == 'honest_review')
+        else:
+            opening_style = random.choice(OPENING_STYLES)
+        opening_instruction = f"⚠️ REQUIRED OPENING STYLE: {opening_style['style'].upper()}\n{opening_style['instruction']}"
+
+        # Build the system prompt with the selected opening style
+        system_prompt = BASE_RESPONSE_PROMPT.format(opening_instruction=opening_instruction)
 
         # Determine appropriate response length
-        if body_len < 100 and ('?' in title or any(w in title_lower for w in ['how', 'what', 'why', 'can i', 'should i'])):
+        if is_feedback_request:
+            # Feedback request - give honest, balanced review
+            max_tokens = 400
+            post_content += "\n\n[NOTE: They're asking for feedback. Give HONEST, balanced feedback - genuine positives AND real concerns/suggestions. Don't just hype them up.]"
+        elif body_len < 100 and ('?' in title or any(w in title_lower for w in ['how', 'what', 'why', 'can i', 'should i'])):
             # Simple question - short answer
             max_tokens = 200
             post_content += "\n\n[NOTE: This is a simple question. Give a direct, concise answer - 1-2 short paragraphs max.]"
