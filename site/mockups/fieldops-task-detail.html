@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>FieldOps - Task Detail</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #064e3b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f1f1c 0%, #1a2f2a 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+      height: calc(100% - 114px);
+      overflow-y: auto;
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+    }
+    .back-button {
+      font-size: 20px;
+      color: #10b981;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .more-icon {
+      font-size: 20px;
+      color: #10b981;
+    }
+
+    /* Task Header */
+    .task-header-section {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .task-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .task-title { font-weight: 700; font-size: 18px; }
+    .task-status {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+    }
+    .task-priority {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      margin-bottom: 8px;
+    }
+    .task-time {
+      font-size: 13px;
+      color: #6ee7b7;
+    }
+
+    /* Info Section */
+    .info-section {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6ee7b7;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .info-row:last-child { margin-bottom: 0; }
+    .info-label {
+      color: #94a3b8;
+      min-width: 70px;
+    }
+    .info-value {
+      color: #e2e8f0;
+    }
+
+    /* Requirements */
+    .requirement-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+    }
+    .requirement-item:last-child { border-bottom: none; }
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #10b981;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    /* Photos */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .photo-item {
+      aspect-ratio: 1;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+    .btn-secondary {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 31, 28, 0.95);
+      border-top: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #10b981; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="app-content">
+          <div class="page-header">
+            <span class="back-button">←</span>
+            <span class="page-title">Task Details</span>
+            <span class="more-icon">⋯</span>
+          </div>
+
+          <div class="task-header-section">
+            <div class="task-title-row">
+              <div class="task-title">HVAC Installation</div>
+              <span class="task-status">In Progress</span>
+            </div>
+            <div class="task-priority">High Priority</div>
+            <div class="task-time">⏰ Due: Today at 2:00 PM</div>
+          </div>
+
+          <div class="info-section">
+            <div class="section-title">Customer Information</div>
+            <div class="info-row">
+              <span class="info-label">Company:</span>
+              <span class="info-value">Acme Corporation</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Contact:</span>
+              <span class="info-value">John Smith</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Phone:</span>
+              <span class="info-value">(555) 123-4567</span>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="section-title">Location</div>
+            <div class="info-row">
+              <span class="info-label">📍</span>
+              <span class="info-value">1234 Oak Street, Suite 102<br>Springfield, IL 62701</span>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="section-title">Requirements</div>
+            <div class="requirement-item">
+              <span class="checkbox">✓</span>
+              <span>Complete installation checklist</span>
+            </div>
+            <div class="requirement-item">
+              <span class="checkbox">✓</span>
+              <span>Take before photos</span>
+            </div>
+            <div class="requirement-item">
+              <span class="checkbox"></span>
+              <span>Take after photos (3 required)</span>
+            </div>
+            <div class="requirement-item">
+              <span class="checkbox"></span>
+              <span>Get customer signature</span>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <div class="section-title">Photos (2/5)</div>
+            <div class="photo-grid">
+              <div class="photo-item">📷</div>
+              <div class="photo-item">📷</div>
+              <div class="photo-item">+</div>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-secondary">Pause</button>
+            <button class="btn btn-primary">Complete Task</button>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">📋</span>
+            <span>Tasks</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📍</span>
+            <span>Map</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📸</span>
+            <span>Photos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">📋 Task Details</div>
+      <h1 class="info-title">Complete Job <span>Information</span></h1>
+      <p class="info-desc">
+        View comprehensive task details including customer information,
+        location, requirements, and photo documentation all in one place.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Customer contact details</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Interactive checklist</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Photo documentation</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">GPS location integration</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

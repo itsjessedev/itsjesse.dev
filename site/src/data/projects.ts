@@ -277,6 +277,24 @@ export const projects: Project[] = [
     demoUrl: 'https://smartclassify.itsjesse.dev',
     featured: true,
   },
+  {
+    id: 'dealscout',
+    title: 'DealScout',
+    tagline: 'Deal Discovery & Flip Tracking',
+    description: 'AI-powered deal discovery from marketplace alerts with real-time eBay price lookups and profit tracking.',
+    problem: 'Resellers miss profitable deals by manually checking marketplaces, and struggle to track purchase-to-sale profit across multiple flips.',
+    solution: 'React Native app that monitors Swoopa alerts via Gmail, uses Gemini AI to classify items, fetches eBay market prices, and tracks the full flip lifecycle from purchase to sale.',
+    results: [
+      'Instant profit calculations on new deals',
+      'AI classification extracts brand, model, condition',
+      'Push notifications for high-ROI opportunities'
+    ],
+    tech: ['React Native', 'FastAPI', 'Gemini AI', 'eBay API', 'Gmail API', 'Firebase'],
+    category: 'automation',
+    image: '/projects/dealscout/deals.png',
+    githubUrl: 'https://github.com/itsjessedev/dealscout',
+    featured: true,
+  },
 ];
 
 export const featuredProjects = projects.filter(p => p.featured);

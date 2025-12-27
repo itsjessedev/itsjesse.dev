@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>FieldOps - Tasks</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #064e3b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f1f1c 0%, #1a2f2a 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+      height: calc(100% - 114px);
+      overflow-y: auto;
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+    }
+    .back-button {
+      font-size: 20px;
+      color: #10b981;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .filter-icon {
+      font-size: 20px;
+      color: #10b981;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+    .filter-tab {
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 20px;
+      font-size: 12px;
+      white-space: nowrap;
+      color: #6ee7b7;
+    }
+    .filter-tab.active {
+      background: rgba(16, 185, 129, 0.3);
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    /* Task List */
+    .task-card {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .task-title { font-weight: 600; font-size: 14px; }
+    .task-status {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .status-pending { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+    .status-in-progress { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+    .status-completed { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    .task-customer {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .task-location {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #6ee7b7;
+      margin-bottom: 8px;
+    }
+    .task-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .task-priority {
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .priority-high { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .priority-medium { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+    .priority-low { background: rgba(100, 116, 139, 0.2); color: #94a3b8; }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 31, 28, 0.95);
+      border-top: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #10b981; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="app-content">
+          <div class="page-header">
+            <span class="back-button">←</span>
+            <span class="page-title">All Tasks</span>
+            <span class="filter-icon">⚙</span>
+          </div>
+
+          <div class="filter-tabs">
+            <div class="filter-tab active">All (8)</div>
+            <div class="filter-tab">Pending (3)</div>
+            <div class="filter-tab">In Progress (2)</div>
+            <div class="filter-tab">Completed (3)</div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-header">
+              <div class="task-title">HVAC Installation</div>
+              <span class="task-status status-in-progress">In Progress</span>
+            </div>
+            <div class="task-customer">Acme Corporation</div>
+            <div class="task-location">📍 1234 Oak Street, Suite 102</div>
+            <div class="task-meta">
+              <span>⏰ Due: 2:00 PM</span>
+              <span class="task-priority priority-high">High Priority</span>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-header">
+              <div class="task-title">Maintenance Check</div>
+              <span class="task-status status-pending">Pending</span>
+            </div>
+            <div class="task-customer">Tech Solutions LLC</div>
+            <div class="task-location">📍 567 Pine Avenue</div>
+            <div class="task-meta">
+              <span>⏰ Due: 4:30 PM</span>
+              <span class="task-priority priority-medium">Medium</span>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-header">
+              <div class="task-title">Equipment Repair</div>
+              <span class="task-status status-completed">Completed</span>
+            </div>
+            <div class="task-customer">Global Industries</div>
+            <div class="task-location">📍 890 Maple Drive</div>
+            <div class="task-meta">
+              <span>⏰ Completed: 11:45 AM</span>
+              <span class="task-priority priority-high">High Priority</span>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-header">
+              <div class="task-title">Safety Inspection</div>
+              <span class="task-status status-pending">Pending</span>
+            </div>
+            <div class="task-customer">Metro Plaza Building</div>
+            <div class="task-location">📍 234 Broadway, Floor 3</div>
+            <div class="task-meta">
+              <span>⏰ Due: Tomorrow 9:00 AM</span>
+              <span class="task-priority priority-low">Low</span>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-header">
+              <div class="task-title">System Upgrade</div>
+              <span class="task-status status-in-progress">In Progress</span>
+            </div>
+            <div class="task-customer">Riverside Medical</div>
+            <div class="task-location">📍 456 Health Plaza</div>
+            <div class="task-meta">
+              <span>⏰ Due: 5:00 PM</span>
+              <span class="task-priority priority-high">High Priority</span>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <div class="task-header">
+              <div class="task-title">Routine Checkup</div>
+              <span class="task-status status-completed">Completed</span>
+            </div>
+            <div class="task-customer">Downtown Retail</div>
+            <div class="task-location">📍 789 Main Street</div>
+            <div class="task-meta">
+              <span>⏰ Completed: 10:30 AM</span>
+              <span class="task-priority priority-low">Low</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">📋</span>
+            <span>Tasks</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📍</span>
+            <span>Map</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📸</span>
+            <span>Photos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">📋 Task Management</div>
+      <h1 class="info-title">Complete Task <span>Overview</span></h1>
+      <p class="info-desc">
+        View all assigned jobs with real-time status updates, priority levels,
+        and filtering options to manage your workload efficiently.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Filter by status and priority</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Real-time task updates</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Customer and location details</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Due time tracking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

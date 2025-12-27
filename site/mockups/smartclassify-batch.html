@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>SmartClassify - Batch Processing</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #1e293b 50%, #0a1628 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .container { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 23, 42, 0.9);
+      border-right: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .nav-item:hover { background: rgba(59, 130, 246, 0.1); color: #e2e8f0; }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.1));
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    /* Main Content */
+    .main { flex: 1; padding: 32px; overflow-y: auto; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 28px; font-weight: 700; }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+    }
+    .btn-secondary {
+      background: rgba(59, 130, 246, 0.1);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary:hover { box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); }
+
+    /* Upload Section */
+    .upload-section {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    .upload-area {
+      border: 2px dashed rgba(59, 130, 246, 0.4);
+      border-radius: 12px;
+      padding: 48px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: rgba(15, 23, 42, 0.3);
+    }
+    .upload-area:hover {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.05);
+    }
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .upload-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .upload-desc {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+    .supported-formats {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 12px;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .stat-box {
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(59, 130, 246, 0.15);
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #60a5fa;
+    }
+
+    /* Processing Section */
+    .processing-section {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .job-card {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .job-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .job-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .job-details h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .job-meta {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .job-status {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .status-processing {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+    }
+    .status-completed {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+    .status-pending {
+      background: rgba(251, 191, 36, 0.2);
+      color: #fbbf24;
+    }
+
+    .progress-container {
+      margin-bottom: 12px;
+    }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .progress-bar {
+      height: 8px;
+      background: rgba(59, 130, 246, 0.15);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #06b6d4);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+    .job-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(59, 130, 246, 0.1);
+    }
+    .job-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .job-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    /* Results Section */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+    .result-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .result-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .result-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .result-title { font-weight: 600; font-size: 16px; }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .item-index {
+      font-size: 12px;
+      color: #64748b;
+      min-width: 30px;
+    }
+    .item-text {
+      flex: 1;
+      font-size: 13px;
+      color: #e2e8f0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .item-category {
+      padding: 4px 10px;
+      background: rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      font-size: 11px;
+      color: #60a5fa;
+      white-space: nowrap;
+    }
+    .item-confidence {
+      font-size: 12px;
+      font-weight: 600;
+      color: #22c55e;
+      min-width: 40px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🎯</div>
+        <span class="logo-text">SmartClassify</span>
+      </div>
+      <nav>
+        <div class="nav-item">📊 Dashboard</div>
+        <div class="nav-item">📝 Classify Text</div>
+        <div class="nav-item active">📁 Batch Processing</div>
+        <div class="nav-item">🏷️ Categories</div>
+        <div class="nav-item">📈 Analytics</div>
+        <div class="nav-item">🔌 API Access</div>
+        <div class="nav-item">⚙️ Settings</div>
+      </nav>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>Batch Processing</h1>
+        <button class="btn btn-secondary">📜 View History</button>
+      </div>
+
+      <div class="upload-section">
+        <div class="upload-area">
+          <div class="upload-icon">📤</div>
+          <div class="upload-title">Upload File for Batch Classification</div>
+          <div class="upload-desc">Drag and drop your file here, or click to browse</div>
+          <button class="btn btn-primary">Choose File</button>
+          <div class="supported-formats">Supported formats: CSV, JSON, TXT, XLSX · Max file size: 50 MB</div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-label">Queue Size</div>
+            <div class="stat-value">2,847</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Processing Rate</div>
+            <div class="stat-value">342/min</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Avg Time</div>
+            <div class="stat-value">0.28s</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Success Rate</div>
+            <div class="stat-value">98.4%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="processing-section">
+        <h2 class="section-title">⚡ Active Jobs</h2>
+
+        <div class="job-card">
+          <div class="job-header">
+            <div class="job-info">
+              <div class="job-icon">📊</div>
+              <div class="job-details">
+                <h3>customer_feedback_q4.csv</h3>
+                <div class="job-meta">Started 3 minutes ago · 5,247 items</div>
+              </div>
+            </div>
+            <span class="job-status status-processing">Processing</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-header">
+              <span>Processing items...</span>
+              <span style="color: #60a5fa; font-weight: 600;">3,891 / 5,247 (74%)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 74%"></div>
+            </div>
+          </div>
+          <div class="job-footer">
+            <div class="job-stats">
+              <span>⏱️ Est. 2 min remaining</span>
+              <span>✅ 3,745 successful</span>
+              <span>❌ 12 errors</span>
+            </div>
+            <div class="job-actions">
+              <button class="btn btn-secondary btn-sm">⏸️ Pause</button>
+              <button class="btn btn-secondary btn-sm">❌ Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-card">
+          <div class="job-header">
+            <div class="job-info">
+              <div class="job-icon">📋</div>
+              <div class="job-details">
+                <h3>support_tickets_batch_2.json</h3>
+                <div class="job-meta">Queued · 1,892 items</div>
+              </div>
+            </div>
+            <span class="job-status status-pending">Pending</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-header">
+              <span>Waiting in queue...</span>
+              <span style="color: #94a3b8;">Position: 2</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="job-footer">
+            <div class="job-stats">
+              <span>⏱️ Starting soon</span>
+            </div>
+            <div class="job-actions">
+              <button class="btn btn-secondary btn-sm">🗑️ Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-card">
+          <div class="job-header">
+            <div class="job-info">
+              <div class="job-icon">✅</div>
+              <div class="job-details">
+                <h3>email_classifications.csv</h3>
+                <div class="job-meta">Completed 12 minutes ago · 3,421 items</div>
+              </div>
+            </div>
+            <span class="job-status status-completed">Completed</span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-header">
+              <span>All items processed</span>
+              <span style="color: #22c55e; font-weight: 600;">3,421 / 3,421 (100%)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 100%; background: linear-gradient(90deg, #22c55e, #10b981);"></div>
+            </div>
+          </div>
+          <div class="job-footer">
+            <div class="job-stats">
+              <span>⏱️ Completed in 4m 32s</span>
+              <span>✅ 3,413 successful</span>
+              <span>❌ 8 errors</span>
+            </div>
+            <div class="job-actions">
+              <button class="btn btn-primary btn-sm">📥 Download Results</button>
+              <button class="btn btn-secondary btn-sm">👁️ View</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-title-group">
+              <div class="result-icon">📄</div>
+              <span class="result-title">Recent Results Preview</span>
+            </div>
+            <button class="btn btn-secondary btn-sm">📥 Export All</button>
+          </div>
+
+          <div class="result-item">
+            <span class="item-index">#1</span>
+            <span class="item-text">Great product, fast shipping, highly recommend...</span>
+            <span class="item-category">Review</span>
+            <span class="item-confidence">94%</span>
+          </div>
+
+          <div class="result-item">
+            <span class="item-index">#2</span>
+            <span class="item-text">Unable to login to my account, need urgent help...</span>
+            <span class="item-category">Support</span>
+            <span class="item-confidence">91%</span>
+          </div>
+
+          <div class="result-item">
+            <span class="item-index">#3</span>
+            <span class="item-text">When will the new features be released?...</span>
+            <span class="item-category">Inquiry</span>
+            <span class="item-confidence">87%</span>
+          </div>
+
+          <div class="result-item">
+            <span class="item-index">#4</span>
+            <span class="item-text">Interested in enterprise pricing options...</span>
+            <span class="item-category">Sales</span>
+            <span class="item-confidence">89%</span>
+          </div>
+
+          <div class="result-item">
+            <span class="item-index">#5</span>
+            <span class="item-text">The app keeps crashing on iOS 17...</span>
+            <span class="item-category">Technical</span>
+            <span class="item-confidence">96%</span>
+          </div>
+
+          <div class="result-item">
+            <span class="item-index">#6</span>
+            <span class="item-text">Love the new UI update, much cleaner...</span>
+            <span class="item-category">Feedback</span>
+            <span class="item-confidence">92%</span>
+          </div>
+
+          <div class="result-item">
+            <span class="item-index">#7</span>
+            <span class="item-text">How do I cancel my subscription?...</span>
+            <span class="item-category">Support</span>
+            <span class="item-confidence">88%</span>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-title-group">
+              <div class="result-icon">📊</div>
+              <span class="result-title">Export Options</span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;">📄 Export as CSV</button>
+            <button class="btn btn-secondary" style="width: 100%; justify-content: center;">📋 Export as JSON</button>
+            <button class="btn btn-secondary" style="width: 100%; justify-content: center;">📊 Export as Excel</button>
+            <button class="btn btn-secondary" style="width: 100%; justify-content: center;">📝 Export as TXT</button>
+          </div>
+
+          <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(59, 130, 246, 0.15);">
+            <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Export Settings</div>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked style="width: 16px; height: 16px; accent-color: #3b82f6;">
+                <span>Include confidence scores</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" checked style="width: 16px; height: 16px; accent-color: #3b82f6;">
+                <span>Include sentiment data</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" style="width: 16px; height: 16px; accent-color: #3b82f6;">
+                <span>Include keywords</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" style="width: 16px; height: 16px; accent-color: #3b82f6;">
+                <span>Include processing time</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

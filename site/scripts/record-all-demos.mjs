@@ -5,8 +5,12 @@ import path from 'path';
 const mockupsDir = '/home/jesse/itsjesse.dev/site/mockups';
 const videosDir = '/home/jesse/itsjesse.dev/site/public/videos';
 
-// Project demo configurations
+// Project demo configurations - all 15 projects
 const projects = {
+  syncflow: {
+    pages: ['dashboard', 'sync-history', 'field-mapping', 'analytics', 'alerts', 'settings'],
+    prefix: 'syncflow'
+  },
   orderhub: {
     pages: ['dashboard', 'orders', 'inventory', 'analytics', 'integrations', 'settings'],
     prefix: 'orderhub'
@@ -16,7 +20,7 @@ const projects = {
     prefix: 'invoicebot'
   },
   leadscore: {
-    pages: ['dashboard', 'leads', 'scoring', 'analytics', 'integrations', 'settings'],
+    pages: ['dashboard', 'leads', 'scoring', 'analytics', 'integrations', 'alerts'],
     prefix: 'leadscore'
   },
   stockalert: {
@@ -40,8 +44,28 @@ const projects = {
     prefix: 'databridge'
   },
   workflowbot: {
-    pages: ['dashboard', 'workflows', 'editor', 'requests', 'approvals', 'audit', 'settings'],
+    pages: ['dashboard', 'workflows', 'editor', 'requests', 'approvals', 'audit'],
     prefix: 'workflowbot'
+  },
+  dealscout: {
+    pages: ['deals', 'detail', 'flips', 'profits', 'notifications', 'settings'],
+    prefix: 'dealscout'
+  },
+  documind: {
+    pages: ['dashboard', 'documents', 'search', 'chat', 'analytics', 'settings'],
+    prefix: 'documind'
+  },
+  smartclassify: {
+    pages: ['dashboard', 'classify', 'batch', 'categories', 'analytics', 'api'],
+    prefix: 'smartclassify'
+  },
+  fieldops: {
+    pages: ['dashboard', 'tasks', 'task-detail', 'map', 'photos', 'schedule'],
+    prefix: 'fieldops'
+  },
+  'itsjesse-mobile': {
+    pages: ['dashboard', 'projects', 'project-detail', 'services', 'about', 'contact'],
+    prefix: 'itsjesse-mobile'
   }
 };
 
@@ -52,9 +76,9 @@ async function recordProjectDemo(projectName, config) {
   const context = await browser.newContext({
     recordVideo: {
       dir: videosDir,
-      size: { width: 1280, height: 720 }
+      size: { width: 1440, height: 900 }
     },
-    viewport: { width: 1280, height: 720 }
+    viewport: { width: 1440, height: 900 }
   });
 
   const page = await context.newPage();

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>FieldOps - Map View</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #064e3b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f1f1c 0%, #1a2f2a 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Map Content */
+    .map-container {
+      position: absolute;
+      top: 44px;
+      left: 0;
+      right: 0;
+      bottom: 70px;
+      background: linear-gradient(180deg, #1a3a2f 0%, #2a4a3f 100%);
+      overflow: hidden;
+    }
+
+    /* Map Grid Effect */
+    .map-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    /* Route Line */
+    .route-line {
+      position: absolute;
+      top: 30%;
+      left: 20%;
+      width: 60%;
+      height: 40%;
+      border: 3px dashed rgba(16, 185, 129, 0.4);
+      border-radius: 30px;
+      transform: rotate(-10deg);
+    }
+
+    /* Location Markers */
+    .marker {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background: #10b981;
+      border: 3px solid #064e3b;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      animation: pulse 2s infinite;
+    }
+    .marker-content {
+      transform: rotate(45deg);
+    }
+    @keyframes pulse {
+      0%, 100% { transform: rotate(-45deg) scale(1); }
+      50% { transform: rotate(-45deg) scale(1.1); }
+    }
+
+    .marker-1 { top: 25%; left: 15%; background: #ef4444; }
+    .marker-2 { top: 35%; left: 50%; background: #10b981; }
+    .marker-3 { top: 55%; left: 30%; background: #eab308; }
+    .marker-4 { top: 65%; left: 65%; background: #3b82f6; }
+    .marker-current { top: 40%; left: 70%; background: #10b981; box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
+
+    /* Map Overlay Header */
+    .map-header {
+      position: absolute;
+      top: 60px;
+      left: 16px;
+      right: 16px;
+      background: rgba(15, 31, 28, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      z-index: 10;
+    }
+    .route-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .route-stat {
+      text-align: center;
+    }
+    .route-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #10b981;
+    }
+    .route-label {
+      font-size: 10px;
+      color: #6ee7b7;
+      margin-top: 2px;
+    }
+
+    /* Task Cards at Bottom */
+    .map-task-list {
+      position: absolute;
+      bottom: 80px;
+      left: 16px;
+      right: 16px;
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+    .map-task-card {
+      background: rgba(15, 31, 28, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .map-task-info {
+      flex: 1;
+    }
+    .map-task-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .map-task-location {
+      font-size: 11px;
+      color: #6ee7b7;
+    }
+    .map-task-distance {
+      font-size: 12px;
+      font-weight: 600;
+      color: #10b981;
+    }
+
+    /* Map Controls */
+    .map-controls {
+      position: absolute;
+      top: 160px;
+      right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10;
+    }
+    .map-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(15, 31, 28, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #10b981;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 31, 28, 0.95);
+      border-top: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+      z-index: 20;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #10b981; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="map-container">
+          <div class="map-grid"></div>
+          <div class="route-line"></div>
+
+          <div class="marker marker-1">
+            <span class="marker-content">1</span>
+          </div>
+          <div class="marker marker-2">
+            <span class="marker-content">2</span>
+          </div>
+          <div class="marker marker-3">
+            <span class="marker-content">3</span>
+          </div>
+          <div class="marker marker-4">
+            <span class="marker-content">4</span>
+          </div>
+          <div class="marker marker-current">
+            <span class="marker-content">📍</span>
+          </div>
+
+          <div class="map-header">
+            <div class="route-info">
+              <div class="route-stat">
+                <div class="route-value">24.3</div>
+                <div class="route-label">Miles</div>
+              </div>
+              <div class="route-stat">
+                <div class="route-value">45</div>
+                <div class="route-label">Minutes</div>
+              </div>
+              <div class="route-stat">
+                <div class="route-value">5</div>
+                <div class="route-label">Stops</div>
+              </div>
+              <div class="route-stat">
+                <div class="route-value">$42</div>
+                <div class="route-label">Fuel Cost</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="map-controls">
+            <div class="map-btn">+</div>
+            <div class="map-btn">−</div>
+            <div class="map-btn">🧭</div>
+          </div>
+
+          <div class="map-task-list">
+            <div class="map-task-card">
+              <div class="map-task-info">
+                <div class="map-task-title">HVAC Installation</div>
+                <div class="map-task-location">📍 1234 Oak Street</div>
+              </div>
+              <div class="map-task-distance">2.4 mi</div>
+            </div>
+            <div class="map-task-card">
+              <div class="map-task-info">
+                <div class="map-task-title">Maintenance Check</div>
+                <div class="map-task-location">📍 567 Pine Avenue</div>
+              </div>
+              <div class="map-task-distance">5.1 mi</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>Tasks</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">📍</span>
+            <span>Map</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📸</span>
+            <span>Photos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">🗺️ Route Planning</div>
+      <h1 class="info-title">GPS Route <span>Optimization</span></h1>
+      <p class="info-desc">
+        Interactive map view showing all job locations with optimized routes,
+        distance calculations, and real-time GPS tracking.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Optimized route planning</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Real-time GPS tracking</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Distance & time estimates</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Fuel cost calculations</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

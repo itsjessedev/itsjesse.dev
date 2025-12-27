@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>itsjesse.dev Mobile - Projects</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+      height: calc(100% - 44px - 70px);
+      overflow-y: auto;
+    }
+    .page-header {
+      padding: 16px 0;
+    }
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+    .page-subtitle {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .search-icon {
+      font-size: 16px;
+      color: #64748b;
+    }
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      font-size: 14px;
+      outline: none;
+    }
+    .search-input::placeholder {
+      color: #64748b;
+    }
+
+    /* Category Filters */
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .filter-chip {
+      padding: 6px 12px;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 16px;
+      font-size: 12px;
+      color: #94a3b8;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .filter-chip.active {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.2));
+      border-color: rgba(99, 102, 241, 0.5);
+      color: #a78bfa;
+    }
+
+    /* Project Grid */
+    .projects-grid {
+      display: grid;
+      gap: 12px;
+      padding-bottom: 20px;
+    }
+    .project-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+    .project-card:active {
+      transform: scale(0.98);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    .project-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .project-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .project-name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .project-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .project-tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .project-tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      background: rgba(99, 102, 241, 0.2);
+      border-radius: 10px;
+      color: #a78bfa;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(99, 102, 241, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #8b5cf6; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #a78bfa;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(34, 197, 94, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="app-content">
+          <div class="page-header">
+            <div class="page-title">All Projects</div>
+            <div class="page-subtitle">10 portfolio projects</div>
+          </div>
+
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Search projects...">
+          </div>
+
+          <div class="filters">
+            <div class="filter-chip active">All</div>
+            <div class="filter-chip">Automation</div>
+            <div class="filter-chip">Integration</div>
+            <div class="filter-chip">Analytics</div>
+          </div>
+
+          <div class="projects-grid">
+            <div class="project-card">
+              <div class="project-icon">🔄</div>
+              <div class="project-info">
+                <div class="project-name">SyncFlow</div>
+                <div class="project-desc">Bi-directional sync between Salesforce and Jira</div>
+                <div class="project-tags">
+                  <span class="project-tag">Automation</span>
+                  <span class="project-tag">Integration</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">🛒</div>
+              <div class="project-info">
+                <div class="project-name">OrderHub</div>
+                <div class="project-desc">Unified dashboard for Shopify, WooCommerce, Amazon</div>
+                <div class="project-tags">
+                  <span class="project-tag">Integration</span>
+                  <span class="project-tag">Dashboard</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">🧾</div>
+              <div class="project-info">
+                <div class="project-name">InvoiceBot</div>
+                <div class="project-desc">OCR receipt scanning to QuickBooks automation</div>
+                <div class="project-tags">
+                  <span class="project-tag">Automation</span>
+                  <span class="project-tag">AI/ML</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">🎯</div>
+              <div class="project-info">
+                <div class="project-name">LeadScore</div>
+                <div class="project-desc">ML-powered lead scoring and prioritization</div>
+                <div class="project-tags">
+                  <span class="project-tag">AI/ML</span>
+                  <span class="project-tag">Analytics</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">📦</div>
+              <div class="project-info">
+                <div class="project-name">StockAlert</div>
+                <div class="project-desc">Real-time inventory monitoring and alerts</div>
+                <div class="project-tags">
+                  <span class="project-tag">Automation</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">📊</div>
+              <div class="project-info">
+                <div class="project-name">ReportGen</div>
+                <div class="project-desc">Automated branded report generation</div>
+                <div class="project-tags">
+                  <span class="project-tag">Automation</span>
+                  <span class="project-tag">Analytics</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">💬</div>
+              <div class="project-info">
+                <div class="project-name">FeedbackPulse</div>
+                <div class="project-desc">Multi-platform review sentiment analyzer</div>
+                <div class="project-tags">
+                  <span class="project-tag">AI/ML</span>
+                  <span class="project-tag">Analytics</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">📅</div>
+              <div class="project-info">
+                <div class="project-name">BookingSync</div>
+                <div class="project-desc">Calendly to Google Calendar automation</div>
+                <div class="project-tags">
+                  <span class="project-tag">Automation</span>
+                  <span class="project-tag">Integration</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">🔌</div>
+              <div class="project-info">
+                <div class="project-name">DataBridge</div>
+                <div class="project-desc">Legacy system to modern platform migration</div>
+                <div class="project-tags">
+                  <span class="project-tag">Migration</span>
+                  <span class="project-tag">Integration</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="project-card">
+              <div class="project-icon">⚡</div>
+              <div class="project-info">
+                <div class="project-name">WorkflowBot</div>
+                <div class="project-desc">Custom Slack workflow automations</div>
+                <div class="project-tags">
+                  <span class="project-tag">Automation</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">📁</span>
+            <span>Projects</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">🛠️</span>
+            <span>Services</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>About</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">📁 Projects List</div>
+      <h1 class="info-title">Browse All <span>Portfolio Projects</span></h1>
+      <p class="info-desc">
+        Explore the complete collection of automation, integration, and AI/ML projects. Filter by category or search to find specific solutions.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">10 real-world projects</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Category filtering</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Search functionality</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Tap for details</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

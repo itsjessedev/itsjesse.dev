@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jesse Eldridge - Resume</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 11pt;
+      line-height: 1.5;
+      color: #1a1a2e;
+      background: #fff;
+      padding: 0.5in;
+      max-width: 8.5in;
+      margin: 0 auto;
+    }
+
+    @page {
+      size: letter;
+      margin: 0.5in;
+    }
+
+    @media print {
+      body { padding: 0; }
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #3b82f6;
+    }
+
+    .name {
+      font-size: 28pt;
+      font-weight: 700;
+      color: #1a1a2e;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .contact {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      font-size: 10pt;
+      color: #4b5563;
+      flex-wrap: wrap;
+    }
+
+    .contact a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+
+    .contact a:hover {
+      text-decoration: underline;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #1a1a2e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Summary */
+    .summary {
+      font-size: 10.5pt;
+      color: #374151;
+      text-align: justify;
+    }
+
+    /* Skills Grid */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px 24px;
+    }
+
+    .skill-category {
+      margin-bottom: 4px;
+    }
+
+    .skill-label {
+      font-weight: 600;
+      color: #1a1a2e;
+      font-size: 10pt;
+    }
+
+    .skill-list {
+      font-size: 10pt;
+      color: #4b5563;
+    }
+
+    /* Projects */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px 20px;
+    }
+
+    .project {
+      margin-bottom: 4px;
+    }
+
+    .project-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .project-name {
+      font-weight: 600;
+      color: #1a1a2e;
+      font-size: 10.5pt;
+    }
+
+    .project-type {
+      font-size: 9pt;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .project-desc {
+      font-size: 9.5pt;
+      color: #4b5563;
+      margin: 2px 0;
+    }
+
+    .project-result {
+      font-size: 9pt;
+      color: #059669;
+      font-weight: 500;
+    }
+
+    .project-tech {
+      font-size: 8.5pt;
+      color: #6b7280;
+    }
+
+    /* Education & Experience */
+    .entry {
+      margin-bottom: 10px;
+    }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .entry-title {
+      font-weight: 600;
+      color: #1a1a2e;
+      font-size: 10.5pt;
+    }
+
+    .entry-subtitle {
+      font-size: 10pt;
+      color: #4b5563;
+    }
+
+    .entry-date {
+      font-size: 9.5pt;
+      color: #6b7280;
+    }
+
+    .entry-details {
+      font-size: 9.5pt;
+      color: #4b5563;
+      margin-top: 2px;
+    }
+
+    ul {
+      margin-left: 16px;
+      margin-top: 4px;
+    }
+
+    li {
+      font-size: 9.5pt;
+      color: #4b5563;
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1 class="name">JESSE ELDRIDGE</h1>
+    <div class="contact">
+      <span>Cookeville, TN (Remote)</span>
+      <a href="mailto:jobs@itsjesse.dev">jobs@itsjesse.dev</a>
+      <a href="https://itsjesse.dev">itsjesse.dev</a>
+      <a href="https://github.com/itsjessedev">github.com/itsjessedev</a>
+    </div>
+  </header>
+
+  <section class="section">
+    <h2 class="section-title">Summary</h2>
+    <p class="summary">
+      Full-stack developer specializing in business automation, system integration, and AI/ML applications. I build custom solutions that connect disparate systems, automate repetitive workflows, and leverage machine learning for intelligent data processing. Portfolio includes 15 production-ready projects spanning API integration, native mobile development, and AI-powered document intelligence.
+    </p>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Technical Skills</h2>
+    <div class="skills-grid">
+      <div class="skill-category">
+        <span class="skill-label">Languages:</span>
+        <span class="skill-list">Python, JavaScript/TypeScript, SQL, Dart</span>
+      </div>
+      <div class="skill-category">
+        <span class="skill-label">Frameworks:</span>
+        <span class="skill-list">FastAPI, React, Next.js, React Native, Flutter</span>
+      </div>
+      <div class="skill-category">
+        <span class="skill-label">AI/ML:</span>
+        <span class="skill-list">OpenAI, Gemini, ChromaDB, RAG, scikit-learn, TF-IDF, OCR</span>
+      </div>
+      <div class="skill-category">
+        <span class="skill-label">APIs:</span>
+        <span class="skill-list">Salesforce, Shopify, Amazon, eBay, HubSpot, Jira, Slack</span>
+      </div>
+      <div class="skill-category">
+        <span class="skill-label">Data:</span>
+        <span class="skill-list">PostgreSQL, SQLite, Pandas, REST, OAuth 2.0, Webhooks</span>
+      </div>
+      <div class="skill-category">
+        <span class="skill-label">Tools:</span>
+        <span class="skill-list">Git, Docker, Linux, CI/CD, Expo</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Featured Projects</h2>
+    <div class="projects-grid">
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">OrderHub</span>
+          <span class="project-type">Integration</span>
+        </div>
+        <p class="project-desc">Multi-platform e-commerce aggregator for Shopify, Amazon, eBay, Etsy</p>
+        <p class="project-result">70% faster order processing, eliminated overselling</p>
+        <p class="project-tech">React, FastAPI, Shopify API, Amazon SP-API, PostgreSQL</p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">SyncFlow</span>
+          <span class="project-type">Automation</span>
+        </div>
+        <p class="project-desc">Automated data pipeline between Salesforce, Jira, and Google Sheets</p>
+        <p class="project-result">Saved 6 hours/week, eliminated data entry errors</p>
+        <p class="project-tech">Python, Salesforce API, Jira API, Google Sheets API</p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">InvoiceBot</span>
+          <span class="project-type">AI/Automation</span>
+        </div>
+        <p class="project-desc">Receipt OCR with AI categorization and QuickBooks integration</p>
+        <p class="project-result">98% extraction accuracy, 2 hours to 5 minutes</p>
+        <p class="project-tech">Python, Google Cloud Vision, OpenAI, QuickBooks API</p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">DocuMind</span>
+          <span class="project-type">AI/ML</span>
+        </div>
+        <p class="project-desc">RAG-powered document intelligence with semantic search and Q&A</p>
+        <p class="project-result">Natural language queries, source-attributed answers</p>
+        <p class="project-tech">Python, FastAPI, Sentence Transformers, ChromaDB</p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">LeadScore</span>
+          <span class="project-type">ML/Dashboard</span>
+        </div>
+        <p class="project-desc">ML-based lead prioritization from CRM and email engagement</p>
+        <p class="project-result">23% increase in close rate, 1-hour response time</p>
+        <p class="project-tech">Python, HubSpot API, Slack API, Machine Learning</p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">FieldOps</span>
+          <span class="project-type">Mobile</span>
+        </div>
+        <p class="project-desc">Field service app with GPS, task management, photo documentation</p>
+        <p class="project-result">Offline-first, real-time sync across iOS/Android</p>
+        <p class="project-tech">React Native, TypeScript, Expo, AsyncStorage</p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">SmartClassify</span>
+          <span class="project-type">AI/ML</span>
+        </div>
+        <p class="project-desc">Multi-task text classification with category detection and sentiment</p>
+        <p class="project-result">7-category classification, batch processing</p>
+        <p class="project-tech">Python, FastAPI, scikit-learn, TF-IDF</p>
+      </div>
+
+      <div class="project">
+        <div class="project-header">
+          <span class="project-name">DealScout</span>
+          <span class="project-type">Mobile/AI</span>
+        </div>
+        <p class="project-desc">AI-powered deal discovery with eBay price lookups and flip tracking</p>
+        <p class="project-result">Instant profit calculations, push alerts for hot deals</p>
+        <p class="project-tech">React Native, FastAPI, Gemini AI, eBay API, Gmail API, Firebase</p>
+      </div>
+    </div>
+    <p style="font-size: 9pt; color: #6b7280; margin-top: 8px; text-align: center;">
+      + 7 more projects at itsjesse.dev: StockAlert, ReportGen, FeedbackPulse, BookingSync, WorkflowBot, DataBridge, itsjesse.dev Mobile
+    </p>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Education</h2>
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">Western Governors University</span>
+        <span class="entry-date">Expected 2025</span>
+      </div>
+      <p class="entry-subtitle">Bachelor of Science, Computer Science</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Work Experience</h2>
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">Spark Driver</span>
+        <span class="entry-date">July 2024 - Present</span>
+      </div>
+      <p class="entry-subtitle">Delivery Driver (Remote/Self-directed)</p>
+      <ul>
+        <li>Self-directed gig work requiring route optimization, time management, and customer service</li>
+        <li>Maintained high ratings through reliable, deadline-driven delivery</li>
+      </ul>
+    </div>
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">Amazon - MQY1</span>
+        <span class="entry-date">January 2023 - July 2024</span>
+      </div>
+      <p class="entry-subtitle">Fulfillment Center Associate</p>
+      <ul>
+        <li>Met productivity quotas in high-volume fulfillment environment</li>
+        <li>Demonstrated reliability and attention to detail in fast-paced operations</li>
+      </ul>
+    </div>
+    <div class="entry">
+      <div class="entry-header">
+        <span class="entry-title">Eldridge Signing</span>
+        <span class="entry-date">January 2022 - December 2022</span>
+      </div>
+      <p class="entry-subtitle">Loan Signing Agent (Self-employed)</p>
+      <ul>
+        <li>Self-employed notary handling legal document signings and client scheduling</li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>

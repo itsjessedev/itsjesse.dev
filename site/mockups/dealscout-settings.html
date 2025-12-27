@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>DealScout - Settings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #4c1d95 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .app-content {
+      padding: 0 16px 16px;
+      overflow-y: auto;
+      max-height: calc(100% - 44px - 70px);
+    }
+    .app-header {
+      padding: 16px 0;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* Settings Section */
+    .settings-section {
+      margin-bottom: 20px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #a78bfa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+    .settings-group {
+      background: rgba(167, 139, 250, 0.08);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px;
+      border-bottom: 1px solid rgba(167, 139, 250, 0.1);
+    }
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+    .setting-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .setting-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(167, 139, 250, 0.2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .setting-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .setting-sub {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Toggle */
+    .toggle {
+      width: 44px;
+      height: 24px;
+      background: rgba(100, 116, 139, 0.4);
+      border-radius: 12px;
+      position: relative;
+    }
+    .toggle.on {
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+    }
+    .toggle-knob {
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+    }
+    .toggle.on .toggle-knob {
+      left: 22px;
+    }
+
+    /* Value Display */
+    .setting-value {
+      font-size: 13px;
+      color: #a78bfa;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Connection Status */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-connected {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: currentColor;
+      border-radius: 50%;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 15, 35, 0.95);
+      border-top: 1px solid rgba(167, 139, 250, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #a78bfa; }
+    .nav-icon { font-size: 20px; }
+
+    .info-panel { max-width: 500px; }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(244, 114, 182, 0.1));
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #c4b5fd;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(167, 139, 250, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>5G</span>
+        </div>
+
+        <div class="app-content">
+          <div class="app-header">
+            <div class="page-title">Settings</div>
+          </div>
+
+          <div class="settings-section">
+            <div class="section-label">Integrations</div>
+            <div class="settings-group">
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#9993;</div>
+                  <div>
+                    <div class="setting-label">Gmail</div>
+                    <div class="setting-sub">Swoopa alerts</div>
+                  </div>
+                </div>
+                <span class="connection-status status-connected">
+                  <span class="status-dot"></span>
+                  Connected
+                </span>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#128722;</div>
+                  <div>
+                    <div class="setting-label">eBay</div>
+                    <div class="setting-sub">Price lookups</div>
+                  </div>
+                </div>
+                <span class="connection-status status-connected">
+                  <span class="status-dot"></span>
+                  Connected
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="section-label">Deal Alerts</div>
+            <div class="settings-group">
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#128176;</div>
+                  <div>
+                    <div class="setting-label">Min Profit</div>
+                    <div class="setting-sub">Minimum profit threshold</div>
+                  </div>
+                </div>
+                <span class="setting-value">$50 &#9654;</span>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#128200;</div>
+                  <div>
+                    <div class="setting-label">Min ROI</div>
+                    <div class="setting-sub">Minimum return percentage</div>
+                  </div>
+                </div>
+                <span class="setting-value">25% &#9654;</span>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#128293;</div>
+                  <div>
+                    <div class="setting-label">Hot Deal Alerts</div>
+                    <div class="setting-sub">Push for high-value deals</div>
+                  </div>
+                </div>
+                <div class="toggle on"><div class="toggle-knob"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="section-label">Fees & Costs</div>
+            <div class="settings-group">
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#128181;</div>
+                  <div>
+                    <div class="setting-label">eBay Fee %</div>
+                    <div class="setting-sub">Seller fee percentage</div>
+                  </div>
+                </div>
+                <span class="setting-value">13.25% &#9654;</span>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#128666;</div>
+                  <div>
+                    <div class="setting-label">Avg Shipping</div>
+                    <div class="setting-sub">Default shipping cost</div>
+                  </div>
+                </div>
+                <span class="setting-value">$12 &#9654;</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="section-label">Notifications</div>
+            <div class="settings-group">
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#128276;</div>
+                  <div>
+                    <div class="setting-label">Push Notifications</div>
+                  </div>
+                </div>
+                <div class="toggle on"><div class="toggle-knob"></div></div>
+              </div>
+              <div class="setting-item">
+                <div class="setting-left">
+                  <div class="setting-icon">&#128266;</div>
+                  <div>
+                    <div class="setting-label">Sound Alerts</div>
+                  </div>
+                </div>
+                <div class="toggle"><div class="toggle-knob"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">&#128184;</span>
+            <span>Deals</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#128230;</span>
+            <span>Flips</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#128200;</span>
+            <span>Profits</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">&#9881;</span>
+            <span>Settings</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">&#9881; Configuration</div>
+      <h1 class="info-title">Full <span>Control</span></h1>
+      <p class="info-desc">
+        Configure profit thresholds, fee calculations, notification preferences,
+        and manage your Gmail and eBay integrations.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Customizable profit thresholds</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">eBay fee and shipping settings</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Push notification controls</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">API connection management</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>DealScout - Profits</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 50%, #4c1d95 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #1a1a2e 0%, #0f0f23 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .app-content {
+      padding: 0 16px 16px;
+      overflow-y: auto;
+      max-height: calc(100% - 44px - 70px);
+    }
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .period-selector {
+      padding: 6px 12px;
+      background: rgba(167, 139, 250, 0.2);
+      border-radius: 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Total Profit Card */
+    .profit-card {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .profit-label {
+      font-size: 12px;
+      color: #6ee7b7;
+      margin-bottom: 4px;
+    }
+    .profit-amount {
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #22c55e, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .profit-change {
+      font-size: 12px;
+      color: #22c55e;
+      margin-top: 4px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-box {
+      background: rgba(167, 139, 250, 0.08);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #a78bfa;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Chart Section */
+    .chart-section {
+      background: rgba(167, 139, 250, 0.08);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+    .chart-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 100px;
+    }
+    .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bar {
+      width: 100%;
+      max-width: 24px;
+      background: linear-gradient(to top, #a78bfa, #c4b5fd);
+      border-radius: 4px 4px 0 0;
+    }
+    .bar-label {
+      font-size: 9px;
+      color: #64748b;
+      margin-top: 6px;
+    }
+
+    /* Recent Sales */
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .sale-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(167, 139, 250, 0.05);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .sale-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(34, 197, 94, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .sale-info {
+      flex: 1;
+    }
+    .sale-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .sale-date {
+      font-size: 10px;
+      color: #64748b;
+    }
+    .sale-profit {
+      font-size: 14px;
+      font-weight: 700;
+      color: #22c55e;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 15, 35, 0.95);
+      border-top: 1px solid rgba(167, 139, 250, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #a78bfa; }
+    .nav-icon { font-size: 20px; }
+
+    .info-panel { max-width: 500px; }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.1));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #22c55e, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(34, 197, 94, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>5G</span>
+        </div>
+
+        <div class="app-content">
+          <div class="app-header">
+            <div class="page-title">Profits</div>
+            <div class="period-selector">December &#9660;</div>
+          </div>
+
+          <div class="profit-card">
+            <div class="profit-label">This Month's Profit</div>
+            <div class="profit-amount">$1,847</div>
+            <div class="profit-change">+32% vs last month</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-value">12</div>
+              <div class="stat-label">Items Sold</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">$154</div>
+              <div class="stat-label">Avg Profit/Item</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">41%</div>
+              <div class="stat-label">Avg ROI</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">8.2</div>
+              <div class="stat-label">Avg Days to Sell</div>
+            </div>
+          </div>
+
+          <div class="chart-section">
+            <div class="chart-title">Weekly Profit</div>
+            <div class="chart-bars">
+              <div class="bar-group">
+                <div class="bar" style="height: 45px;"></div>
+                <span class="bar-label">W1</span>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height: 70px;"></div>
+                <span class="bar-label">W2</span>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height: 55px;"></div>
+                <span class="bar-label">W3</span>
+              </div>
+              <div class="bar-group">
+                <div class="bar" style="height: 90px;"></div>
+                <span class="bar-label">W4</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-title">Recent Sales</div>
+          <div class="sale-item">
+            <div class="sale-icon">&#10003;</div>
+            <div class="sale-info">
+              <div class="sale-title">MacBook Pro M2 13"</div>
+              <div class="sale-date">Dec 24, 2024</div>
+            </div>
+            <div class="sale-profit">+$245</div>
+          </div>
+          <div class="sale-item">
+            <div class="sale-icon">&#10003;</div>
+            <div class="sale-info">
+              <div class="sale-title">Nintendo Switch OLED</div>
+              <div class="sale-date">Dec 22, 2024</div>
+            </div>
+            <div class="sale-profit">+$87</div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">&#128184;</span>
+            <span>Deals</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#128230;</span>
+            <span>Flips</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">&#128200;</span>
+            <span>Profits</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">&#9881;</span>
+            <span>Settings</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">&#128200; Profit Analytics</div>
+      <h1 class="info-title">Track Your <span>Earnings</span></h1>
+      <p class="info-desc">
+        Detailed profit analytics show your monthly earnings, average ROI,
+        days to sell metrics, and complete sale history.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Monthly and weekly profit tracking</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">ROI and turnaround analytics</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Sale history with profit per item</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">&#10003;</div>
+          <span class="feature-text">Performance trend visualization</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

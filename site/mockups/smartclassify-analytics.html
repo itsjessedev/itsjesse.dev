@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>SmartClassify - Analytics</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #1e293b 50%, #0a1628 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .container { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 23, 42, 0.9);
+      border-right: 1px solid rgba(59, 130, 246, 0.2);
+      padding: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 4px;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .nav-item:hover { background: rgba(59, 130, 246, 0.1); color: #e2e8f0; }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.1));
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    /* Main Content */
+    .main { flex: 1; padding: 32px; overflow-y: auto; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .header h1 { font-size: 28px; font-weight: 700; }
+    .time-filter {
+      display: flex;
+      gap: 8px;
+      background: rgba(30, 41, 59, 0.6);
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    .filter-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover {
+      color: #e2e8f0;
+    }
+    .filter-btn.active {
+      background: linear-gradient(135deg, #3b82f6, #06b6d4);
+      color: white;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+    .stat-label { color: #94a3b8; font-size: 14px; margin-bottom: 8px; }
+    .stat-value { font-size: 32px; font-weight: 700; color: #60a5fa; }
+    .stat-change { font-size: 12px; color: #22c55e; margin-top: 4px; }
+    .stat-change.negative { color: #ef4444; }
+
+    /* Chart Cards */
+    .chart-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .chart-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    /* Volume Chart */
+    .volume-chart {
+      height: 200px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 20px 0;
+    }
+    .bar {
+      flex: 1;
+      background: linear-gradient(180deg, #3b82f6, #06b6d4);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .bar:hover {
+      opacity: 0.8;
+      transform: translateY(-4px);
+    }
+    .bar-label {
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    /* Two Column Grid */
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    /* Category Distribution */
+    .category-dist {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dist-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .dist-name {
+      min-width: 140px;
+      font-size: 14px;
+      color: #e2e8f0;
+    }
+    .dist-bar-container {
+      flex: 1;
+      height: 28px;
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .dist-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #06b6d4);
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+    .dist-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #60a5fa;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    /* Accuracy Trend */
+    .accuracy-trend {
+      height: 180px;
+      position: relative;
+      margin-top: 20px;
+    }
+    .trend-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .trend-point {
+      flex: 1;
+      background: linear-gradient(180deg, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.1));
+      border-top: 2px solid #22c55e;
+      border-radius: 2px 2px 0 0;
+      position: relative;
+    }
+    .trend-point::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+    }
+
+    /* Processing Time Chart */
+    .time-chart {
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+      height: 180px;
+      padding: 20px 0;
+    }
+    .time-bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .time-bar {
+      width: 100%;
+      background: linear-gradient(180deg, #06b6d4, #3b82f6);
+      border-radius: 4px 4px 0 0;
+      position: relative;
+    }
+    .time-label {
+      font-size: 11px;
+      color: #94a3b8;
+      text-align: center;
+    }
+    .time-value {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #60a5fa;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Performance Table */
+    .performance-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .performance-table thead {
+      background: rgba(15, 23, 42, 0.5);
+    }
+    .performance-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    .performance-table td {
+      padding: 14px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+    }
+    .performance-table tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+    .perf-category {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .perf-icon {
+      font-size: 16px;
+    }
+    .perf-score {
+      font-weight: 600;
+      color: #22c55e;
+    }
+    .perf-score.medium {
+      color: #fbbf24;
+    }
+    .perf-mini-bar {
+      width: 100px;
+      height: 6px;
+      background: rgba(59, 130, 246, 0.15);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .perf-mini-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #06b6d4);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🎯</div>
+        <span class="logo-text">SmartClassify</span>
+      </div>
+      <nav>
+        <div class="nav-item">📊 Dashboard</div>
+        <div class="nav-item">📝 Classify Text</div>
+        <div class="nav-item">📁 Batch Processing</div>
+        <div class="nav-item">🏷️ Categories</div>
+        <div class="nav-item active">📈 Analytics</div>
+        <div class="nav-item">🔌 API Access</div>
+        <div class="nav-item">⚙️ Settings</div>
+      </nav>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>Analytics & Insights</h1>
+        <div class="time-filter">
+          <button class="filter-btn">24h</button>
+          <button class="filter-btn active">7d</button>
+          <button class="filter-btn">30d</button>
+          <button class="filter-btn">90d</button>
+          <button class="filter-btn">All</button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Classifications</div>
+          <div class="stat-value">12.4K</div>
+          <div class="stat-change">↑ 18.3% vs last week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg Accuracy</div>
+          <div class="stat-value">94.7%</div>
+          <div class="stat-change">↑ 2.1% improvement</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Processing Time</div>
+          <div class="stat-value">0.28s</div>
+          <div class="stat-change class-negative">↓ 15% faster</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">API Calls</div>
+          <div class="stat-value">8.7K</div>
+          <div class="stat-change">↑ 24.5% vs last week</div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h2 class="chart-title">Classification Volume</h2>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);"></div>
+              <span>Classifications</span>
+            </div>
+          </div>
+        </div>
+        <div class="volume-chart">
+          <div class="bar" style="height: 45%;">
+            <span class="bar-label">Mon</span>
+          </div>
+          <div class="bar" style="height: 62%;">
+            <span class="bar-label">Tue</span>
+          </div>
+          <div class="bar" style="height: 78%;">
+            <span class="bar-label">Wed</span>
+          </div>
+          <div class="bar" style="height: 55%;">
+            <span class="bar-label">Thu</span>
+          </div>
+          <div class="bar" style="height: 88%;">
+            <span class="bar-label">Fri</span>
+          </div>
+          <div class="bar" style="height: 35%;">
+            <span class="bar-label">Sat</span>
+          </div>
+          <div class="bar" style="height: 42%;">
+            <span class="bar-label">Sun</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Category Distribution</h2>
+          </div>
+          <div class="category-dist">
+            <div class="dist-item">
+              <span class="dist-name">Customer Support</span>
+              <div class="dist-bar-container">
+                <div class="dist-bar" style="width: 32%;"></div>
+              </div>
+              <span class="dist-value">32%</span>
+            </div>
+            <div class="dist-item">
+              <span class="dist-name">Product Reviews</span>
+              <div class="dist-bar-container">
+                <div class="dist-bar" style="width: 24%;"></div>
+              </div>
+              <span class="dist-value">24%</span>
+            </div>
+            <div class="dist-item">
+              <span class="dist-name">Technical Issues</span>
+              <div class="dist-bar-container">
+                <div class="dist-bar" style="width: 18%;"></div>
+              </div>
+              <span class="dist-value">18%</span>
+            </div>
+            <div class="dist-item">
+              <span class="dist-name">Sales Inquiries</span>
+              <div class="dist-bar-container">
+                <div class="dist-bar" style="width: 14%;"></div>
+              </div>
+              <span class="dist-value">14%</span>
+            </div>
+            <div class="dist-item">
+              <span class="dist-name">General Inquiry</span>
+              <div class="dist-bar-container">
+                <div class="dist-bar" style="width: 12%;"></div>
+              </div>
+              <span class="dist-value">12%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Accuracy Trend</h2>
+          </div>
+          <div class="accuracy-trend">
+            <div class="trend-line">
+              <div class="trend-point" style="height: 85%;"></div>
+              <div class="trend-point" style="height: 88%;"></div>
+              <div class="trend-point" style="height: 87%;"></div>
+              <div class="trend-point" style="height: 91%;"></div>
+              <div class="trend-point" style="height: 93%;"></div>
+              <div class="trend-point" style="height: 94%;"></div>
+              <div class="trend-point" style="height: 95%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col-grid">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Avg Processing Time by Category</h2>
+          </div>
+          <div class="time-chart">
+            <div class="time-bar-group">
+              <div class="time-bar" style="height: 75%;">
+                <span class="time-value">0.28s</span>
+              </div>
+              <span class="time-label">Support</span>
+            </div>
+            <div class="time-bar-group">
+              <div class="time-bar" style="height: 60%;">
+                <span class="time-value">0.21s</span>
+              </div>
+              <span class="time-label">Reviews</span>
+            </div>
+            <div class="time-bar-group">
+              <div class="time-bar" style="height: 85%;">
+                <span class="time-value">0.32s</span>
+              </div>
+              <span class="time-label">Technical</span>
+            </div>
+            <div class="time-bar-group">
+              <div class="time-bar" style="height: 55%;">
+                <span class="time-value">0.19s</span>
+              </div>
+              <span class="time-label">Sales</span>
+            </div>
+            <div class="time-bar-group">
+              <div class="time-bar" style="height: 68%;">
+                <span class="time-value">0.25s</span>
+              </div>
+              <span class="time-label">General</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-header">
+            <h2 class="chart-title">Category Performance</h2>
+          </div>
+          <table class="performance-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Accuracy</th>
+                <th>Volume</th>
+                <th>Trend</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="perf-category">
+                    <span class="perf-icon">💬</span>
+                    <span>Support</span>
+                  </div>
+                </td>
+                <td><span class="perf-score">96.8%</span></td>
+                <td>3,247</td>
+                <td>
+                  <div class="perf-mini-bar">
+                    <div class="perf-mini-fill" style="width: 97%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="perf-category">
+                    <span class="perf-icon">⭐</span>
+                    <span>Reviews</span>
+                  </div>
+                </td>
+                <td><span class="perf-score">94.3%</span></td>
+                <td>2,891</td>
+                <td>
+                  <div class="perf-mini-bar">
+                    <div class="perf-mini-fill" style="width: 94%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="perf-category">
+                    <span class="perf-icon">🔧</span>
+                    <span>Technical</span>
+                  </div>
+                </td>
+                <td><span class="perf-score">97.2%</span></td>
+                <td>2,134</td>
+                <td>
+                  <div class="perf-mini-bar">
+                    <div class="perf-mini-fill" style="width: 98%;"></div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="perf-category">
+                    <span class="perf-icon">💼</span>
+                    <span>Sales</span>
+                  </div>
+                </td>
+                <td><span class="perf-score medium">91.7%</span></td>
+                <td>1,847</td>
+                <td>
+                  <div class="perf-mini-bar">
+                    <div class="perf-mini-fill" style="width: 92%;"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

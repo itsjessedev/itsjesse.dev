@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>FieldOps - Photo Gallery</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #064e3b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f1f1c 0%, #1a2f2a 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+      height: calc(100% - 114px);
+      overflow-y: auto;
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+    }
+    .back-button {
+      font-size: 20px;
+      color: #10b981;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .search-icon {
+      font-size: 20px;
+      color: #10b981;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-box {
+      flex: 1;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-value { font-size: 18px; font-weight: 700; color: #10b981; }
+    .stat-label { font-size: 10px; color: #6ee7b7; margin-top: 2px; }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+    }
+    .filter-tab {
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 20px;
+      font-size: 12px;
+      white-space: nowrap;
+      color: #6ee7b7;
+    }
+    .filter-tab.active {
+      background: rgba(16, 185, 129, 0.3);
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    /* Photo Grid */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .photo-item {
+      aspect-ratio: 1;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .photo-item.add {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 2px dashed rgba(16, 185, 129, 0.4);
+    }
+    .photo-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(15, 31, 28, 0.9);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 9px;
+      font-weight: 600;
+      color: #10b981;
+    }
+    .photo-time {
+      position: absolute;
+      bottom: 6px;
+      left: 6px;
+      background: rgba(15, 31, 28, 0.9);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 9px;
+      color: #6ee7b7;
+    }
+
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0 12px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6ee7b7;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .section-count {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /* Upload Button */
+    .upload-button {
+      position: fixed;
+      bottom: 90px;
+      right: 30px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+      z-index: 15;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 31, 28, 0.95);
+      border-top: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #10b981; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #6ee7b7;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #10b981, #6ee7b7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="app-content">
+          <div class="page-header">
+            <span class="back-button">←</span>
+            <span class="page-title">Photo Gallery</span>
+            <span class="search-icon">🔍</span>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-value">24</div>
+              <div class="stat-label">Today</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">156</div>
+              <div class="stat-label">This Week</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">2.3 GB</div>
+              <div class="stat-label">Storage</div>
+            </div>
+          </div>
+
+          <div class="filter-tabs">
+            <div class="filter-tab active">All Photos</div>
+            <div class="filter-tab">Before</div>
+            <div class="filter-tab">After</div>
+            <div class="filter-tab">In Progress</div>
+          </div>
+
+          <div class="section-header">
+            <span class="section-title">Today</span>
+            <span class="section-count">12 photos</span>
+          </div>
+
+          <div class="photo-grid">
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">Before</span>
+              <span class="photo-time">2:45 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">After</span>
+              <span class="photo-time">3:15 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">Before</span>
+              <span class="photo-time">1:20 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">Progress</span>
+              <span class="photo-time">12:30 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">After</span>
+              <span class="photo-time">11:45 AM</span>
+            </div>
+            <div class="photo-item add">
+              +<br>
+              <span style="font-size: 12px; margin-top: 4px;">Add Photo</span>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <span class="section-title">Yesterday</span>
+            <span class="section-count">8 photos</span>
+          </div>
+
+          <div class="photo-grid">
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">Before</span>
+              <span class="photo-time">5:30 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">After</span>
+              <span class="photo-time">4:15 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">Before</span>
+              <span class="photo-time">2:45 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">Progress</span>
+              <span class="photo-time">1:30 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">After</span>
+              <span class="photo-time">12:00 PM</span>
+            </div>
+            <div class="photo-item">
+              📷
+              <span class="photo-badge">Before</span>
+              <span class="photo-time">10:15 AM</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-button">📸</div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>Tasks</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📍</span>
+            <span>Map</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">📸</span>
+            <span>Photos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">📸 Photo Documentation</div>
+      <h1 class="info-title">Photo Gallery & <span>Upload</span></h1>
+      <p class="info-desc">
+        Organized photo gallery for documenting work with before, during, and after photos.
+        Upload and categorize images with timestamp tracking.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Before/after categorization</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Automatic timestamp tagging</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Storage tracking</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Quick upload access</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

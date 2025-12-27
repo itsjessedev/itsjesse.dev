@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>itsjesse.dev Mobile - Contact</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+      height: calc(100% - 44px - 70px);
+      overflow-y: auto;
+    }
+    .page-header {
+      padding: 16px 0;
+      text-align: center;
+    }
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+    .page-subtitle {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    /* Contact Methods */
+    .contact-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .contact-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .contact-card:active {
+      transform: scale(0.98);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    .contact-icon {
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .contact-info {
+      flex: 1;
+    }
+    .contact-label {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 3px;
+    }
+    .contact-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    .contact-arrow {
+      color: #64748b;
+      font-size: 18px;
+    }
+
+    /* Contact Form */
+    .contact-form {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .form-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #e2e8f0;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-label {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .form-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: rgba(99, 102, 241, 0.5);
+    }
+    .form-textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .form-button {
+      width: 100%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    /* Availability Badge */
+    .availability {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .availability-dot {
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .availability-text {
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+    .availability-text strong {
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(99, 102, 241, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+      cursor: pointer;
+    }
+    .nav-item.active { color: #8b5cf6; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #a78bfa;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(34, 197, 94, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="app-content">
+          <div class="page-header">
+            <div class="page-title">Get in Touch</div>
+            <div class="page-subtitle">Let's discuss your project</div>
+          </div>
+
+          <div class="availability">
+            <div class="availability-dot"></div>
+            <div class="availability-text">
+              <strong>Available for new projects</strong> - Typical response within 24 hours
+            </div>
+          </div>
+
+          <div class="contact-methods">
+            <div class="contact-card">
+              <div class="contact-icon">📧</div>
+              <div class="contact-info">
+                <div class="contact-label">Email</div>
+                <div class="contact-value">jesse@itsjesse.dev</div>
+              </div>
+              <div class="contact-arrow">→</div>
+            </div>
+
+            <div class="contact-card">
+              <div class="contact-icon">💼</div>
+              <div class="contact-info">
+                <div class="contact-label">LinkedIn</div>
+                <div class="contact-value">linkedin.com/in/jesseeldridge</div>
+              </div>
+              <div class="contact-arrow">→</div>
+            </div>
+
+            <div class="contact-card">
+              <div class="contact-icon">💻</div>
+              <div class="contact-info">
+                <div class="contact-label">GitHub</div>
+                <div class="contact-value">github.com/jesse-eldridge</div>
+              </div>
+              <div class="contact-arrow">→</div>
+            </div>
+
+            <div class="contact-card">
+              <div class="contact-icon">📅</div>
+              <div class="contact-info">
+                <div class="contact-label">Schedule a Call</div>
+                <div class="contact-value">Book a consultation</div>
+              </div>
+              <div class="contact-arrow">→</div>
+            </div>
+          </div>
+
+          <div class="contact-form">
+            <div class="form-title">Quick Message</div>
+
+            <div class="form-group">
+              <label class="form-label">Your Name</label>
+              <input type="text" class="form-input" placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input" placeholder="john@example.com">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Project Type</label>
+              <input type="text" class="form-input" placeholder="e.g., API Integration">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea class="form-input form-textarea" placeholder="Tell me about your project..."></textarea>
+            </div>
+
+            <button class="form-button">Send Message</button>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📁</span>
+            <span>Projects</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">🛠️</span>
+            <span>Services</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span>About</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">📧 Contact Screen</div>
+      <h1 class="info-title">Multiple Ways to <span>Connect</span></h1>
+      <p class="info-desc">
+        Comprehensive contact page with direct links to email, LinkedIn, GitHub, and scheduling. Includes a quick message form for immediate inquiries and shows availability status.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Quick contact methods</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">In-app contact form</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Availability indicator</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Social media links</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1440, height=900">
+  <title>itsjesse.dev Mobile - About</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      display: flex;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* Phone Mockup */
+    .phone {
+      width: 320px;
+      height: 650px;
+      background: #1e1e1e;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+    .notch {
+      width: 150px;
+      height: 30px;
+      background: #1e1e1e;
+      border-radius: 0 0 20px 20px;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      padding-top: 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* App Content */
+    .app-content {
+      padding: 0 16px 16px;
+      height: calc(100% - 44px - 70px);
+      overflow-y: auto;
+    }
+
+    /* Profile Header */
+    .profile-header {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      border: 3px solid rgba(99, 102, 241, 0.3);
+    }
+    .profile-name {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .profile-title {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+    .profile-location {
+      font-size: 13px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    .stat-card {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #a78bfa;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* About Section */
+    .about-section {
+      padding: 20px 0;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #a78bfa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .about-text {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    /* Skills */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .skill-card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .skill-icon {
+      font-size: 18px;
+    }
+    .skill-name {
+      font-size: 13px;
+      color: #e2e8f0;
+    }
+
+    /* Experience Timeline */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .timeline-item {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      padding: 14px;
+      position: relative;
+      padding-left: 40px;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: 14px;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 50%;
+    }
+    .timeline-year {
+      font-size: 11px;
+      color: #a78bfa;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .timeline-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 2px;
+    }
+    .timeline-company {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    /* Social Links */
+    .social-links {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .social-link {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .social-link:active {
+      transform: scale(0.95);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    .social-icon {
+      font-size: 22px;
+    }
+    .social-label {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1px solid rgba(99, 102, 241, 0.2);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-bottom: 10px;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #64748b;
+      font-size: 10px;
+    }
+    .nav-item.active { color: #8b5cf6; }
+    .nav-icon { font-size: 20px; }
+
+    /* Info Panel */
+    .info-panel {
+      max-width: 500px;
+    }
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 24px;
+      font-size: 14px;
+      color: #a78bfa;
+      margin-bottom: 24px;
+    }
+    .info-title {
+      font-size: 42px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .info-title span {
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .info-desc {
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      background: rgba(34, 197, 94, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .feature-text { font-size: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+
+        <div class="app-content">
+          <div class="profile-header">
+            <div class="profile-avatar">JE</div>
+            <div class="profile-name">Jesse Eldridge</div>
+            <div class="profile-title">Automation & Integration Developer</div>
+            <div class="profile-location">
+              <span>📍</span>
+              <span>San Francisco Bay Area</span>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-value">10+</div>
+              <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">5+</div>
+              <div class="stat-label">Years Exp</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">20+</div>
+              <div class="stat-label">Clients</div>
+            </div>
+          </div>
+
+          <div class="about-section">
+            <div class="section-title">About Me</div>
+            <div class="about-text">
+              I build automation and integration solutions that eliminate manual work and connect disparate systems. From API development to workflow automation, I help businesses streamline operations and unlock their data.
+            </div>
+            <div class="about-text">
+              Specializing in Python, FastAPI, React, and cloud platforms, I create robust, scalable solutions tailored to your unique needs.
+            </div>
+          </div>
+
+          <div class="about-section">
+            <div class="section-title">Core Skills</div>
+            <div class="skills-grid">
+              <div class="skill-card">
+                <span class="skill-icon">🐍</span>
+                <span class="skill-name">Python</span>
+              </div>
+              <div class="skill-card">
+                <span class="skill-icon">⚡</span>
+                <span class="skill-name">FastAPI</span>
+              </div>
+              <div class="skill-card">
+                <span class="skill-icon">⚛️</span>
+                <span class="skill-name">React</span>
+              </div>
+              <div class="skill-card">
+                <span class="skill-icon">📱</span>
+                <span class="skill-name">React Native</span>
+              </div>
+              <div class="skill-card">
+                <span class="skill-icon">🔌</span>
+                <span class="skill-name">REST APIs</span>
+              </div>
+              <div class="skill-card">
+                <span class="skill-icon">☁️</span>
+                <span class="skill-name">Cloud</span>
+              </div>
+              <div class="skill-card">
+                <span class="skill-icon">🐳</span>
+                <span class="skill-name">Docker</span>
+              </div>
+              <div class="skill-card">
+                <span class="skill-icon">📊</span>
+                <span class="skill-name">PostgreSQL</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-section">
+            <div class="section-title">Experience</div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">2020 - Present</div>
+                <div class="timeline-title">Freelance Developer</div>
+                <div class="timeline-company">Self-Employed</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">2018 - 2020</div>
+                <div class="timeline-title">Senior Integration Engineer</div>
+                <div class="timeline-company">Tech Solutions Inc</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-year">2016 - 2018</div>
+                <div class="timeline-title">Software Developer</div>
+                <div class="timeline-company">StartupCo</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-section">
+            <div class="section-title">Connect</div>
+            <div class="social-links">
+              <div class="social-link">
+                <span class="social-icon">💼</span>
+                <span class="social-label">LinkedIn</span>
+              </div>
+              <div class="social-link">
+                <span class="social-icon">💻</span>
+                <span class="social-label">GitHub</span>
+              </div>
+              <div class="social-link">
+                <span class="social-icon">📧</span>
+                <span class="social-label">Email</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📁</span>
+            <span>Projects</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">🛠️</span>
+            <span>Services</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">👤</span>
+            <span>About</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-badge">👤 About Screen</div>
+      <h1 class="info-title">Complete <span>Professional Profile</span></h1>
+      <p class="info-desc">
+        Comprehensive about page with bio, skills, experience timeline, and social links. Shows professional background and expertise in a clean, mobile-optimized layout.
+      </p>
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Professional biography</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Skills showcase</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Experience timeline</span>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Social media links</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
