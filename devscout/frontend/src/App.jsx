@@ -1069,7 +1069,7 @@ function App() {
       // Submit to backend
       await submitPosts(redditPosts);
       // Clear the auto-check cache so new posts get checked for user comments
-      hasCheckedPosts.current.clear();
+      localStorage.removeItem('devscout_checked_posts');
       // Clear progress on completion
       localStorage.removeItem('devscout_posts_progress');
       loadData();

@@ -1,6 +1,4 @@
-# Project Agent Instructions (Codex)
-
-This file provides project-specific guidance to Codex.
+# DevScout - Project Instructions (Codex)
 
 ## Project Overview
 
@@ -143,7 +141,18 @@ ssh junipr-vps "sudo journalctl -u devscout -f"
 
 ## Session Notes (2025-12-27)
 
-### Completed
+### Completed (Latest)
+- Fixed subreddit badge height (override 44px min-height in CSS)
+- Auto-resume fetch on reload for Posts and Prospects (no manual Resume button)
+- Notification banner auto-fades after 10s of no new activity
+- Stricter prospect scoring: filters out stories/tips/advice/discussions
+- HOT score (40+) only for [Hiring]/[Task] tags or explicit hiring phrases
+- Proxy-first fetching for all Reddit requests (corsproxy.io first, then allorigins.win)
+- Significantly faster desktop fetching (skip failing direct CORS attempts)
+- Fixed Reddit CORS in Prospects search
+- Fixed HN timestamp display (Unix timestamp conversion)
+
+### Previous Session
 - Combined Copy + Reply on Reddit into single button (Replies + Posts tabs)
 - Added Reddit orange (#ff4500) and Snoo icon to Reply buttons
 - Added 60s periodic auto-mark responded on Posts tab
@@ -170,6 +179,8 @@ ssh junipr-vps "sudo journalctl -u devscout -f"
 - Clear All buttons for Prospects and News
 - Enhanced auto-mark debugging logs
 
-### Next Up
-- Add Dismiss button for replies (clear notifications without responding)
-- Investigate auto-mark not updating posts (check console logs for updatePost errors)
+### Technical Notes
+- **Proxy-first approach**: All Reddit fetches use corsproxy.io first (avoids CORS failures on desktop)
+- **44px touch targets**: Global CSS sets min-height on buttons/links, but `.devscout-subreddit` overrides this
+- **Prospect scoring**: Returns 0 for posts matching "not hiring" patterns (tips, stories, advice, etc.)
+- **Auto-resume**: Saves progress to localStorage during fetch, auto-resumes on page reload
