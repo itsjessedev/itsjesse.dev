@@ -299,3 +299,40 @@ async def delete_post(post_id: int, db: AsyncSession = Depends(get_db)):
     await db.delete(post)
     await db.commit()
     return {"deleted": True}
+
+
+# Reddit JSON Proxy (to bypass CORS)
+import httpx
+import re
+
+@router.get("/reddit-proxy/{post_id}")
+async def proxy_reddit_post(post_id: str):
+    """Proxy Reddit JSON API to bypass CORS restrictions."""
+    # Validate post_id format (alphanumeric only)
+    if not re.match(r'^[a-zA-Z0-9]+$', post_id):
+        raise HTTPException(status_code=400, detail="Invalid post ID format")
+
+    url = f"https://www.reddit.com/comments/{post_id}.json?limit=500&depth=10"
+
+    try:
+        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+            response = await client.get(
+                url,
+                headers={
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    "Accept": "application/json, text/html,application/xhtml+xml",
+                    "Accept-Language": "en-US,en;q=0.9",
+                }
+            )
+
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Reddit API error: {response.status_code}"
+                )
+
+            return response.json()
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Reddit API timeout")
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=502, detail=f"Failed to reach Reddit: {str(e)}")
