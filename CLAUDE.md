@@ -1,5 +1,16 @@
 # itsjesse.dev Project Instructions
 
+## CRITICAL: No AI Attribution
+
+**NEVER include Claude co-author tags or AI attribution in commits to this repository.**
+
+This is Jesse's professional portfolio - it should appear as his own work with no visible AI assistance on GitHub. When committing changes:
+- Do NOT add "Co-Authored-By: Claude" lines
+- Do NOT add "Generated with Claude Code" signatures
+- Keep commit messages professional and author-neutral
+
+This applies to all itsjesse.dev repositories and portfolio project repos.
+
 ## Project Overview
 Personal portfolio website and demo projects showcasing automation & integration development services.
 
