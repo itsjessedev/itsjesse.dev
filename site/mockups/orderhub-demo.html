@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1440, height=900">
+    <title>OrderHub - Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 220px;
+            background: linear-gradient(180deg, #5b5fc7 0%, #4f46e5 100%);
+            color: white;
+            padding: 24px 0;
+            flex-shrink: 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 24px;
+            margin-bottom: 40px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-item.active { background: rgba(255,255,255,0.15); color: white; }
+        .nav-icon { width: 20px; text-align: center; }
+        .main { flex: 1; padding: 32px; overflow-y: auto; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .header h1 { font-size: 1.75rem; color: #1a1a2e; }
+        .header p { color: #666; font-size: 0.95rem; margin-top: 4px; }
+        .header-actions { display: flex; align-items: center; gap: 16px; }
+        .sync-info { color: #888; font-size: 0.85rem; }
+        .sync-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .platform-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .platform-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .platform-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .platform-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        .shopify-icon { background: #e8f5e9; color: #95BF47; }
+        .amazon-icon { background: #fff3e0; color: #FF9900; }
+        .ebay-icon { background: #e3f2fd; color: #0064D2; }
+        .etsy-icon { background: #fff3e0; color: #F56400; }
+        .connected-badge {
+            background: #e8f5e9;
+            color: #4caf50;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .platform-name { color: #888; font-size: 0.85rem; margin-bottom: 4px; }
+        .platform-orders { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; }
+        .platform-today { color: #4caf50; font-size: 0.85rem; margin-top: 4px; }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .summary-card {
+            padding: 24px;
+            border-radius: 12px;
+            color: white;
+        }
+        .revenue-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .pending-card { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .alerts-card { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
+        .summary-label { font-size: 0.9rem; opacity: 0.9; margin-bottom: 8px; }
+        .summary-value { font-size: 2.25rem; font-weight: 700; margin-bottom: 4px; }
+        .summary-sub { font-size: 0.85rem; opacity: 0.8; }
+        .orders-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .orders-header h2 { font-size: 1.1rem; color: #1a1a2e; }
+        .view-all { color: #4f46e5; text-decoration: none; font-size: 0.9rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            color: #888;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #eee;
+        }
+        td { padding: 16px; border-bottom: 1px solid #f5f5f5; }
+        .order-id { font-weight: 600; color: #1a1a2e; }
+        .platform-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .shopify-badge { background: #e8f5e9; color: #2e7d32; }
+        .amazon-badge { background: #fff3e0; color: #e65100; }
+        .ebay-badge { background: #e3f2fd; color: #1565c0; }
+        .etsy-badge { background: #fce4ec; color: #c2185b; }
+        .customer { color: #333; }
+        .items { color: #666; }
+        .total { font-weight: 600; color: #1a1a2e; }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fff3e0; color: #e65100; }
+        .status-processing { background: #e3f2fd; color: #1565c0; }
+        .status-shipped { background: #f3e5f5; color: #7b1fa2; }
+        .action-link { color: #4f46e5; text-decoration: none; font-weight: 500; }
+        .action-link.disabled { color: #ccc; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">&#x1F4E6;</div>
+            OrderHub
+        </div>
+        <nav>
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">&#x1F4CA;</span> Dashboard
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">&#x1F4E6;</span> Orders
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">&#x1F4CB;</span> Inventory
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">&#x1F517;</span> Integrations
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">&#x1F4C8;</span> Analytics
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">&#x2699;</span> Settings
+            </a>
+        </nav>
+    </aside>
+    <main class="main">
+        <header class="header">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Unified view of all your e-commerce platforms</p>
+            </div>
+            <div class="header-actions">
+                <span class="sync-info">Last sync: 2 min ago</span>
+                <button class="sync-btn">&#x1F504; Sync Now</button>
+            </div>
+        </header>
+
+        <div class="platform-cards">
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon shopify-icon">&#x1F6D2;</div>
+                    <span class="connected-badge">Connected</span>
+                </div>
+                <div class="platform-name">Shopify</div>
+                <div class="platform-orders">47 orders</div>
+                <div class="platform-today">+12 today</div>
+            </div>
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon amazon-icon">&#x1F4E6;</div>
+                    <span class="connected-badge">Connected</span>
+                </div>
+                <div class="platform-name">Amazon</div>
+                <div class="platform-orders">124 orders</div>
+                <div class="platform-today">+28 today</div>
+            </div>
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon ebay-icon">&#x1F50D;</div>
+                    <span class="connected-badge">Connected</span>
+                </div>
+                <div class="platform-name">eBay</div>
+                <div class="platform-orders">89 orders</div>
+                <div class="platform-today">+19 today</div>
+            </div>
+            <div class="platform-card">
+                <div class="platform-header">
+                    <div class="platform-icon etsy-icon">&#x1F381;</div>
+                    <span class="connected-badge">Connected</span>
+                </div>
+                <div class="platform-name">Etsy</div>
+                <div class="platform-orders">31 orders</div>
+                <div class="platform-today">+5 today</div>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card revenue-card">
+                <div class="summary-label">Total Revenue (Today)</div>
+                <div class="summary-value">$12,847</div>
+                <div class="summary-sub">+23% from yesterday</div>
+            </div>
+            <div class="summary-card pending-card">
+                <div class="summary-label">Orders Pending</div>
+                <div class="summary-value">64</div>
+                <div class="summary-sub">Needs fulfillment</div>
+            </div>
+            <div class="summary-card alerts-card">
+                <div class="summary-label">Low Stock Alerts</div>
+                <div class="summary-value">7</div>
+                <div class="summary-sub">Items need restock</div>
+            </div>
+        </div>
+
+        <div class="orders-section">
+            <div class="orders-header">
+                <h2>Recent Orders</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Platform</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="order-id">#ORD-2847</td>
+                        <td><span class="platform-badge shopify-badge">Shopify</span></td>
+                        <td class="customer">Sarah Johnson</td>
+                        <td class="items">3 items</td>
+                        <td class="total">$249.99</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td><a href="#" class="action-link">Fulfill</a></td>
+                    </tr>
+                    <tr>
+                        <td class="order-id">#AMZ-9182</td>
+                        <td><span class="platform-badge amazon-badge">Amazon</span></td>
+                        <td class="customer">Mike Chen</td>
+                        <td class="items">1 item</td>
+                        <td class="total">$89.00</td>
+                        <td><span class="status-badge status-processing">Processing</span></td>
+                        <td><a href="#" class="action-link">Fulfill</a></td>
+                    </tr>
+                    <tr>
+                        <td class="order-id">#EBY-4521</td>
+                        <td><span class="platform-badge ebay-badge">eBay</span></td>
+                        <td class="customer">Emily Davis</td>
+                        <td class="items">2 items</td>
+                        <td class="total">$175.50</td>
+                        <td><span class="status-badge status-shipped">Shipped</span></td>
+                        <td><a href="#" class="action-link disabled">Fulfilled</a></td>
+                    </tr>
+                    <tr>
+                        <td class="order-id">#ETS-7834</td>
+                        <td><span class="platform-badge etsy-badge">Etsy</span></td>
+                        <td class="customer">Alex Thompson</td>
+                        <td class="items">1 item</td>
+                        <td class="total">$45.00</td>
+                        <td><span class="status-badge status-pending">Pending</span></td>
+                        <td><a href="#" class="action-link">Fulfill</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
