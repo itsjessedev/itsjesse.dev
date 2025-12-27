@@ -1,0 +1,29 @@
+# Add to /etc/caddy/Caddyfile
+
+reddit.junipr.io {
+    # Block search engines
+    header X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+
+    # API routes
+    handle /api/* {
+        reverse_proxy localhost:8004
+    }
+
+    # Health check
+    handle /health {
+        reverse_proxy localhost:8004
+    }
+
+    # Robots.txt
+    handle /robots.txt {
+        respond "User-agent: *
+Disallow: /" 200
+    }
+
+    # Static frontend
+    handle {
+        root * /home/deploy/reddit-scout/frontend
+        try_files {path} /index.html
+        file_server
+    }
+}

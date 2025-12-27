@@ -388,7 +388,7 @@ export default function ServicesPage() {
             Let&apos;s discuss how I can help you automate, integrate, and scale.
           </p>
           <a
-            href="mailto:jesse@itsjesse.dev"
+            href="/#contact"
             className="btn-primary text-lg"
           >
             Get in Touch
@@ -406,6 +406,7 @@ export default function ServicesPage() {
             <Link href="/" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Home</Link>
             <Link href="/#projects" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Projects</Link>
             <Link href="/services" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Services</Link>
+            <Link href="/#contact" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Contact</Link>
           </div>
         </div>
       </footer>

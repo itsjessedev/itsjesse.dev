@@ -201,10 +201,10 @@ export default function ProjectsPage() {
               LinkedIn
             </a>
             <a
-              href="mailto:jesse@itsjesse.dev"
+              href="/#contact"
               className="hover:text-[var(--text-primary)] transition-colors"
             >
-              Email
+              Contact
             </a>
           </div>
         </div>
