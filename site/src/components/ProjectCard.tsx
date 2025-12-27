@@ -31,7 +31,7 @@ export default function ProjectCard({ project, size = "normal" }: ProjectCardPro
             src={project.image}
             alt={project.title}
             fill
-            className="object-cover"
+            className="object-cover object-left"
             sizes={isLarge ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
           />
         ) : (

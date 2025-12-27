@@ -1,4 +1,4 @@
-# itsjesse.dev Project Instructions
+# Project Instructions (Codex)
 
 ## CRITICAL: No AI Attribution
 

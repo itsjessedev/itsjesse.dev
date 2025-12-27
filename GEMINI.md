@@ -1,4 +1,4 @@
-# itsjesse.dev Project Instructions
+# Project Instructions (Gemini)
 
 ## CRITICAL: No AI Attribution
 
