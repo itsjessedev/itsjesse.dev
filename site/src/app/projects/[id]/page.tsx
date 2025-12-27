@@ -56,6 +56,7 @@ const projectDetails: Record<
     ],
     videoUrl: "/videos/syncflow-demo.webm",
     screenshots: [
+      "/projects/syncflow/hero.png",
       "/projects/syncflow/dashboard.png",
       "/projects/syncflow/history.png",
       "/projects/syncflow/mapping.png",
@@ -78,6 +79,7 @@ const projectDetails: Record<
     demoUrl: "https://orderhub.itsjesse.dev",
     videoUrl: "/videos/orderhub-demo.webm",
     screenshots: [
+      "/projects/orderhub/hero.png",
       "/projects/orderhub/dashboard.png",
       "/projects/orderhub/orders.png",
       "/projects/orderhub/inventory.png",
@@ -99,6 +101,7 @@ const projectDetails: Record<
     ],
     videoUrl: "/videos/invoicebot-demo.webm",
     screenshots: [
+      "/projects/invoicebot/hero.png",
       "/projects/invoicebot/dashboard.png",
       "/projects/invoicebot/upload.png",
       "/projects/invoicebot/processing.png",
@@ -120,6 +123,7 @@ const projectDetails: Record<
     ],
     videoUrl: "/videos/leadscore-demo.webm",
     screenshots: [
+      "/projects/leadscore/hero.png",
       "/projects/leadscore/dashboard.png",
       "/projects/leadscore/leads.png",
       "/projects/leadscore/scoring.png",
@@ -142,6 +146,7 @@ const projectDetails: Record<
     demoUrl: "https://stockalert.itsjesse.dev",
     videoUrl: "/videos/stockalert-demo.webm",
     screenshots: [
+      "/projects/stockalert/hero.png",
       "/projects/stockalert/dashboard.png",
       "/projects/stockalert/inventory.png",
       "/projects/stockalert/locations.png",
@@ -163,6 +168,7 @@ const projectDetails: Record<
     ],
     videoUrl: "/videos/reportgen-demo.webm",
     screenshots: [
+      "/projects/reportgen/hero.png",
       "/projects/reportgen/dashboard.png",
       "/projects/reportgen/templates.png",
       "/projects/reportgen/editor.png",
@@ -185,6 +191,7 @@ const projectDetails: Record<
     demoUrl: "https://feedbackpulse.itsjesse.dev",
     videoUrl: "/videos/feedbackpulse-demo.webm",
     screenshots: [
+      "/projects/feedbackpulse/hero.png",
       "/projects/feedbackpulse/dashboard.png",
       "/projects/feedbackpulse/reviews.png",
       "/projects/feedbackpulse/surveys.png",
@@ -207,6 +214,7 @@ const projectDetails: Record<
     demoUrl: "https://bookingsync.itsjesse.dev",
     videoUrl: "/videos/bookingsync-demo.webm",
     screenshots: [
+      "/projects/bookingsync/hero.png",
       "/projects/bookingsync/dashboard.png",
       "/projects/bookingsync/calendar.png",
       "/projects/bookingsync/bookings.png",
@@ -228,6 +236,7 @@ const projectDetails: Record<
     ],
     videoUrl: "/videos/databridge-demo.webm",
     screenshots: [
+      "/projects/databridge/hero.png",
       "/projects/databridge/dashboard.png",
       "/projects/databridge/sources.png",
       "/projects/databridge/mapping.png",
@@ -249,6 +258,7 @@ const projectDetails: Record<
     ],
     videoUrl: "/videos/workflowbot-demo.webm",
     screenshots: [
+      "/projects/workflowbot/hero.png",
       "/projects/workflowbot/dashboard.png",
       "/projects/workflowbot/workflows.png",
       "/projects/workflowbot/editor.png",
@@ -271,6 +281,7 @@ const projectDetails: Record<
     demoUrl: "https://dealscout.itsjesse.dev",
     videoUrl: "/videos/dealscout-demo.webm",
     screenshots: [
+      "/projects/dealscout/hero.png",
       "/projects/dealscout/deals.png",
       "/projects/dealscout/detail.png",
       "/projects/dealscout/flips.png",
@@ -293,6 +304,7 @@ const projectDetails: Record<
     demoUrl: "https://documind.itsjesse.dev",
     videoUrl: "/videos/documind-demo.webm",
     screenshots: [
+      "/projects/documind/hero.png",
       "/projects/documind/dashboard.png",
       "/projects/documind/documents.png",
       "/projects/documind/search.png",
@@ -315,6 +327,7 @@ const projectDetails: Record<
     demoUrl: "https://smartclassify.itsjesse.dev",
     videoUrl: "/videos/smartclassify-demo.webm",
     screenshots: [
+      "/projects/smartclassify/hero.png",
       "/projects/smartclassify/dashboard.png",
       "/projects/smartclassify/classify.png",
       "/projects/smartclassify/batch.png",
@@ -336,6 +349,7 @@ const projectDetails: Record<
     ],
     videoUrl: "/videos/fieldops-demo.webm",
     screenshots: [
+      "/projects/fieldops/hero.png",
       "/projects/fieldops/dashboard.png",
       "/projects/fieldops/tasks.png",
       "/projects/fieldops/task-detail.png",
@@ -357,6 +371,7 @@ const projectDetails: Record<
     ],
     videoUrl: "/videos/itsjesse-mobile-demo.webm",
     screenshots: [
+      "/projects/itsjesse-mobile/hero.png",
       "/projects/itsjesse-mobile/dashboard.png",
       "/projects/itsjesse-mobile/projects.png",
       "/projects/itsjesse-mobile/project-detail.png",
