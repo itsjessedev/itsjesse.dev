@@ -142,6 +142,16 @@ ssh junipr-vps "sudo journalctl -u devscout -f"
 ## Session Notes (2025-12-27)
 
 ### Completed (Latest)
+- **Gemini honest feedback mode**: New `honest_review` opening style for feedback-seeking posts
+- Auto-detects posts asking for feedback/critique/roast and uses balanced, honest tone
+- Prompts updated to encourage real feedback (positives AND concerns) not just hype
+- **Mobile responsiveness fixes**: No horizontal scroll on any screen size
+- Added `overflow-x: hidden` to html/body, word-break to post titles/bodies
+- Updated global notification for mobile (full width, smaller font on xs screens)
+- Extra small device (380px) improvements: smaller buttons, flexible widths
+- Fixed `hasCheckedPosts` undefined error in Posts fetch
+
+### Previous Micro-Session
 - Fixed subreddit badge height (override 44px min-height in CSS)
 - Auto-resume fetch on reload for Posts and Prospects (no manual Resume button)
 - Notification banner auto-fades after 10s of no new activity
