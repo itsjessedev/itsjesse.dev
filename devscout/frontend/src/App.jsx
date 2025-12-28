@@ -906,6 +906,7 @@ function App() {
   const [repliesFetching, setRepliesFetching] = useState(false);
   const [expandedPosts, setExpandedPosts] = useState({}); // postId -> boolean
   const [pollingActive, setPollingActive] = useState(false);
+  const [hideNoActionNeeded, setHideNoActionNeeded] = useState(true); // Hide posts with no unreplied comments
   const pollingInterval = useRef(null);
   // Notification banner visibility (auto-fades after 10s of no new activity)
   const [notificationVisible, setNotificationVisible] = useState(true);
@@ -2309,14 +2310,25 @@ function App() {
 
       {/* Replies Controls */}
       {mode === 'replies' && (
-        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button
-            style={{ ...styles.btn, ...styles.btnSecondary }}
-            onClick={handleFetchReplies}
-            disabled={repliesFetching}
-          >
-            {repliesFetching ? 'Scanning...' : 'Refresh Now'}
-          </button>
+        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <button
+              style={{ ...styles.btn, ...styles.btnSecondary }}
+              onClick={handleFetchReplies}
+              disabled={repliesFetching}
+            >
+              {repliesFetching ? 'Scanning...' : 'Refresh Now'}
+            </button>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#a0a0a0' }}>
+              <input
+                type="checkbox"
+                checked={hideNoActionNeeded}
+                onChange={(e) => setHideNoActionNeeded(e.target.checked)}
+                style={{ width: '16px', height: '16px', cursor: 'pointer' }}
+              />
+              Hide no action needed
+            </label>
+          </div>
           {pollingActive && (
             <div style={styles.pollingIndicator}>
               <div style={styles.pulsingDot}></div>
@@ -2333,8 +2345,28 @@ function App() {
             <div style={styles.empty} className="devscout-empty">
               No responded posts yet. Posts you mark as "Responded" will appear here for reply tracking.
             </div>
-          ) : (
-            respondedPosts.map((post) => {
+          ) : (() => {
+            // Filter posts based on hideNoActionNeeded setting
+            const filteredPosts = hideNoActionNeeded
+              ? respondedPosts.filter((post) => {
+                  const repliesData = postRepliesData[post.id] || { comments: [], totalUnreplied: 0 };
+                  const activeUnreplied = getActiveUnrepliedCount(repliesData.comments);
+                  return activeUnreplied > 0;
+                })
+              : respondedPosts;
+
+            if (filteredPosts.length === 0) {
+              return (
+                <div style={styles.empty} className="devscout-empty">
+                  All caught up! No posts need attention right now.
+                  <div style={{ marginTop: '8px', fontSize: '13px', color: '#666' }}>
+                    ({respondedPosts.length} post{respondedPosts.length !== 1 ? 's' : ''} hidden with no action needed)
+                  </div>
+                </div>
+              );
+            }
+
+            return filteredPosts.map((post) => {
               const repliesData = postRepliesData[post.id] || { comments: [], totalUnreplied: 0 };
               const isExpanded = expandedPosts[post.id];
               // Use dismissal-aware count
@@ -2579,8 +2611,8 @@ function App() {
                   )}
                 </div>
               );
-            })
-          )}
+            });
+          })()}
         </div>
       )}
 
