@@ -108,27 +108,40 @@ async function fetchSubreddit(subreddit) {
   try {
     let data = null;
 
-    // Method 1: Try corsproxy.io first (most reliable)
+    // Method 1: Try allorigins.win first (corsproxy.io now blocks requests)
     try {
-      const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-      const response = await fetch(corsProxyUrl, { headers: { 'Accept': 'application/json' } });
+      const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+      const response = await fetch(allOriginsUrl);
       if (response.ok) {
         data = await response.json();
       }
     } catch (e) {
-      // corsproxy failed
+      // allorigins failed
     }
 
-    // Method 2: Try allorigins.win as fallback
+    // Method 2: Try corsproxy.io as fallback
     if (!data) {
       try {
-        const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const response = await fetch(allOriginsUrl);
+        const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        const response = await fetch(corsProxyUrl, { headers: { 'Accept': 'application/json' } });
         if (response.ok) {
           data = await response.json();
         }
       } catch (e) {
-        // allorigins failed
+        // corsproxy failed
+      }
+    }
+
+    // Method 3: Try thingproxy as last resort
+    if (!data) {
+      try {
+        const thingProxyUrl = `https://thingproxy.freeboard.io/fetch/${url}`;
+        const response = await fetch(thingProxyUrl);
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (e) {
+        // thingproxy failed
       }
     }
 
@@ -921,33 +934,48 @@ export async function scrapePostForUserComments(postUrl) {
     let data;
     const redditUrl = `https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`;
 
-    // Method 1: Try corsproxy.io first (most reliable, avoids CORS failures)
+    // Method 1: Try allorigins.win first (corsproxy.io now blocks requests)
     try {
-      const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(redditUrl)}`;
-      console.log(`[DevScout] Trying corsproxy.io: ${corsProxyUrl}`);
-      response = await fetch(corsProxyUrl, {
-        headers: { 'Accept': 'application/json' }
-      });
+      const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(redditUrl)}`;
+      console.log(`[DevScout] Trying allorigins: ${allOriginsUrl}`);
+      response = await fetch(allOriginsUrl);
       if (response.ok) {
         data = await response.json();
-        console.log(`[DevScout] corsproxy.io succeeded`);
+        console.log(`[DevScout] allorigins succeeded`);
       }
     } catch (e) {
-      console.log(`[DevScout] corsproxy.io failed: ${e.message}`);
+      console.log(`[DevScout] allorigins failed: ${e.message}`);
     }
 
-    // Method 2: Try allorigins.win as fallback
+    // Method 2: Try corsproxy.io as fallback
     if (!data) {
       try {
-        const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://www.reddit.com/comments/${postId}.json?limit=500&depth=10`)}`;
-        console.log(`[DevScout] Trying allorigins: ${allOriginsUrl}`);
-        response = await fetch(allOriginsUrl);
+        const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(redditUrl)}`;
+        console.log(`[DevScout] Trying corsproxy.io: ${corsProxyUrl}`);
+        response = await fetch(corsProxyUrl, {
+          headers: { 'Accept': 'application/json' }
+        });
         if (response.ok) {
           data = await response.json();
-          console.log(`[DevScout] allorigins succeeded`);
+          console.log(`[DevScout] corsproxy.io succeeded`);
         }
       } catch (e) {
-        console.log(`[DevScout] allorigins failed: ${e.message}`);
+        console.log(`[DevScout] corsproxy.io failed: ${e.message}`);
+      }
+    }
+
+    // Method 3: Try thingproxy as last resort
+    if (!data) {
+      try {
+        const thingProxyUrl = `https://thingproxy.freeboard.io/fetch/${redditUrl}`;
+        console.log(`[DevScout] Trying thingproxy: ${thingProxyUrl}`);
+        response = await fetch(thingProxyUrl);
+        if (response.ok) {
+          data = await response.json();
+          console.log(`[DevScout] thingproxy succeeded`);
+        }
+      } catch (e) {
+        console.log(`[DevScout] thingproxy failed: ${e.message}`);
       }
     }
 
@@ -1347,27 +1375,40 @@ async function searchSubreddit(subreddit, query) {
     const url = `https://www.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&sort=new&t=week&limit=15`;
     let data = null;
 
-    // Method 1: Try corsproxy.io first (most reliable, avoids CORS)
+    // Method 1: Try allorigins.win first (corsproxy.io now blocks requests)
     try {
-      const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-      const response = await fetch(corsProxyUrl, { headers: { 'Accept': 'application/json' } });
+      const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+      const response = await fetch(allOriginsUrl);
       if (response.ok) {
         data = await response.json();
       }
     } catch (e) {
-      // corsproxy failed, try alternatives
+      // allorigins failed
     }
 
-    // Method 2: Try allorigins.win as fallback
+    // Method 2: Try corsproxy.io as fallback
     if (!data) {
       try {
-        const allOriginsUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-        const response = await fetch(allOriginsUrl);
+        const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        const response = await fetch(corsProxyUrl, { headers: { 'Accept': 'application/json' } });
         if (response.ok) {
           data = await response.json();
         }
       } catch (e) {
-        // allorigins failed
+        // corsproxy failed
+      }
+    }
+
+    // Method 3: Try thingproxy as last resort
+    if (!data) {
+      try {
+        const thingProxyUrl = `https://thingproxy.freeboard.io/fetch/${url}`;
+        const response = await fetch(thingProxyUrl);
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (e) {
+        // thingproxy failed
       }
     }
 
