@@ -124,12 +124,10 @@ async function fetchSubreddit(subreddit) {
       }
     };
 
-    // Try multiple proxy services
+    // Try multiple proxy services (corsproxy works best)
     const proxyUrls = [
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
       `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-      `https://thingproxy.freeboard.io/fetch/${url}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
     ];
 
     for (const proxyUrl of proxyUrls) {
@@ -954,12 +952,10 @@ export async function scrapePostForUserComments(postUrl) {
       }
     };
 
-    // Try multiple proxy services
+    // Try multiple proxy services (corsproxy works best, others are fallbacks)
     const proxyUrls = [
-      { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(redditUrl)}`, name: 'allorigins' },
       { url: `https://corsproxy.io/?${encodeURIComponent(redditUrl)}`, name: 'corsproxy' },
-      { url: `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(redditUrl)}`, name: 'codetabs' },
-      { url: `https://thingproxy.freeboard.io/fetch/${redditUrl}`, name: 'thingproxy' },
+      { url: `https://api.allorigins.win/raw?url=${encodeURIComponent(redditUrl)}`, name: 'allorigins' },
     ];
 
     for (const { url, name } of proxyUrls) {
@@ -1379,12 +1375,10 @@ async function searchSubreddit(subreddit, query) {
       }
     };
 
-    // Try multiple proxy services
+    // Try multiple proxy services (corsproxy works best)
     const proxyUrls = [
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
       `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-      `https://thingproxy.freeboard.io/fetch/${url}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
     ];
 
     for (const proxyUrl of proxyUrls) {

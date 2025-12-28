@@ -985,7 +985,7 @@ function App() {
     setAutoMarkStatus(`Checking ${newPosts.length} posts...`);
 
     let markedCount = 0;
-    const BATCH_SIZE = 5; // Check 5 posts in parallel
+    const BATCH_SIZE = 2; // Check 2 posts in parallel (avoid corsproxy rate limits)
 
     for (let i = 0; i < newPosts.length; i += BATCH_SIZE) {
       const batch = newPosts.slice(i, i + BATCH_SIZE);
@@ -1021,9 +1021,9 @@ function App() {
       markedCount += results.filter(Boolean).length;
       saveCheckedPosts(checkedPosts);
 
-      // Brief pause between batches to avoid rate limiting
+      // Pause between batches to avoid corsproxy rate limiting
       if (i + BATCH_SIZE < newPosts.length) {
-        await new Promise(r => setTimeout(r, 100));
+        await new Promise(r => setTimeout(r, 500));
       }
     }
 
