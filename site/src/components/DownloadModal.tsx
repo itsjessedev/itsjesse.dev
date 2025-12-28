@@ -31,11 +31,11 @@ export default function DownloadModal({ appName, downloadUrl, isLarge = false }:
       {/* Modal overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto"
           onClick={() => setIsOpen(false)}
         >
           <div
-            className="glass-card max-w-md w-full p-6 relative animate-fade-in"
+            className="glass-card max-w-md w-full p-5 sm:p-6 relative animate-fade-in my-auto max-h-[95vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
@@ -62,10 +62,10 @@ export default function DownloadModal({ appName, downloadUrl, isLarge = false }:
             </div>
 
             {/* Install instructions */}
-            <div className="space-y-4 mb-6">
-              <div className="p-4 bg-[var(--bg-secondary)] rounded-lg">
+            <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+              <div className="p-3 sm:p-4 bg-[var(--bg-secondary)] rounded-lg">
                 <p className="text-sm font-medium text-[var(--accent)] mb-2">Installation Steps:</p>
-                <ol className="text-sm text-[var(--text-secondary)] space-y-2 list-decimal list-inside">
+                <ol className="text-xs sm:text-sm text-[var(--text-secondary)] space-y-1.5 sm:space-y-2 list-decimal list-inside">
                   <li>Download the APK file to your Android device</li>
                   <li>Open your device Settings &rarr; Security</li>
                   <li>Enable &quot;Install from unknown sources&quot;</li>
