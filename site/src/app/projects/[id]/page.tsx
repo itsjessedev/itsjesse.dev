@@ -54,6 +54,7 @@ const projectDetails: Record<
       "Historical tracking so you can see changes over time",
       "Email alerts when something needs your attention",
     ],
+    demoUrl: "https://syncflow.itsjesse.dev",
     videoUrl: "/videos/syncflow-demo.webm",
     screenshots: [
       "/projects/syncflow/hero.png",
@@ -99,6 +100,7 @@ const projectDetails: Record<
       "Direct sync to QuickBooks Online",
       "Audit-ready expense reports on demand",
     ],
+    demoUrl: "https://invoicebot.itsjesse.dev",
     videoUrl: "/videos/invoicebot-demo.webm",
     screenshots: [
       "/projects/invoicebot/hero.png",
@@ -121,6 +123,7 @@ const projectDetails: Record<
       "Priority call lists updated automatically",
       "Integration with HubSpot and major email platforms",
     ],
+    demoUrl: "https://leadscore.itsjesse.dev",
     videoUrl: "/videos/leadscore-demo.webm",
     screenshots: [
       "/projects/leadscore/hero.png",
@@ -166,6 +169,7 @@ const projectDetails: Record<
       "Scheduled delivery - daily, weekly, monthly",
       "Historical archive with search",
     ],
+    demoUrl: "https://reportgen.itsjesse.dev",
     videoUrl: "/videos/reportgen-demo.webm",
     screenshots: [
       "/projects/reportgen/hero.png",
@@ -234,6 +238,7 @@ const projectDetails: Record<
       "Incremental sync during transition period",
       "Full rollback capability if anything goes wrong",
     ],
+    demoUrl: "https://databridge.itsjesse.dev",
     videoUrl: "/videos/databridge-demo.webm",
     screenshots: [
       "/projects/databridge/hero.png",
@@ -256,6 +261,7 @@ const projectDetails: Record<
       "Status tracking and reminders",
       "Complete audit trail for compliance",
     ],
+    demoUrl: "https://workflowbot.itsjesse.dev",
     videoUrl: "/videos/workflowbot-demo.webm",
     screenshots: [
       "/projects/workflowbot/hero.png",
@@ -409,16 +415,16 @@ export default async function ProjectPage({
           <Link href="/" className="text-xl font-bold text-gradient">
             Jesse Eldridge
           </Link>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 md:gap-6">
             <Link
               href="/projects"
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              className="hidden sm:block text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-sm md:text-base"
             >
               All Projects
             </Link>
             <Link
-              href="/#services"
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              href="/services"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-sm md:text-base"
             >
               Services
             </Link>
@@ -439,7 +445,7 @@ export default async function ProjectPage({
             </a>
             <a
               href="/resume.html"
-              className="text-sm px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
+              className="text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
             >
               Resume
             </a>

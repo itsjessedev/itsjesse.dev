@@ -33,22 +33,22 @@ export default function ProjectsPage() {
           <Link href="/" className="text-xl font-bold text-gradient">
             Jesse Eldridge
           </Link>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 md:gap-6">
             <Link
               href="/#projects"
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              className="hidden sm:block text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-sm md:text-base"
             >
               Featured
             </Link>
             <Link
-              href="/#services"
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              href="/services"
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-sm md:text-base"
             >
               Services
             </Link>
             <Link
               href="/#about"
-              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+              className="hidden sm:block text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-sm md:text-base"
             >
               About
             </Link>
@@ -69,7 +69,7 @@ export default function ProjectsPage() {
             </a>
             <a
               href="/resume.html"
-              className="text-sm px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
+              className="text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
             >
               Resume
             </a>

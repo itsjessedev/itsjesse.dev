@@ -189,14 +189,14 @@ export default function ServicesPage() {
           <Link href="/" className="text-xl font-bold text-gradient">
             Jesse Eldridge
           </Link>
-          <div className="flex items-center gap-6">
-            <Link href="/#projects" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+          <div className="flex items-center gap-3 md:gap-6">
+            <Link href="/projects" className="hidden sm:block text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-sm md:text-base">
               Projects
             </Link>
-            <Link href="/services" className="text-[var(--accent)] transition-colors">
+            <Link href="/services" className="text-[var(--accent)] transition-colors text-sm md:text-base">
               Services
             </Link>
-            <Link href="/#about" className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+            <Link href="/#about" className="hidden sm:block text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors text-sm md:text-base">
               About
             </Link>
             <a
@@ -212,7 +212,7 @@ export default function ServicesPage() {
             </a>
             <a
               href="/resume.html"
-              className="text-sm px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
+              className="text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all"
             >
               Resume
             </a>

@@ -33,6 +33,7 @@ export const projects: Project[] = [
     category: 'automation',
     image: '/projects/syncflow/hero.png',
     githubUrl: 'https://github.com/itsjessedev/syncflow',
+    demoUrl: 'https://syncflow.itsjesse.dev',
     featured: true,
   },
   {
@@ -70,6 +71,7 @@ export const projects: Project[] = [
     category: 'automation',
     image: '/projects/invoicebot/hero.png',
     githubUrl: 'https://github.com/itsjessedev/invoicebot',
+    demoUrl: 'https://invoicebot.itsjesse.dev',
     featured: true,
   },
   {
@@ -88,6 +90,7 @@ export const projects: Project[] = [
     category: 'automation',
     image: '/projects/leadscore/hero.png',
     githubUrl: 'https://github.com/itsjessedev/leadscore',
+    demoUrl: 'https://leadscore.itsjesse.dev',
     featured: false,
   },
   {
@@ -125,6 +128,7 @@ export const projects: Project[] = [
     category: 'automation',
     image: '/projects/reportgen/hero.png',
     githubUrl: 'https://github.com/itsjessedev/reportgen',
+    demoUrl: 'https://reportgen.itsjesse.dev',
     featured: false,
   },
   {
@@ -181,6 +185,7 @@ export const projects: Project[] = [
     category: 'migration',
     image: '/projects/databridge/hero.png',
     githubUrl: 'https://github.com/itsjessedev/databridge',
+    demoUrl: 'https://databridge.itsjesse.dev',
     featured: false,
   },
   {
@@ -199,11 +204,12 @@ export const projects: Project[] = [
     category: 'automation',
     image: '/projects/workflowbot/hero.png',
     githubUrl: 'https://github.com/itsjessedev/workflowbot',
+    demoUrl: 'https://workflowbot.itsjesse.dev',
     featured: false,
   },
   {
     id: 'itsjesse-mobile',
-    title: 'itsjesse.dev Mobile',
+    title: "It's Jesse!",
     tagline: 'Website-to-Native App Demo',
     description: 'This portfolio website converted to a true native Flutter app with auto-sync capability.',
     problem: 'Businesses want mobile presence but webview wrappers provide poor user experience and can be rejected by app stores.',
@@ -217,7 +223,7 @@ export const projects: Project[] = [
     category: 'native-apps',
     image: '/projects/itsjesse-mobile/hero.png',
     githubUrl: 'https://github.com/itsjessedev/itsjesse-mobile',
-    downloadUrl: '/downloads/itsjesse-mobile-v4.apk',
+    downloadUrl: '/downloads/itsjesse-mobile-v5.apk',
     featured: false,
   },
   {
