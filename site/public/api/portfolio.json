@@ -379,7 +379,7 @@
         "https://itsjesse.dev/projects/itsjesse-mobile/contact.png"
       ],
       "githubUrl": "https://github.com/itsjessedev/itsjesse-mobile",
-      "downloadUrl": "https://itsjesse.dev/downloads/itsjesse-mobile-v5.apk",
+      "downloadUrl": "https://itsjesse.dev/downloads/itsjesse-mobile-v6.apk",
       "featured": true
     },
     {
@@ -490,6 +490,8 @@
         "https://itsjesse.dev/projects/dealscout/settings.png"
       ],
       "githubUrl": "https://github.com/itsjessedev/dealscout",
+      "demoUrl": "https://dealscout.itsjesse.dev",
+      "downloadUrl": "https://itsjesse.dev/downloads/dealscout-v1.apk",
       "featured": true
     }
   ],
