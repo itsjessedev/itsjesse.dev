@@ -1341,6 +1341,23 @@ function App() {
     localStorage.removeItem('devscout_news');
   };
 
+  const handleClearPosts = () => {
+    setPosts([]);
+  };
+
+  const handleClearGitHub = () => {
+    setGithubIssues([]);
+  };
+
+  const handleClearReplies = () => {
+    setRespondedPosts([]);
+    setPostRepliesData({});
+    setDismissedReplies([]);
+    localStorage.removeItem('devscout_responded_posts');
+    localStorage.removeItem('devscout_replies_data');
+    localStorage.removeItem('devscout_dismissed_replies');
+  };
+
   const handleGenerateNewsResponse = async (newsItem) => {
     const newsId = newsItem.reddit_id;
     setGeneratingNews((prev) => ({ ...prev, [newsId]: true }));
@@ -1835,6 +1852,14 @@ function App() {
                   : 'Fetching...'
                 : 'Fetch New Posts'}
             </button>
+            {posts.length > 0 && !fetching && (
+              <button
+                style={{ ...styles.btn, ...styles.btnSecondary }}
+                onClick={handleClearPosts}
+              >
+                Clear All
+              </button>
+            )}
             {autoMarkStatus && (
               <span style={{ marginLeft: '12px', color: '#4ade80', fontSize: '13px', animation: 'pulse 1s infinite' }}>
                 🔍 {autoMarkStatus}
@@ -1894,6 +1919,14 @@ function App() {
                 : 'Fetching...'
               : 'Find Contribution Opportunities'}
           </button>
+          {githubIssues.length > 0 && !githubFetching && (
+            <button
+              style={{ ...styles.btn, ...styles.btnSecondary }}
+              onClick={handleClearGitHub}
+            >
+              Clear All
+            </button>
+          )}
         </div>
       )}
 
@@ -2319,6 +2352,14 @@ function App() {
             >
               {repliesFetching ? 'Scanning...' : 'Refresh Now'}
             </button>
+            {respondedPosts.length > 0 && !repliesFetching && (
+              <button
+                style={{ ...styles.btn, ...styles.btnSecondary }}
+                onClick={handleClearReplies}
+              >
+                Clear All
+              </button>
+            )}
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#a0a0a0' }}>
               <input
                 type="checkbox"
