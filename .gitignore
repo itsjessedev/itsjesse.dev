@@ -33,3 +33,13 @@ coverage/
 # Misc
 *.bak
 *.tmp
+# AI context files (local only)
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+**/CLAUDE.md
+**/AGENTS.md
+**/GEMINI.md
+.session-notes.md
+**/.session-notes.md
+.playwright-mcp/
