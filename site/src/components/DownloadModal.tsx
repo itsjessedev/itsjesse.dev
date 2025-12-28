@@ -31,11 +31,11 @@ export default function DownloadModal({ appName, downloadUrl, isLarge = false }:
       {/* Modal overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm"
           onClick={() => setIsOpen(false)}
         >
           <div
-            className="glass-card max-w-md w-full p-5 sm:p-6 relative animate-fade-in my-auto max-h-[95vh] overflow-y-auto"
+            className="glass-card w-full sm:max-w-md p-5 sm:p-6 relative animate-fade-in rounded-t-2xl sm:rounded-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
