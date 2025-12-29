@@ -82,120 +82,72 @@
     }
     .page-subtitle {
       color: #94a3b8;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     /* Service Cards */
-    .services-grid {
-      display: grid;
-      gap: 14px;
-      padding-bottom: 20px;
+    .services-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .service-card {
       background: rgba(30, 41, 59, 0.8);
       border: 1px solid rgba(99, 102, 241, 0.2);
       border-radius: 16px;
-      padding: 16px;
-      transition: all 0.2s;
-    }
-    .service-card:active {
-      transform: scale(0.98);
-      border-color: rgba(99, 102, 241, 0.4);
-    }
-    .service-header {
+      padding: 14px;
       display: flex;
-      align-items: center;
       gap: 12px;
-      margin-bottom: 12px;
+    }
+    .service-card.featured {
+      border-color: rgba(99, 102, 241, 0.4);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
     }
     .service-icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+      width: 44px;
+      height: 44px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 20px;
       flex-shrink: 0;
     }
-    .service-title {
-      font-size: 17px;
-      font-weight: 600;
-      color: #e2e8f0;
-    }
-    .service-description {
-      font-size: 13px;
-      color: #94a3b8;
-      line-height: 1.5;
-      margin-bottom: 10px;
-    }
-    .service-features {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .feature-item {
+    .service-icon.blue { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+    .service-icon.purple { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
+    .service-icon.green { background: linear-gradient(135deg, #22c55e, #10b981); }
+    .service-icon.indigo { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    .service-icon.orange { background: linear-gradient(135deg, #f97316, #eab308); }
+    .service-icon.teal { background: linear-gradient(135deg, #14b8a6, #06b6d4); }
+    .service-info { flex: 1; }
+    .service-header {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 12px;
-      color: #cbd5e1;
+      margin-bottom: 4px;
     }
-    .feature-icon {
-      color: #22c55e;
-      font-size: 14px;
-    }
-    .service-pricing {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(99, 102, 241, 0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .pricing-label {
-      font-size: 11px;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .pricing-value {
-      font-size: 14px;
-      font-weight: 600;
+    .service-name { font-weight: 600; font-size: 14px; }
+    .service-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      background: rgba(99, 102, 241, 0.2);
+      border-radius: 8px;
       color: #a78bfa;
-    }
-
-    /* CTA Section */
-    .cta-section {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-      margin-top: 10px;
-      margin-bottom: 20px;
-    }
-    .cta-title {
-      font-size: 18px;
       font-weight: 600;
-      margin-bottom: 8px;
-      color: #e2e8f0;
     }
-    .cta-text {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 14px;
+    .service-desc { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+    .service-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
     }
-    .cta-button {
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      border: none;
-      border-radius: 12px;
-      padding: 12px 24px;
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
+    .feature-tag {
+      font-size: 10px;
+      padding: 3px 8px;
+      background: rgba(99, 102, 241, 0.15);
+      border-radius: 10px;
+      color: #a78bfa;
     }
 
     /* Bottom Nav */
@@ -266,7 +218,7 @@
       align-items: center;
       gap: 12px;
     }
-    .feature-icon-panel {
+    .feature-icon {
       width: 36px;
       height: 36px;
       background: rgba(34, 197, 94, 0.2);
@@ -292,183 +244,81 @@
         <div class="app-content">
           <div class="page-header">
             <div class="page-title">Services</div>
-            <div class="page-subtitle">What I can build for you</div>
+            <div class="page-subtitle">Solutions that scale with you</div>
           </div>
 
-          <div class="services-grid">
-            <div class="service-card">
-              <div class="service-header">
-                <div class="service-icon">🤖</div>
-                <div class="service-title">Workflow Automation</div>
-              </div>
-              <div class="service-description">
-                Eliminate repetitive tasks and streamline business processes with intelligent automation solutions.
-              </div>
-              <div class="service-features">
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Custom workflow builders</span>
+          <div class="services-list">
+            <div class="service-card featured">
+              <div class="service-icon indigo">📱</div>
+              <div class="service-info">
+                <div class="service-header">
+                  <span class="service-name">Website to Native App</span>
+                  <span class="service-badge">Featured</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Email & notification automation</span>
+                <div class="service-desc">Transform your website into a true native mobile app</div>
+                <div class="service-features">
+                  <span class="feature-tag">Native UI</span>
+                  <span class="feature-tag">Auto-sync</span>
+                  <span class="feature-tag">Push Notifications</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Data entry automation</span>
-                </div>
-              </div>
-              <div class="service-pricing">
-                <span class="pricing-label">Starting at</span>
-                <span class="pricing-value">Custom Quote</span>
               </div>
             </div>
 
             <div class="service-card">
-              <div class="service-header">
-                <div class="service-icon">🔌</div>
-                <div class="service-title">System Integration</div>
-              </div>
-              <div class="service-description">
-                Connect your tools and platforms for seamless data flow and unified operations.
-              </div>
-              <div class="service-features">
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>API integration & development</span>
+              <div class="service-icon blue">🔄</div>
+              <div class="service-info">
+                <div class="service-header">
+                  <span class="service-name">Business Automation</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Real-time data synchronization</span>
+                <div class="service-desc">Eliminate repetitive tasks and streamline workflows</div>
+                <div class="service-features">
+                  <span class="feature-tag">Data Sync</span>
+                  <span class="feature-tag">Alerts</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Legacy system modernization</span>
-                </div>
-              </div>
-              <div class="service-pricing">
-                <span class="pricing-label">Starting at</span>
-                <span class="pricing-value">Custom Quote</span>
               </div>
             </div>
 
             <div class="service-card">
-              <div class="service-header">
-                <div class="service-icon">📊</div>
-                <div class="service-title">Custom Dashboards</div>
-              </div>
-              <div class="service-description">
-                Real-time insights with beautiful, interactive dashboards tailored to your metrics.
-              </div>
-              <div class="service-features">
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Multi-source data aggregation</span>
+              <div class="service-icon purple">🔌</div>
+              <div class="service-info">
+                <div class="service-header">
+                  <span class="service-name">API Integration</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Custom KPI tracking</span>
+                <div class="service-desc">Connect your tools and make them work together</div>
+                <div class="service-features">
+                  <span class="feature-tag">REST/GraphQL</span>
+                  <span class="feature-tag">Webhooks</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Automated reporting</span>
-                </div>
-              </div>
-              <div class="service-pricing">
-                <span class="pricing-label">Starting at</span>
-                <span class="pricing-value">Custom Quote</span>
               </div>
             </div>
 
             <div class="service-card">
-              <div class="service-header">
-                <div class="service-icon">🚀</div>
-                <div class="service-title">Data Migration</div>
-              </div>
-              <div class="service-description">
-                Safe, reliable migration from legacy systems to modern platforms with zero data loss.
-              </div>
-              <div class="service-features">
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Data mapping & transformation</span>
+              <div class="service-icon orange">🧠</div>
+              <div class="service-info">
+                <div class="service-header">
+                  <span class="service-name">AI & Machine Learning</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Validation & testing</span>
+                <div class="service-desc">Intelligent solutions that learn and adapt</div>
+                <div class="service-features">
+                  <span class="feature-tag">RAG</span>
+                  <span class="feature-tag">Classification</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Rollback protection</span>
-                </div>
-              </div>
-              <div class="service-pricing">
-                <span class="pricing-label">Starting at</span>
-                <span class="pricing-value">Custom Quote</span>
               </div>
             </div>
 
             <div class="service-card">
-              <div class="service-header">
-                <div class="service-icon">📱</div>
-                <div class="service-title">Native Apps</div>
-              </div>
-              <div class="service-description">
-                Cross-platform mobile and desktop applications with native performance.
-              </div>
-              <div class="service-features">
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>iOS & Android apps</span>
+              <div class="service-icon teal">📊</div>
+              <div class="service-info">
+                <div class="service-header">
+                  <span class="service-name">Real-time Dashboards</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Desktop applications</span>
+                <div class="service-desc">Live visibility into your business metrics</div>
+                <div class="service-features">
+                  <span class="feature-tag">Analytics</span>
+                  <span class="feature-tag">KPIs</span>
                 </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Offline-first architecture</span>
-                </div>
-              </div>
-              <div class="service-pricing">
-                <span class="pricing-label">Starting at</span>
-                <span class="pricing-value">Custom Quote</span>
               </div>
             </div>
-
-            <div class="service-card">
-              <div class="service-header">
-                <div class="service-icon">🧠</div>
-                <div class="service-title">AI & Machine Learning</div>
-              </div>
-              <div class="service-description">
-                Intelligent automation with natural language processing, OCR, and predictive analytics.
-              </div>
-              <div class="service-features">
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Document processing & OCR</span>
-                </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Sentiment analysis</span>
-                </div>
-                <div class="feature-item">
-                  <span class="feature-icon">✓</span>
-                  <span>Predictive models</span>
-                </div>
-              </div>
-              <div class="service-pricing">
-                <span class="pricing-label">Starting at</span>
-                <span class="pricing-value">Custom Quote</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="cta-section">
-            <div class="cta-title">Ready to get started?</div>
-            <div class="cta-text">Let's discuss your project requirements</div>
-            <button class="cta-button">Schedule Consultation</button>
           </div>
         </div>
 
@@ -482,39 +332,47 @@
             <span>Projects</span>
           </div>
           <div class="nav-item active">
-            <span class="nav-icon">🛠️</span>
+            <span class="nav-icon">⚙️</span>
             <span>Services</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📄</span>
+            <span>Resume</span>
           </div>
           <div class="nav-item">
             <span class="nav-icon">👤</span>
             <span>About</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">✉️</span>
+            <span>Contact</span>
           </div>
         </div>
       </div>
     </div>
 
     <div class="info-panel">
-      <div class="info-badge">🛠️ Services Screen</div>
+      <div class="info-badge">⚙️ Services Screen</div>
       <h1 class="info-title">Complete <span>Service Catalog</span></h1>
       <p class="info-desc">
-        Comprehensive overview of all services offered, from automation and integration to AI/ML and native app development. Each service includes features and pricing information.
+        Browse all available services in a native mobile interface. Each service shows key features and can be tapped for more details and project examples.
       </p>
       <div class="features">
         <div class="feature">
-          <div class="feature-icon-panel">✓</div>
-          <span class="feature-text">6 core service categories</span>
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">All services at a glance</span>
         </div>
         <div class="feature">
-          <div class="feature-icon-panel">✓</div>
-          <span class="feature-text">Detailed feature lists</span>
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Feature highlights per service</span>
         </div>
         <div class="feature">
-          <div class="feature-icon-panel">✓</div>
-          <span class="feature-text">Clear pricing structure</span>
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Tap for detailed info</span>
         </div>
         <div class="feature">
-          <div class="feature-icon-panel">✓</div>
-          <span class="feature-text">Direct consultation CTA</span>
+          <div class="feature-icon">✓</div>
+          <span class="feature-text">Direct project links</span>
         </div>
       </div>
     </div>

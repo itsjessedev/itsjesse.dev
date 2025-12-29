@@ -369,17 +369,18 @@
       "tech": ["Flutter", "Dart", "REST API", "SharedPreferences"],
       "category": "native-apps",
       "serviceId": "site-to-app",
-      "image": "https://itsjesse.dev/projects/itsjesse-mobile/dashboard.png",
+      "image": "https://itsjesse.dev/projects/itsjesse-mobile/hero.png",
       "screenshots": [
+        "https://itsjesse.dev/projects/itsjesse-mobile/hero.png",
         "https://itsjesse.dev/projects/itsjesse-mobile/dashboard.png",
         "https://itsjesse.dev/projects/itsjesse-mobile/projects.png",
-        "https://itsjesse.dev/projects/itsjesse-mobile/project-detail.png",
-        "https://itsjesse.dev/projects/itsjesse-mobile/services.png",
+        "https://itsjesse.dev/projects/itsjesse-mobile/resume.png",
         "https://itsjesse.dev/projects/itsjesse-mobile/about.png",
-        "https://itsjesse.dev/projects/itsjesse-mobile/contact.png"
+        "https://itsjesse.dev/projects/itsjesse-mobile/contact.png",
+        "https://itsjesse.dev/projects/itsjesse-mobile/project-detail.png"
       ],
       "githubUrl": "https://github.com/itsjessedev/itsjesse-mobile",
-      "downloadUrl": "https://itsjesse.dev/downloads/itsjesse-mobile-v6.apk",
+      "downloadUrl": "https://dl.itsjesse.dev/itsjesse-mobile-v9.apk",
       "featured": true
     },
     {
@@ -496,11 +497,11 @@
     }
   ],
   "version": "1.0.0",
-  "lastUpdated": "2025-12-26",
+  "lastUpdated": "2025-12-28",
   "mobileApp": {
-    "version": "1.0.8",
-    "versionCode": 8,
-    "downloadUrl": "https://dl.itsjesse.dev/itsjesse-mobile-v8.apk",
-    "changelog": "Added screenshot carousel to project details, improved hero image display"
+    "version": "1.0.10",
+    "versionCode": 10,
+    "downloadUrl": "https://dl.itsjesse.dev/downloads/itsjesse-mobile-v10.apk",
+    "changelog": "New signing key - please uninstall previous version first. Updated mockup screenshots with 6-tab navigation."
   }
 }

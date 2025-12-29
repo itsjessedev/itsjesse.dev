@@ -86,55 +86,35 @@
       font-size: 14px;
     }
 
-    /* Contact Methods */
-    .contact-methods {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .contact-card {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid rgba(99, 102, 241, 0.2);
-      border-radius: 16px;
-      padding: 16px;
+    /* Availability Badge */
+    .availability {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 12px;
+      padding: 12px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
+      gap: 10px;
+      margin-bottom: 16px;
     }
-    .contact-card:active {
-      transform: scale(0.98);
-      border-color: rgba(99, 102, 241, 0.4);
+    .availability-dot {
+      width: 10px;
+      height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
     }
-    .contact-icon {
-      width: 52px;
-      height: 52px;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      flex-shrink: 0;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
-    .contact-info {
-      flex: 1;
+    .availability-text {
+      font-size: 12px;
+      color: #cbd5e1;
     }
-    .contact-label {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 3px;
-    }
-    .contact-value {
-      font-size: 15px;
+    .availability-text strong {
+      color: #22c55e;
       font-weight: 600;
-      color: #e2e8f0;
-    }
-    .contact-arrow {
-      color: #64748b;
-      font-size: 18px;
     }
 
     /* Contact Form */
@@ -142,22 +122,22 @@
       background: rgba(30, 41, 59, 0.5);
       border: 1px solid rgba(99, 102, 241, 0.2);
       border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
+      padding: 18px;
+      margin-bottom: 16px;
     }
     .form-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       color: #e2e8f0;
     }
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .form-label {
-      font-size: 13px;
+      font-size: 12px;
       color: #94a3b8;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       display: block;
     }
     .form-input {
@@ -175,9 +155,67 @@
       border-color: rgba(99, 102, 241, 0.5);
     }
     .form-textarea {
-      min-height: 80px;
+      min-height: 70px;
       resize: vertical;
     }
+
+    /* Email Selector */
+    .email-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .email-option {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .email-option.selected {
+      border-color: rgba(99, 102, 241, 0.5);
+      background: rgba(99, 102, 241, 0.1);
+    }
+    .email-radio {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(99, 102, 241, 0.4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .email-option.selected .email-radio {
+      border-color: #8b5cf6;
+    }
+    .email-radio-inner {
+      width: 10px;
+      height: 10px;
+      background: #8b5cf6;
+      border-radius: 50%;
+      display: none;
+    }
+    .email-option.selected .email-radio-inner {
+      display: block;
+    }
+    .email-details {
+      flex: 1;
+    }
+    .email-address {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    .email-desc {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
     .form-button {
       width: 100%;
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
@@ -191,35 +229,28 @@
       margin-top: 6px;
     }
 
-    /* Availability Badge */
-    .availability {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
-      border: 1px solid rgba(34, 197, 94, 0.3);
+    /* Quick Links */
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .quick-link {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(99, 102, 241, 0.2);
       border-radius: 12px;
       padding: 14px;
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 20px;
+      cursor: pointer;
     }
-    .availability-dot {
-      width: 10px;
-      height: 10px;
-      background: #22c55e;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
+    .quick-link-icon {
+      font-size: 20px;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-    .availability-text {
+    .quick-link-label {
       font-size: 13px;
-      color: #cbd5e1;
-    }
-    .availability-text strong {
-      color: #22c55e;
-      font-weight: 600;
+      color: #e2e8f0;
     }
 
     /* Bottom Nav */
@@ -327,46 +358,35 @@
             </div>
           </div>
 
-          <div class="contact-methods">
-            <div class="contact-card">
-              <div class="contact-icon">📧</div>
-              <div class="contact-info">
-                <div class="contact-label">Email</div>
-                <div class="contact-value">jesse@itsjesse.dev</div>
-              </div>
-              <div class="contact-arrow">→</div>
-            </div>
-
-            <div class="contact-card">
-              <div class="contact-icon">💼</div>
-              <div class="contact-info">
-                <div class="contact-label">LinkedIn</div>
-                <div class="contact-value">linkedin.com/in/jesseeldridge</div>
-              </div>
-              <div class="contact-arrow">→</div>
-            </div>
-
-            <div class="contact-card">
-              <div class="contact-icon">💻</div>
-              <div class="contact-info">
-                <div class="contact-label">GitHub</div>
-                <div class="contact-value">github.com/jesse-eldridge</div>
-              </div>
-              <div class="contact-arrow">→</div>
-            </div>
-
-            <div class="contact-card">
-              <div class="contact-icon">📅</div>
-              <div class="contact-info">
-                <div class="contact-label">Schedule a Call</div>
-                <div class="contact-value">Book a consultation</div>
-              </div>
-              <div class="contact-arrow">→</div>
-            </div>
-          </div>
-
           <div class="contact-form">
-            <div class="form-title">Quick Message</div>
+            <div class="form-title">Send a Message</div>
+
+            <div class="form-group">
+              <label class="form-label">Send To</label>
+              <div class="email-selector">
+                <div class="email-option">
+                  <div class="email-radio"><div class="email-radio-inner"></div></div>
+                  <div class="email-details">
+                    <div class="email-address">hire@itsjesse.dev</div>
+                    <div class="email-desc">Full-time opportunities</div>
+                  </div>
+                </div>
+                <div class="email-option selected">
+                  <div class="email-radio"><div class="email-radio-inner"></div></div>
+                  <div class="email-details">
+                    <div class="email-address">projects@itsjesse.dev</div>
+                    <div class="email-desc">Freelance & contract work</div>
+                  </div>
+                </div>
+                <div class="email-option">
+                  <div class="email-radio"><div class="email-radio-inner"></div></div>
+                  <div class="email-details">
+                    <div class="email-address">hello@itsjesse.dev</div>
+                    <div class="email-desc">General inquiries</div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div class="form-group">
               <label class="form-label">Your Name</label>
@@ -379,16 +399,22 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Project Type</label>
-              <input type="text" class="form-input" placeholder="e.g., API Integration">
-            </div>
-
-            <div class="form-group">
               <label class="form-label">Message</label>
               <textarea class="form-input form-textarea" placeholder="Tell me about your project..."></textarea>
             </div>
 
             <button class="form-button">Send Message</button>
+          </div>
+
+          <div class="quick-links">
+            <div class="quick-link">
+              <span class="quick-link-icon">💼</span>
+              <span class="quick-link-label">LinkedIn</span>
+            </div>
+            <div class="quick-link">
+              <span class="quick-link-icon">💻</span>
+              <span class="quick-link-label">GitHub</span>
+            </div>
           </div>
         </div>
 
@@ -402,12 +428,20 @@
             <span>Projects</span>
           </div>
           <div class="nav-item">
-            <span class="nav-icon">🛠️</span>
+            <span class="nav-icon">⚙️</span>
             <span>Services</span>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📄</span>
+            <span>Resume</span>
           </div>
           <div class="nav-item">
             <span class="nav-icon">👤</span>
             <span>About</span>
+          </div>
+          <div class="nav-item active">
+            <span class="nav-icon">✉️</span>
+            <span>Contact</span>
           </div>
         </div>
       </div>
@@ -415,14 +449,14 @@
 
     <div class="info-panel">
       <div class="info-badge">📧 Contact Screen</div>
-      <h1 class="info-title">Multiple Ways to <span>Connect</span></h1>
+      <h1 class="info-title">Smart <span>Contact Form</span></h1>
       <p class="info-desc">
-        Comprehensive contact page with direct links to email, LinkedIn, GitHub, and scheduling. Includes a quick message form for immediate inquiries and shows availability status.
+        Contact form with recipient selector - choose whether you're reaching out for full-time work, freelance projects, or general inquiries. Messages go directly to the right inbox.
       </p>
       <div class="features">
         <div class="feature">
           <div class="feature-icon">✓</div>
-          <span class="feature-text">Quick contact methods</span>
+          <span class="feature-text">Email recipient selector</span>
         </div>
         <div class="feature">
           <div class="feature-icon">✓</div>
@@ -434,7 +468,7 @@
         </div>
         <div class="feature">
           <div class="feature-icon">✓</div>
-          <span class="feature-text">Social media links</span>
+          <span class="feature-text">Quick social links</span>
         </div>
       </div>
     </div>
