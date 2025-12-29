@@ -223,7 +223,7 @@ export const projects: Project[] = [
     category: 'native-apps',
     image: '/projects/itsjesse-mobile/hero.png',
     githubUrl: 'https://github.com/itsjessedev/itsjesse-mobile',
-    downloadUrl: '/downloads/itsjesse-mobile-v6.apk',
+    downloadUrl: 'https://dl.itsjesse.dev/itsjesse-mobile-v8.apk',
     featured: false,
   },
   {
@@ -242,7 +242,7 @@ export const projects: Project[] = [
     category: 'native-apps',
     image: '/projects/fieldops/hero.png',
     githubUrl: 'https://github.com/itsjessedev/fieldops',
-    downloadUrl: '/downloads/fieldops-v1.apk',
+    downloadUrl: 'https://dl.itsjesse.dev/fieldops-v1.apk',
     featured: true,
   },
   {
@@ -300,7 +300,7 @@ export const projects: Project[] = [
     image: '/projects/dealscout/hero.png',
     githubUrl: 'https://github.com/itsjessedev/dealscout',
     demoUrl: 'https://dealscout.itsjesse.dev',
-    downloadUrl: '/downloads/dealscout-v1.apk',
+    downloadUrl: 'https://dl.itsjesse.dev/dealscout-v1.apk',
     featured: true,
   },
 ];
