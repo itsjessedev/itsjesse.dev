@@ -162,3 +162,14 @@ body {
     font-size: 0.875rem;
   }
 }
+
+/* Mobile app banner - push nav and content down when visible */
+@media (max-width: 767px) {
+  body.mobile-banner-visible nav {
+    top: 52px !important;
+  }
+
+  body.mobile-banner-visible .gradient-bg {
+    padding-top: 52px;
+  }
+}

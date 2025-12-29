@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-const STORAGE_KEY = "mobile-app-banner-dismissed";
+const STORAGE_KEY = "mobile-app-banner-dismissed-v2";
 
 export default function MobileAppBanner() {
   const [isVisible, setIsVisible] = useState(false);
@@ -13,12 +13,17 @@ export default function MobileAppBanner() {
     const isDismissed = localStorage.getItem(STORAGE_KEY);
     if (!isDismissed) {
       setIsVisible(true);
+      document.body.classList.add('mobile-banner-visible');
     }
+    return () => {
+      document.body.classList.remove('mobile-banner-visible');
+    };
   }, []);
 
   const handleDismiss = () => {
     setIsVisible(false);
     localStorage.setItem(STORAGE_KEY, "true");
+    document.body.classList.remove('mobile-banner-visible');
   };
 
   const handleDownloadClick = () => {
@@ -29,7 +34,7 @@ export default function MobileAppBanner() {
 
   return (
     <>
-      {/* Banner - only visible on mobile via CSS */}
+      {/* Banner - fixed at top, above nav (z-60 > nav's z-50) */}
       <div className="fixed top-0 left-0 right-0 z-[60] md:hidden bg-gradient-to-r from-[var(--accent)] to-purple-600 text-white">
         <div className="flex items-center justify-between px-3 py-2.5">
           <button
@@ -114,7 +119,7 @@ export default function MobileAppBanner() {
 
             {/* Download button */}
             <a
-              href="https://dl.itsjesse.dev/downloads/itsjesse-mobile-v10.apk"
+              href="https://dl.itsjesse.dev/itsjesse-mobile-v11.apk"
               download
               className="w-full btn-primary flex items-center justify-center gap-2"
               onClick={() => setShowModal(false)}

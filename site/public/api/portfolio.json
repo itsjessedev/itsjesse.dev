@@ -6,7 +6,7 @@
     "location": "Cookeville, TN",
     "remote": true,
     "email": "jesse@itsjesse.dev",
-    "jobsEmail": "jobs@itsjesse.dev",
+    "jobsEmail": "hire@itsjesse.dev",
     "github": "https://github.com/itsjessedev",
     "linkedin": "https://linkedin.com/in/jesseeldridge",
     "website": "https://itsjesse.dev",
@@ -380,7 +380,7 @@
         "https://itsjesse.dev/projects/itsjesse-mobile/project-detail.png"
       ],
       "githubUrl": "https://github.com/itsjessedev/itsjesse-mobile",
-      "downloadUrl": "https://dl.itsjesse.dev/itsjesse-mobile-v9.apk",
+      "downloadUrl": "https://dl.itsjesse.dev/itsjesse-mobile-v11.apk",
       "featured": true
     },
     {
@@ -499,9 +499,9 @@
   "version": "1.0.0",
   "lastUpdated": "2025-12-28",
   "mobileApp": {
-    "version": "1.0.10",
-    "versionCode": 10,
-    "downloadUrl": "https://dl.itsjesse.dev/downloads/itsjesse-mobile-v10.apk",
-    "changelog": "New signing key - please uninstall previous version first. Updated mockup screenshots with 6-tab navigation."
+    "version": "1.0.11",
+    "versionCode": 11,
+    "downloadUrl": "https://dl.itsjesse.dev/itsjesse-mobile-v11.apk",
+    "changelog": "Added Services tab (6-tab navigation), actual photo on About screen, contact form with email selector, updated resume email."
   }
 }
