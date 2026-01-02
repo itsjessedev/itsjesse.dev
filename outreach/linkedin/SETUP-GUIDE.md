@@ -1,5 +1,9 @@
 # LinkedIn Setup Guide
 
+**Your Profile:** [linkedin.com/in/jesseeldridge](https://www.linkedin.com/in/jesseeldridge)
+
+---
+
 ## Profile Optimization
 
 ### Headline (Most Important)
