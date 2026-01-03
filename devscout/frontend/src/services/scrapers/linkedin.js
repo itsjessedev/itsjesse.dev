@@ -1,44 +1,41 @@
 /**
- * LinkedIn Scraper - Fetches jobs via Apify LinkedIn Jobs Scraper
+ * LinkedIn Posts Scraper - Fetches posts from people looking for developers
  *
- * Uses Apify's LinkedIn scraper API which costs ~$1 per 1000 jobs.
- * $5 free monthly credit covers ~5,000 jobs.
+ * Uses Apify's LinkedIn Posts Search Scraper (no login required).
+ * Cost: ~$5 per 1,000 posts
+ * Free tier: $5/month credit (~1,000 posts)
  *
- * IMPORTANT: This should be called from the backend, not client-side,
- * as it requires the Apify API token which should not be exposed.
- *
- * This file provides the client-side interface that calls the backend.
+ * This scrapes actual LinkedIn POSTS (people asking their network for help),
+ * NOT job listings.
  */
 
 import { API_BASE } from '../sources.js';
 
-// Search terms optimized for freelance/contract developer work
-const SEARCH_TERMS = [
-  'freelance developer',
-  'contract developer',
-  'python freelance',
-  'javascript freelance',
-  'api integration developer',
-  'automation developer',
+// Search terms to find people looking for developers
+const DEFAULT_SEARCH_TERMS = [
+  'looking for a developer',
+  'need freelance developer',
+  'hiring freelance developer',
+  'looking for freelancer',
+  'need a programmer',
+  'anyone know a developer',
+  'recommend a developer',
 ];
 
 /**
- * Fetch LinkedIn jobs via backend (which calls Apify)
+ * Fetch LinkedIn posts via backend (which calls Apify)
  *
- * The backend endpoint should be: POST /api/prospects/linkedin
+ * The backend endpoint: POST /api/prospects/linkedin
  */
-export async function fetchLinkedIn(searchTerm = null) {
+export async function fetchLinkedInPosts(searchTerms = null, maxPostsPerTerm = 20) {
   try {
     const response = await fetch(`${API_BASE}/api/prospects/linkedin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        search_term: searchTerm || SEARCH_TERMS[0],
-        filters: {
-          datePosted: 'past-week',
-          workType: ['remote', 'contract'],
-          limit: 50,
-        },
+        search_terms: searchTerms || DEFAULT_SEARCH_TERMS,
+        max_posts_per_term: maxPostsPerTerm,
+        sort_by: 'date_posted',
       }),
     });
 
@@ -48,74 +45,52 @@ export async function fetchLinkedIn(searchTerm = null) {
     }
 
     const data = await response.json();
-    return data.jobs || [];
+
+    if (data.error) {
+      console.warn('LinkedIn API error:', data.error);
+    }
+
+    // Transform to standard prospect format
+    return (data.posts || []).map(post => ({
+      source: 'linkedin',
+      source_id: post.source_id,
+      platform_detail: 'LinkedIn Posts',
+      title: post.title,
+      body: post.body,
+      url: post.url,
+      author: post.author,
+      author_url: post.author_url,
+      posted_at: post.posted_at,
+      // Extra metadata
+      author_headline: post.author_headline,
+      reactions: post.reactions,
+      comments: post.comments,
+    }));
   } catch (err) {
-    console.error('Error fetching LinkedIn jobs:', err);
+    console.error('Error fetching LinkedIn posts:', err);
     return [];
   }
 }
 
 /**
- * Fetch LinkedIn jobs for all search terms
+ * Fetch all LinkedIn posts (main entry point for scraper system)
  */
 export async function fetchAllLinkedIn(onProgress = null) {
-  const allJobs = [];
-  const seen = new Set();
-
-  for (let i = 0; i < SEARCH_TERMS.length; i++) {
-    const term = SEARCH_TERMS[i];
-
-    if (onProgress) {
-      onProgress(i + 1, SEARCH_TERMS.length, `LinkedIn: ${term}`);
-    }
-
-    const jobs = await fetchLinkedIn(term);
-
-    for (const job of jobs) {
-      if (!seen.has(job.source_id)) {
-        seen.add(job.source_id);
-        allJobs.push(job);
-      }
-    }
-
-    // Rate limiting
-    if (i < SEARCH_TERMS.length - 1) {
-      await new Promise(r => setTimeout(r, 1000));
-    }
+  if (onProgress) {
+    onProgress(1, 1, 'LinkedIn: Searching posts...');
   }
 
-  return allJobs;
+  const posts = await fetchLinkedInPosts();
+
+  if (onProgress) {
+    onProgress(1, 1, `LinkedIn: Found ${posts.length} posts`);
+  }
+
+  return posts;
 }
 
-/**
- * NOTE: If LinkedIn backend endpoint doesn't exist yet,
- * this provides a stub that returns empty results.
- * The backend needs to implement the Apify integration.
- *
- * Backend implementation example:
- *
- * @router.post("/linkedin")
- * async def fetch_linkedin_jobs(request: LinkedInRequest):
- *     apify_token = settings.apify_api_token
- *     if not apify_token:
- *         return {"jobs": [], "error": "Apify token not configured"}
- *
- *     async with httpx.AsyncClient() as client:
- *         response = await client.post(
- *             'https://api.apify.com/v2/acts/practicaltools~linkedin-jobs/runs',
- *             headers={'Authorization': f'Bearer {apify_token}'},
- *             json={
- *                 'keywords': request.search_term,
- *                 'location': 'remote',
- *                 'datePosted': request.filters.get('datePosted', 'past-week'),
- *                 'maxResults': request.filters.get('limit', 50),
- *             }
- *         )
- *         # Process and return results
- */
-
 export default {
-  fetchLinkedIn,
+  fetchLinkedInPosts,
   fetchAllLinkedIn,
-  SEARCH_TERMS,
+  DEFAULT_SEARCH_TERMS,
 };

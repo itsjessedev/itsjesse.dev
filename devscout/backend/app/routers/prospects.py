@@ -468,33 +468,43 @@ def _prospect_to_response(prospect: Prospect) -> ProspectResponse:
 # LinkedIn via Apify
 # ============================================================================
 
-class LinkedInRequest(BaseModel):
-    """Request to fetch LinkedIn jobs via Apify."""
-    search_term: str = "freelance developer"
-    filters: dict = {}
+class LinkedInPostsRequest(BaseModel):
+    """Request to fetch LinkedIn posts via Apify."""
+    search_terms: List[str] = [
+        "looking for a developer",
+        "need freelance developer",
+        "hiring freelance developer",
+        "looking for freelancer",
+        "need a programmer",
+    ]
+    max_posts_per_term: int = 20
+    sort_by: str = "date_posted"  # "relevance" or "date_posted"
 
 
-class LinkedInJob(BaseModel):
-    """LinkedIn job listing."""
+class LinkedInPost(BaseModel):
+    """LinkedIn post from a user looking for help."""
     source: str = "linkedin"
     source_id: str
-    platform_detail: Optional[str] = None
-    title: str
+    platform_detail: str = "LinkedIn Posts"
+    title: str  # First ~100 chars of post
     body: Optional[str] = None
     url: str
     author: Optional[str] = None
-    company_name: Optional[str] = None
-    location: Optional[str] = None
+    author_url: Optional[str] = None
+    author_headline: Optional[str] = None
     posted_at: Optional[str] = None
+    reactions: int = 0
+    comments: int = 0
 
 
 @router.post("/linkedin")
-async def fetch_linkedin_jobs(request: LinkedInRequest):
+async def fetch_linkedin_posts(request: LinkedInPostsRequest):
     """
-    Fetch LinkedIn jobs via Apify's LinkedIn Jobs Scraper.
+    Fetch LinkedIn posts from people looking for developers.
 
-    Cost: ~$1 per 1,000 jobs
-    Free tier: $5/month credit (~5,000 jobs)
+    Uses Apify's LinkedIn Posts Search Scraper (no login required).
+    Cost: ~$5 per 1,000 posts
+    Free tier: $5/month credit (~1,000 posts)
 
     Requires APIFY_API_KEY in .env
     """
@@ -504,53 +514,70 @@ async def fetch_linkedin_jobs(request: LinkedInRequest):
     settings = get_settings()
 
     if not settings.apify_api_key:
-        return {"jobs": [], "error": "Apify API key not configured. Add APIFY_API_KEY to .env"}
+        return {"posts": [], "error": "Apify API key not configured. Add APIFY_API_KEY to .env"}
+
+    all_posts = []
+    seen_ids = set()
 
     try:
-        # Apify LinkedIn Jobs Scraper actor
-        actor_id = "practicaltools~linkedin-jobs"
+        # Apify LinkedIn Posts Search Scraper (no cookies needed)
+        actor_id = "apimaestro~linkedin-posts-search-scraper-no-cookies"
         run_url = f"https://api.apify.com/v2/acts/{actor_id}/run-sync-get-dataset-items"
 
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            response = await client.post(
-                run_url,
-                headers={
-                    "Authorization": f"Bearer {settings.apify_api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "keywords": request.search_term,
-                    "location": request.filters.get("location", "remote"),
-                    "datePosted": request.filters.get("datePosted", "past-week"),
-                    "jobType": request.filters.get("workType", ["contract", "temporary"]),
-                    "maxResults": request.filters.get("limit", 50),
-                },
-            )
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            for search_term in request.search_terms:
+                try:
+                    response = await client.post(
+                        run_url,
+                        headers={
+                            "Authorization": f"Bearer {settings.apify_api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json={
+                            "keyword": search_term,
+                            "sortBy": request.sort_by,
+                            "maxPosts": request.max_posts_per_term,
+                        },
+                    )
 
-            if response.status_code != 200:
-                return {"jobs": [], "error": f"Apify API error: {response.status_code}"}
+                    if response.status_code != 200:
+                        print(f"LinkedIn API error for '{search_term}': {response.status_code}")
+                        continue
 
-            data = response.json()
+                    data = response.json()
 
-            # Transform Apify results to our format
-            jobs = []
-            for item in data:
-                job = LinkedInJob(
-                    source_id=f"li_{item.get('id', item.get('link', '').split('/')[-1])}",
-                    platform_detail="LinkedIn Jobs",
-                    title=item.get("title", ""),
-                    body=item.get("description", ""),
-                    url=item.get("link", item.get("url", "")),
-                    author=item.get("companyName", ""),
-                    company_name=item.get("companyName", ""),
-                    location=item.get("location", ""),
-                    posted_at=item.get("postedAt", item.get("publishedAt", "")),
-                )
-                jobs.append(job.model_dump())
+                    # Transform Apify results to our format
+                    for item in data:
+                        post_id = item.get("postId") or item.get("urn") or item.get("url", "")
+                        if not post_id or post_id in seen_ids:
+                            continue
+                        seen_ids.add(post_id)
 
-            return {"jobs": jobs, "count": len(jobs)}
+                        # Get post text
+                        text = item.get("text") or item.get("postText") or ""
+                        title = text[:100] + "..." if len(text) > 100 else text
+
+                        post = LinkedInPost(
+                            source_id=f"li_post_{hash(post_id) % 10**8}",
+                            title=title,
+                            body=text[:2000] if text else None,
+                            url=item.get("postUrl") or item.get("url") or "",
+                            author=item.get("authorName") or item.get("author", {}).get("name", ""),
+                            author_url=item.get("authorProfileUrl") or item.get("author", {}).get("url", ""),
+                            author_headline=item.get("authorHeadline") or item.get("author", {}).get("headline", ""),
+                            posted_at=item.get("postedAt") or item.get("publishedAt") or item.get("date", ""),
+                            reactions=item.get("totalReactions") or item.get("likes", 0),
+                            comments=item.get("totalComments") or item.get("comments", 0),
+                        )
+                        all_posts.append(post.model_dump())
+
+                except Exception as e:
+                    print(f"Error searching LinkedIn for '{search_term}': {e}")
+                    continue
+
+        return {"posts": all_posts, "count": len(all_posts)}
 
     except httpx.TimeoutException:
-        return {"jobs": [], "error": "Apify request timed out (LinkedIn scraping can take 1-2 minutes)"}
+        return {"posts": all_posts, "error": "Some LinkedIn requests timed out", "count": len(all_posts)}
     except Exception as e:
-        return {"jobs": [], "error": f"Error fetching LinkedIn jobs: {str(e)}"}
+        return {"posts": [], "error": f"Error fetching LinkedIn posts: {str(e)}"}

@@ -72,7 +72,7 @@ export const PLATFORMS = {
   },
   linkedin: {
     name: 'LinkedIn',
-    enabled: false, // Job board, not direct clients
+    enabled: true, // Posts from people looking for developers (via Apify)
     fetch: fetchAllLinkedIn,
   },
   wellfound: {
