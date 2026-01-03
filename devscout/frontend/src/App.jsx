@@ -1926,15 +1926,19 @@ function App() {
   // ==============================================================================
   return (
     <div style={{ ...styles.container, background: '#0a0a0a', minHeight: '100vh', color: '#e0e0e0' }} className="devscout-container">
-      {/* Global Notification Banner */}
+      {/* Global Notification Banner - Reddit */}
       {totalUnread > 0 && notificationVisible && (mainTab !== 'reddit' || currentSubTab !== 'comments') && (
         <div
-          style={styles.globalNotification}
+          style={{
+            ...styles.globalNotification,
+            background: '#ff4500',
+            boxShadow: '0 4px 20px rgba(255, 69, 0, 0.5)',
+          }}
           className="devscout-global-notification"
           onClick={handleNotificationClick}
         >
-          <div style={styles.notificationDot} />
-          {totalUnread} unread {totalUnread === 1 ? 'reply' : 'replies'}
+          <RedditIcon />
+          {totalUnread} unread Reddit {totalUnread === 1 ? 'reply' : 'replies'}
         </div>
       )}
 
@@ -1971,7 +1975,7 @@ function App() {
         {mainTab === 'reddit' && currentSubTab === 'comments' && (
           <div style={styles.stats} className="devscout-stats">
             <div style={styles.stat}>
-              <div style={{ ...styles.statValue, color: '#ef4444' }} className="devscout-stat-value">{totalUnread}</div>
+              <div style={{ ...styles.statValue, color: '#ff4500' }} className="devscout-stat-value">{totalUnread}</div>
               <div style={styles.statLabel}>Unread</div>
             </div>
             <div style={styles.stat}>
@@ -2003,7 +2007,7 @@ function App() {
             {config.label}
             {tabId === 'reddit' && totalUnread > 0 && (
               <span style={{
-                background: mainTab === tabId ? 'rgba(255,255,255,0.2)' : '#ef4444',
+                background: mainTab === tabId ? 'rgba(255,255,255,0.25)' : '#ff4500',
                 color: '#fff',
                 padding: '2px 8px',
                 borderRadius: '10px',
