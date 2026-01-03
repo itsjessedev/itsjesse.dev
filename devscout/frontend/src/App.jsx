@@ -2310,7 +2310,7 @@ function App() {
                   </h3>
 
                   <div style={styles.postMeta}>
-                    u/{post.author} · {formatTime(post.created_utc)} · {post.num_comments} comments · {post.score} upvotes
+                    u/{post.author} · {formatTime(post.created_utc * 1000)} · {post.num_comments} comments · {post.score} upvotes
                   </div>
 
                   {post.body && (
@@ -2537,7 +2537,7 @@ function App() {
                                     >
                                       <div style={{ fontSize: '12px', color: '#888', marginBottom: '6px' }}>
                                         <strong style={{ color: '#3b82f6' }}>u/{reply.author}</strong>
-                                        <span style={{ marginLeft: '8px' }}>{formatTime(reply.created_utc)}</span>
+                                        <span style={{ marginLeft: '8px' }}>{formatTime(reply.created_utc * 1000)}</span>
                                         {isReplied && (
                                           <span style={{ marginLeft: '8px', color: '#22c55e' }}>✓ Replied</span>
                                         )}
