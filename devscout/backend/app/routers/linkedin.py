@@ -478,4 +478,14 @@ async def fetch_job_leads(
                 logger.warning(f"Failed to fetch LinkedIn job leads for '{term}': {e}")
                 continue
 
+    # Sort: newest first, then by fewer comments (less competition)
+    def sort_key(post):
+        # Parse posted_at, default to old date if missing
+        posted = post.get("posted_at") or "1970-01-01"
+        comments = post.get("comments") or 0
+        # Return tuple: (posted_at descending, comments ascending)
+        return (posted, -comments)
+
+    all_posts.sort(key=sort_key, reverse=True)
+
     return all_posts[:limit]
