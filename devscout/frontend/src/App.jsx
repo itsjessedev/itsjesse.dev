@@ -1187,6 +1187,8 @@ function App() {
   // LinkedIn Engagement - persisted
   const [linkedInEngagement, setLinkedInEngagement] = useState(() => loadPersistedData('linkedin_engagement'));
   const [linkedInEngagementFetching, setLinkedInEngagementFetching] = useState(false);
+  const [linkedInEngagementResponses, setLinkedInEngagementResponses] = useState({}); // postId -> response text
+  const [generatingLinkedInEngagement, setGeneratingLinkedInEngagement] = useState({}); // postId -> boolean
 
   // LinkedIn Post Schedule
   const [linkedInScheduledPosts, setLinkedInScheduledPosts] = useState([]);
@@ -1698,6 +1700,34 @@ function App() {
       console.error('Failed to fetch LinkedIn engagement posts:', err);
     } finally {
       setLinkedInEngagementFetching(false);
+    }
+  };
+
+  // Generate response for a LinkedIn engagement post
+  const handleGenerateLinkedInEngagementResponse = async (post) => {
+    const postId = post.source_id;
+    setGeneratingLinkedInEngagement(prev => ({ ...prev, [postId]: true }));
+    try {
+      const response = await fetch('/api/linkedin/generate-response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          post_text: post.text,
+          author: post.author,
+          author_headline: post.author_headline,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setLinkedInEngagementResponses(prev => ({ ...prev, [postId]: data.response }));
+      } else {
+        alert('Failed to generate response');
+      }
+    } catch (err) {
+      console.error('Failed to generate LinkedIn response:', err);
+      alert('Failed to generate response: ' + err.message);
+    } finally {
+      setGeneratingLinkedInEngagement(prev => ({ ...prev, [postId]: false }));
     }
   };
 
@@ -3039,21 +3069,71 @@ function App() {
                     {post.author_headline} · {post.comments} comments
                   </div>
                   <div style={styles.postBody}>{post.text}</div>
+
+                  {/* Generated Response Area */}
+                  {linkedInEngagementResponses[post.source_id] && (
+                    <div style={{ marginTop: '12px' }}>
+                      <textarea
+                        style={styles.textarea}
+                        value={linkedInEngagementResponses[post.source_id]}
+                        onChange={(e) => setLinkedInEngagementResponses(prev => ({
+                          ...prev,
+                          [post.source_id]: e.target.value
+                        }))}
+                        rows={6}
+                      />
+                    </div>
+                  )}
+
                   <div style={styles.actions}>
-                    <button
-                      data-btn="primary"
-                      style={{ ...styles.btn, ...styles.btnPrimary }}
-                    >
-                      Generate Response
-                    </button>
-                    <a
-                      href={post.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ ...styles.btn, ...styles.btnLinkedIn, textDecoration: 'none' }}
-                    >
-                      View on LinkedIn
-                    </a>
+                    {!linkedInEngagementResponses[post.source_id] ? (
+                      <button
+                        data-btn="primary"
+                        style={{ ...styles.btn, ...styles.btnPrimary }}
+                        onClick={() => handleGenerateLinkedInEngagementResponse(post)}
+                        disabled={generatingLinkedInEngagement[post.source_id]}
+                      >
+                        {generatingLinkedInEngagement[post.source_id] ? 'Generating...' : 'Generate Response'}
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          data-btn="linkedin"
+                          style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                          onClick={() => {
+                            navigator.clipboard.writeText(linkedInEngagementResponses[post.source_id]);
+                            window.open(post.url, '_blank');
+                          }}
+                        >
+                          📋 Copy & View on LinkedIn
+                        </button>
+                        <button
+                          data-btn="secondary"
+                          style={{ ...styles.btn, background: '#6b21a8', color: '#fff' }}
+                          onClick={() => handleGenerateLinkedInEngagementResponse(post)}
+                          disabled={generatingLinkedInEngagement[post.source_id]}
+                        >
+                          {generatingLinkedInEngagement[post.source_id] ? 'Regenerating...' : '🔄 Regenerate'}
+                        </button>
+                        <button
+                          data-btn="dismiss"
+                          style={{ ...styles.btn, background: '#374151', color: '#9ca3af' }}
+                          onClick={() => setLinkedInEngagement(prev => prev.filter(p => p.source_id !== post.source_id))}
+                        >
+                          Dismiss
+                        </button>
+                      </>
+                    )}
+                    {!linkedInEngagementResponses[post.source_id] && (
+                      <a
+                        href={post.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ ...styles.btn, ...styles.btnLinkedIn, textDecoration: 'none' }}
+                      >
+                        View on LinkedIn
+                      </a>
+                    )}
                   </div>
                 </div>
               ))
