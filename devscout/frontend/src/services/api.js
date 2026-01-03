@@ -1260,7 +1260,7 @@ export const LINKEDIN_POST_TEMPLATES = {
     { title: "The workflow automation that saved my client 20 hours/week", tags: ['automation', 'casestudy'] },
   ],
   tips_and_tricks: [
-    { title: "5 things to check before any API integration project", tags: ['api', 'tips'] },
+    { title: "How I debug API integrations when the error messages make no sense", tags: ['api', 'tips'] },
     { title: "My checklist for bulletproof webhook handlers", tags: ['webhooks', 'tips'] },
     { title: "Quick wins for making your automation more reliable", tags: ['automation', 'tips'] },
     { title: "The questions I always ask before starting an integration project", tags: ['integration', 'tips'] },

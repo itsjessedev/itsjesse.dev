@@ -1180,12 +1180,12 @@ function App() {
   const [linkedInAuth, setLinkedInAuth] = useState(null);
   const [linkedInAuthLoading, setLinkedInAuthLoading] = useState(true);
 
-  // LinkedIn Job Leads (from Prospects)
-  const [linkedInLeads, setLinkedInLeads] = useState([]);
+  // LinkedIn Job Leads (from Prospects) - persisted
+  const [linkedInLeads, setLinkedInLeads] = useState(() => loadPersistedData('linkedin_leads'));
   const [linkedInLeadsFetching, setLinkedInLeadsFetching] = useState(false);
 
-  // LinkedIn Engagement
-  const [linkedInEngagement, setLinkedInEngagement] = useState([]);
+  // LinkedIn Engagement - persisted
+  const [linkedInEngagement, setLinkedInEngagement] = useState(() => loadPersistedData('linkedin_engagement'));
   const [linkedInEngagementFetching, setLinkedInEngagementFetching] = useState(false);
 
   // LinkedIn Post Schedule
@@ -1218,8 +1218,8 @@ function App() {
   const [newsResponses, setNewsResponses] = useState({});
   const [generatingNews, setGeneratingNews] = useState({});
 
-  // GitHub Issues
-  const [githubIssues, setGithubIssues] = useState([]);
+  // GitHub Issues - persisted
+  const [githubIssues, setGithubIssues] = useState(() => loadPersistedData('github_issues'));
   const [githubFetching, setGithubFetching] = useState(false);
   const [githubProgress, setGithubProgress] = useState(null);
 
@@ -1598,6 +1598,21 @@ function App() {
   useEffect(() => {
     savePersistedData('dismissed_replies', dismissedReplies);
   }, [dismissedReplies]);
+
+  // Persist LinkedIn leads
+  useEffect(() => {
+    savePersistedData('linkedin_leads', linkedInLeads);
+  }, [linkedInLeads]);
+
+  // Persist LinkedIn engagement
+  useEffect(() => {
+    savePersistedData('linkedin_engagement', linkedInEngagement);
+  }, [linkedInEngagement]);
+
+  // Persist GitHub issues
+  useEffect(() => {
+    savePersistedData('github_issues', githubIssues);
+  }, [githubIssues]);
 
   // Polling for replies
   useEffect(() => {
