@@ -53,3 +53,55 @@ class ResponseTemplate(Base):
     template = Column(Text)
     use_count = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Prospect(Base):
+    """A prospect/lead found and scored by AI."""
+
+    __tablename__ = "prospects"
+
+    id = Column(Integer, primary_key=True)
+
+    # Source identification
+    source = Column(String(50), nullable=False, index=True)  # reddit, hackernews, linkedin, etc.
+    source_id = Column(String(100), nullable=False)  # Platform-specific ID
+    platform_detail = Column(String(100))  # Subreddit, city, etc.
+
+    # Post content
+    title = Column(Text)
+    body = Column(Text)
+    url = Column(String(500), nullable=False)
+    author = Column(String(100))
+    author_url = Column(String(500))
+    posted_at = Column(DateTime)
+
+    # AI scoring (stored as JSON string)
+    ai_score = Column(Text)  # Full JSON response from AI
+    is_lead = Column(Boolean, default=False, index=True)
+    confidence = Column(Float, default=0.0)
+    fit_score = Column(Integer, default=0, index=True)
+    urgency = Column(String(50))
+    budget_signal = Column(String(50))
+    lead_type = Column(String(50))
+    key_need = Column(Text)
+    services_needed = Column(Text)  # JSON array
+    contact_info = Column(String(500))
+    company_name = Column(String(200))
+    recommended_approach = Column(Text)
+
+    # Lead tracking
+    status = Column(String(50), default="new", index=True)  # new, reviewing, contacted, replied, converted, dismissed
+    contacted_at = Column(DateTime)
+    replied_at = Column(DateTime)
+    converted_at = Column(DateTime)
+    notes = Column(Text)
+
+    # Metadata
+    discovered_at = Column(DateTime, default=datetime.utcnow, index=True)
+    last_scored_at = Column(DateTime)
+
+    # Unique constraint on source + source_id
+    __table_args__ = (
+        # Create unique index on source + source_id
+        {"sqlite_autoincrement": True},
+    )

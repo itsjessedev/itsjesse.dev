@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
 from .database import init_db
-from .routers import posts_router
+from .routers import posts_router, prospects_router
 
 
 @asynccontextmanager
@@ -31,7 +31,7 @@ app = FastAPI(
 # CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://rscout.junipr.io", "http://localhost:3000", "http://localhost:5173"],
+    allow_origins=["https://devscout.junipr.io", "https://rscout.junipr.io", "http://localhost:3000", "http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -75,3 +75,4 @@ async def health():
 
 # Register routers
 app.include_router(posts_router)
+app.include_router(prospects_router)

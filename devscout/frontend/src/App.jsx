@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, generateNewsResponse, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, getProspectSearchCount, getPostsSubredditCount, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES } from './services/api';
+import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, generateNewsResponse, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, getProspectSearchCount, getPostsSubredditCount, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES,
+  // AI-Powered Prospects System
+  fetchAndScoreProspects, getStoredProspects, getProspectStats, updateProspect as updateProspectAPI, deleteProspect as deleteProspectAPI, clearAllProspects, getAvailablePlatforms, getTotalSourceCount,
+} from './services/api';
 
 const styles = {
   container: {
@@ -893,6 +896,14 @@ function App() {
   const [prospects, setProspects] = useState(() => loadPersistedData('prospects'));
   const [prospectsFetching, setProspectsFetching] = useState(false);
   const [prospectsProgress, setProspectsProgress] = useState(null);
+  // AI-Powered Prospects System
+  const [prospectsMode, setProspectsMode] = useState('ai'); // 'quick' (old) or 'ai' (new)
+  const [aiProspects, setAiProspects] = useState(() => loadPersistedData('ai_prospects'));
+  const [aiProspectsStats, setAiProspectsStats] = useState(null);
+  const [aiScoring, setAiScoring] = useState(false);
+  const [aiScoringProgress, setAiScoringProgress] = useState(null);
+  const [selectedProspect, setSelectedProspect] = useState(null); // For detail modal
+  const [prospectNotes, setProspectNotes] = useState({}); // prospectId -> notes
   const [news, setNews] = useState(() => loadPersistedData('news'));
   const [newsFetching, setNewsFetching] = useState(false);
   const [newsProgress, setNewsProgress] = useState(null);
@@ -1303,6 +1314,124 @@ function App() {
       return savedProgress;
     }
     return null;
+  };
+
+  // AI-Powered Prospects Fetch
+  const handleFetchAIProspects = async () => {
+    setProspectsFetching(true);
+    setAiScoring(false);
+    setProspectsProgress({ current: 0, total: 100, search: 'Starting fetch...' });
+
+    try {
+      const result = await fetchAndScoreProspects({
+        onFetchProgress: (current, total, message) => {
+          setProspectsProgress({ current, total, search: message });
+        },
+        onScoreProgress: (current, total, message) => {
+          setAiScoring(true);
+          setAiScoringProgress({ current, total, message });
+        },
+        onPartialResults: (partialResult) => {
+          // Update with partial leads as they come in
+          if (partialResult.leads && partialResult.leads.length > 0) {
+            setAiProspects(partialResult.leads);
+            savePersistedData('ai_prospects', partialResult.leads);
+          }
+        },
+        quickMode: false,
+        storeLeads: true, // Store in database for persistence
+      });
+
+      // Final update with all leads
+      if (result.leads) {
+        setAiProspects(result.leads);
+        savePersistedData('ai_prospects', result.leads);
+      }
+
+      console.log(`[DevScout] AI Prospects: ${result.total_processed} processed, ${result.leads_found} leads found`);
+    } catch (err) {
+      console.error('Failed to fetch AI prospects:', err);
+    } finally {
+      setProspectsFetching(false);
+      setProspectsProgress(null);
+      setAiScoring(false);
+      setAiScoringProgress(null);
+    }
+  };
+
+  // Load stored prospects from database
+  const handleLoadStoredProspects = async () => {
+    try {
+      const stored = await getStoredProspects({ is_lead: true, limit: 100 });
+      if (stored && stored.length > 0) {
+        setAiProspects(stored);
+        savePersistedData('ai_prospects', stored);
+      }
+    } catch (err) {
+      console.error('Failed to load stored prospects:', err);
+    }
+  };
+
+  // Update prospect status (contacted, converted, etc.)
+  const handleUpdateProspectStatus = async (prospectId, status) => {
+    try {
+      const updated = await updateProspectAPI(prospectId, { status });
+      // Update local state
+      setAiProspects((prev) =>
+        prev.map((p) => (p.id === prospectId ? { ...p, status } : p))
+      );
+    } catch (err) {
+      console.error('Failed to update prospect status:', err);
+    }
+  };
+
+  // Delete prospect
+  const handleDeleteAIProspect = async (prospectId) => {
+    try {
+      await deleteProspectAPI(prospectId);
+      setAiProspects((prev) => prev.filter((p) => p.id !== prospectId));
+    } catch (err) {
+      console.error('Failed to delete prospect:', err);
+    }
+  };
+
+  // Clear all AI prospects
+  const handleClearAIProspects = async () => {
+    try {
+      await clearAllProspects(true); // Keep contacted
+      setAiProspects([]);
+      localStorage.removeItem('devscout_ai_prospects');
+    } catch (err) {
+      console.error('Failed to clear prospects:', err);
+    }
+  };
+
+  // Get category for AI fit score
+  const getAIProspectCategory = (fitScore) => {
+    if (fitScore >= 70) return { label: 'HOT', bg: '#dc2626', color: '#fff' };
+    if (fitScore >= 40) return { label: 'WARM', bg: '#f59e0b', color: '#000' };
+    return { label: 'COOL', bg: '#666', color: '#fff' };
+  };
+
+  // Get urgency badge color
+  const getUrgencyColor = (urgency) => {
+    switch (urgency) {
+      case 'immediate': return '#dc2626';
+      case 'this_week': return '#f59e0b';
+      case 'this_month': return '#3b82f6';
+      default: return '#666';
+    }
+  };
+
+  // Get status badge style
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'contacted': return { bg: '#3b82f6', color: '#fff' };
+      case 'replied': return { bg: '#22c55e', color: '#fff' };
+      case 'converted': return { bg: '#8b5cf6', color: '#fff' };
+      case 'dismissed': return { bg: '#6b7280', color: '#fff' };
+      default: return { bg: '#1f2937', color: '#9ca3af' };
+    }
   };
 
   const handleDismissProspect = (prospectId) => {
@@ -2240,31 +2369,281 @@ function App() {
 
       {/* Prospects Controls */}
       {mode === 'prospects' && (
-        <div style={styles.controls} className="devscout-controls">
-          <button
-            style={{ ...styles.btn, ...styles.btnPrimary }}
-            onClick={() => handleFetchProspects(false)}
-            disabled={prospectsFetching}
-          >
-            {prospectsFetching
-              ? prospectsProgress
-                ? `Searching ${prospectsProgress.search} (${prospectsProgress.current}/${prospectsProgress.total})`
-                : 'Fetching...'
-              : 'Find Hot Prospects'}
-          </button>
-          {prospects.length > 0 && !prospectsFetching && (
+        <div style={{ marginBottom: '20px' }}>
+          {/* Mode Toggle */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
             <button
-              style={{ ...styles.btn, ...styles.btnSecondary }}
-              onClick={handleClearProspects}
+              style={{
+                ...styles.btn,
+                ...(prospectsMode === 'ai' ? styles.btnPrimary : styles.btnSecondary),
+              }}
+              onClick={() => setProspectsMode('ai')}
             >
-              Clear All
+              AI-Powered
             </button>
+            <button
+              style={{
+                ...styles.btn,
+                ...(prospectsMode === 'quick' ? styles.btnPrimary : styles.btnSecondary),
+              }}
+              onClick={() => setProspectsMode('quick')}
+            >
+              Quick Scan
+            </button>
+          </div>
+
+          {/* AI Mode Controls */}
+          {prospectsMode === 'ai' && (
+            <div style={styles.controls} className="devscout-controls">
+              <button
+                style={{ ...styles.btn, ...styles.btnPrimary }}
+                onClick={handleFetchAIProspects}
+                disabled={prospectsFetching}
+              >
+                {prospectsFetching
+                  ? aiScoring
+                    ? `AI Scoring... (${aiScoringProgress?.current || 0}%)`
+                    : prospectsProgress
+                      ? `Fetching ${prospectsProgress.search} (${prospectsProgress.current}/${prospectsProgress.total})`
+                      : 'Starting...'
+                  : 'Find AI Leads'}
+              </button>
+              <button
+                style={{ ...styles.btn, ...styles.btnSecondary }}
+                onClick={handleLoadStoredProspects}
+                disabled={prospectsFetching}
+              >
+                Load Saved
+              </button>
+              {aiProspects.length > 0 && !prospectsFetching && (
+                <button
+                  style={{ ...styles.btn, ...styles.btnSecondary }}
+                  onClick={handleClearAIProspects}
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Quick Mode Controls (legacy) */}
+          {prospectsMode === 'quick' && (
+            <div style={styles.controls} className="devscout-controls">
+              <button
+                style={{ ...styles.btn, ...styles.btnPrimary }}
+                onClick={() => handleFetchProspects(false)}
+                disabled={prospectsFetching}
+              >
+                {prospectsFetching
+                  ? prospectsProgress
+                    ? `Searching ${prospectsProgress.search} (${prospectsProgress.current}/${prospectsProgress.total})`
+                    : 'Fetching...'
+                  : 'Find Hot Prospects'}
+              </button>
+              {prospects.length > 0 && !prospectsFetching && (
+                <button
+                  style={{ ...styles.btn, ...styles.btnSecondary }}
+                  onClick={handleClearProspects}
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Stats Summary */}
+          {prospectsMode === 'ai' && aiProspects.length > 0 && (
+            <div style={{ display: 'flex', gap: '16px', marginTop: '12px', fontSize: '14px', color: '#9ca3af' }}>
+              <span><strong style={{ color: '#dc2626' }}>{aiProspects.filter(p => p.fit_score >= 70).length}</strong> HOT</span>
+              <span><strong style={{ color: '#f59e0b' }}>{aiProspects.filter(p => p.fit_score >= 40 && p.fit_score < 70).length}</strong> WARM</span>
+              <span><strong style={{ color: '#666' }}>{aiProspects.filter(p => p.fit_score < 40).length}</strong> COOL</span>
+              <span>|</span>
+              <span><strong>{aiProspects.filter(p => p.status === 'contacted').length}</strong> Contacted</span>
+            </div>
           )}
         </div>
       )}
 
-      {/* Prospects View */}
-      {mode === 'prospects' && (
+      {/* Prospects View - AI Mode */}
+      {mode === 'prospects' && prospectsMode === 'ai' && (
+        <div style={styles.postList}>
+          {aiProspects.length === 0 ? (
+            <div style={styles.empty} className="devscout-empty">
+              No AI-qualified leads yet. Click "Find AI Leads" to discover and score prospects from 150+ sources.
+            </div>
+          ) : (
+            [...aiProspects]
+              .sort((a, b) => (b.fit_score || 0) - (a.fit_score || 0))
+              .map((prospect) => {
+                const category = getAIProspectCategory(prospect.fit_score || 0);
+                const statusStyle = getStatusStyle(prospect.status);
+                return (
+                  <div key={prospect.source_id || prospect.id} style={styles.post} className="devscout-post">
+                    {/* Header with source, score, status */}
+                    <div style={{ ...styles.postHeader, flexWrap: 'wrap', gap: '8px' }} className="devscout-post-header">
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <span style={{ ...styles.subreddit, textDecoration: 'none', background: '#6b7280' }} className="devscout-subreddit">
+                          {prospect.source || 'unknown'}
+                        </span>
+                        {prospect.platform_detail && (
+                          <span style={{ fontSize: '12px', color: '#9ca3af' }}>
+                            {prospect.platform_detail}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <span style={{
+                          ...styles.score,
+                          background: category.bg,
+                          color: category.color,
+                        }}>
+                          {category.label} ({prospect.fit_score || 0})
+                        </span>
+                        {prospect.urgency && prospect.urgency !== 'unknown' && (
+                          <span style={{
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                            background: getUrgencyColor(prospect.urgency),
+                            color: '#fff',
+                          }}>
+                            {prospect.urgency.replace('_', ' ')}
+                          </span>
+                        )}
+                        {prospect.status && prospect.status !== 'new' && (
+                          <span style={{
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                            background: statusStyle.bg,
+                            color: statusStyle.color,
+                          }}>
+                            {prospect.status}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 style={styles.postTitle} className="devscout-post-title">
+                      <a
+                        href={prospect.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={styles.postLink}
+                      >
+                        {prospect.title || '(No title)'}
+                      </a>
+                    </h3>
+
+                    {/* AI Insights */}
+                    {prospect.key_need && (
+                      <div style={{
+                        padding: '12px',
+                        background: 'linear-gradient(135deg, #1e3a5f 0%, #1a2744 100%)',
+                        borderRadius: '8px',
+                        marginBottom: '12px',
+                        border: '1px solid #3b82f6',
+                      }}>
+                        <div style={{ fontSize: '11px', color: '#60a5fa', marginBottom: '4px', fontWeight: '600' }}>
+                          KEY NEED
+                        </div>
+                        <div style={{ color: '#e0e0e0', fontSize: '14px' }}>
+                          {prospect.key_need}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Services Needed */}
+                    {prospect.services_needed && prospect.services_needed.length > 0 && (
+                      <div style={styles.keywords} className="devscout-keywords">
+                        {prospect.services_needed.map((service, i) => (
+                          <span key={i} style={{ ...styles.keyword, background: '#1e40af' }}>
+                            {service.replace('_', ' ')}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Meta info */}
+                    <div style={styles.postMeta}>
+                      {prospect.author && `by ${prospect.author}`}
+                      {prospect.posted_at && ` · ${formatTime(prospect.posted_at)}`}
+                      {prospect.budget_signal && prospect.budget_signal !== 'unknown' && (
+                        <span style={{ marginLeft: '8px', color: prospect.budget_signal === 'high' ? '#22c55e' : '#f59e0b' }}>
+                          Budget: {prospect.budget_signal}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Body preview */}
+                    {prospect.body && (
+                      <div style={{ ...styles.postBody, maxHeight: '100px', overflow: 'hidden' }} className="devscout-post-body">
+                        {prospect.body.slice(0, 300)}{prospect.body.length > 300 ? '...' : ''}
+                      </div>
+                    )}
+
+                    {/* Recommended approach */}
+                    {prospect.recommended_approach && (
+                      <div style={{
+                        marginTop: '12px',
+                        padding: '8px 12px',
+                        background: '#1f2937',
+                        borderRadius: '6px',
+                        fontSize: '13px',
+                        color: '#9ca3af',
+                        borderLeft: '3px solid #22c55e',
+                      }}>
+                        <strong style={{ color: '#22c55e' }}>Approach:</strong> {prospect.recommended_approach}
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div style={{ ...styles.actions, flexWrap: 'wrap' }} className="devscout-actions">
+                      <a
+                        href={prospect.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ ...styles.btn, ...styles.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
+                      >
+                        View Post
+                      </a>
+                      {prospect.status !== 'contacted' && prospect.id && (
+                        <button
+                          style={{ ...styles.btn, ...styles.btnSuccess }}
+                          onClick={() => handleUpdateProspectStatus(prospect.id, 'contacted')}
+                        >
+                          Mark Contacted
+                        </button>
+                      )}
+                      {prospect.status === 'contacted' && prospect.id && (
+                        <button
+                          style={{ ...styles.btn, background: '#8b5cf6', color: '#fff' }}
+                          onClick={() => handleUpdateProspectStatus(prospect.id, 'converted')}
+                        >
+                          Mark Converted
+                        </button>
+                      )}
+                      {prospect.id && (
+                        <button
+                          style={{ ...styles.btn, ...styles.btnSecondary }}
+                          onClick={() => handleDeleteAIProspect(prospect.id)}
+                        >
+                          Dismiss
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+          )}
+        </div>
+      )}
+
+      {/* Prospects View - Quick Mode (Legacy) */}
+      {mode === 'prospects' && prospectsMode === 'quick' && (
         <div style={styles.postList}>
           {prospects.length === 0 ? (
             <div style={styles.empty} className="devscout-empty">

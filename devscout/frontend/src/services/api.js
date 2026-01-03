@@ -1638,3 +1638,29 @@ async function fetchHNFreelancer() {
   }
 }
 
+// =============================================================================
+// AI-POWERED PROSPECTS (NEW SYSTEM)
+// =============================================================================
+
+// Re-export the new AI-powered prospects system
+// This provides the enhanced prospect discovery with:
+// - 150+ sources across 15+ platforms
+// - AI-powered semantic scoring (not just keywords)
+// - Database storage for lead tracking
+// - Status management (new, reviewing, contacted, etc.)
+export {
+  fetchAndScoreProspects,
+  scoreProspects,
+  storeProspect,
+  storeProspectsBatch,
+  getStoredProspects,
+  getProspectStats,
+  updateProspect,
+  deleteProspect,
+  clearAllProspects,
+} from './prospects.js';
+
+// Re-export platform list and scrapers for UI controls
+export { getAvailablePlatforms, fetchAllProspects as fetchProspectsRaw } from './scrapers/index.js';
+export { getAllRedditSearches, getTotalSourceCount } from './sources.js';
+
