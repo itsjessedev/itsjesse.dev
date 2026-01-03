@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, generateResponse, generateReplyResponse, generateEngagePost, generateNewsResponse, updatePost, fetchGitHubIssues, formatIssueForClaude, fetchProspects, getProspectSearchCount, getPostsSubredditCount, clearStalePosts, scrapeTrackedPostsForReplies, scrapePostForUserComments, getEngagementSubreddits, getRelatedSubreddits, getIdeasForSubreddit, getPostIdeas, getEngagementCategories, getRandomEngagementSubreddit, ENGAGEMENT_TEMPLATES,
   // AI-Powered Prospects System
   fetchAndScoreProspects, getStoredProspects, getProspectStats, updateProspect as updateProspectAPI, deleteProspect as deleteProspectAPI, clearAllProspects, getAvailablePlatforms, getTotalSourceCount,
+  // LinkedIn Post Templates
+  LINKEDIN_POST_TEMPLATES, generateLinkedInPost, getLinkedInPostIdeas, getLinkedInPostCategories,
 } from './services/api';
 
 // ==============================================================================
@@ -1191,6 +1193,8 @@ function App() {
   const [linkedInPostContent, setLinkedInPostContent] = useState('');
   const [linkedInScheduling, setLinkedInScheduling] = useState(false);
   const [linkedInPublishing, setLinkedInPublishing] = useState(false);
+  const [linkedInPostCategory, setLinkedInPostCategory] = useState('lessons_learned');
+  const [linkedInPostGenerating, setLinkedInPostGenerating] = useState(false);
   const [redditScheduledPosts, setRedditScheduledPosts] = useState([]);
 
   // LinkedIn Comments
@@ -1728,6 +1732,22 @@ function App() {
       alert('Failed to schedule post: ' + err.message);
     } finally {
       setLinkedInScheduling(false);
+    }
+  };
+
+  // Generate a LinkedIn post using AI
+  const handleGenerateLinkedInPost = async (ideaTemplate) => {
+    setLinkedInPostGenerating(true);
+    try {
+      const response = await generateLinkedInPost({
+        ideaTemplate: ideaTemplate,
+        category: linkedInPostCategory,
+      });
+      setLinkedInPostContent(response);
+    } catch (err) {
+      alert('Failed to generate post: ' + err.message);
+    } finally {
+      setLinkedInPostGenerating(false);
     }
   };
 
@@ -2780,18 +2800,103 @@ function App() {
             </div>
           )}
 
+          {/* Post Ideas - Category Tabs */}
+          <div style={{ marginBottom: '16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#fff' }}>
+              Post Ideas
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+              {getLinkedInPostCategories().map((cat) => (
+                <button
+                  key={cat}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '16px',
+                    border: 'none',
+                    background: linkedInPostCategory === cat ? '#0A66C2' : '#222',
+                    color: linkedInPostCategory === cat ? '#fff' : '#888',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    textTransform: 'capitalize',
+                  }}
+                  onClick={() => setLinkedInPostCategory(cat)}
+                >
+                  {cat.replace(/_/g, ' ')}
+                </button>
+              ))}
+            </div>
+
+            {/* Post Idea Cards */}
+            <div style={{ display: 'grid', gap: '12px', marginBottom: '20px' }}>
+              {(LINKEDIN_POST_TEMPLATES[linkedInPostCategory] || []).map((idea, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    background: '#1a1a1a',
+                    border: '1px solid #333',
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '12px',
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: '#e0e0e0', fontSize: '14px', marginBottom: '4px' }}>
+                      {idea.title}
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      {idea.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          style={{
+                            fontSize: '10px',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            background: '#0A66C220',
+                            color: '#0A66C2',
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: linkedInPostGenerating ? '#333' : '#0A66C2',
+                      color: '#fff',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      cursor: linkedInPostGenerating ? 'wait' : 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                    onClick={() => handleGenerateLinkedInPost(idea.title)}
+                    disabled={linkedInPostGenerating}
+                  >
+                    {linkedInPostGenerating ? 'Generating...' : 'Generate'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Compose Post */}
           <div style={{ ...styles.post, marginBottom: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#fff' }}>
-              Compose New Post
+              {linkedInPostContent ? 'Edit & Schedule Post' : 'Compose New Post'}
             </div>
             <textarea
               value={linkedInPostContent}
               onChange={(e) => setLinkedInPostContent(e.target.value)}
-              placeholder="Write your LinkedIn post here..."
+              placeholder="Click 'Generate' on a post idea above, or write your own post here..."
               style={{
                 width: '100%',
-                minHeight: '150px',
+                minHeight: '200px',
                 padding: '12px',
                 borderRadius: '8px',
                 border: '1px solid #333',
@@ -2822,17 +2927,19 @@ function App() {
                 data-btn="primary"
                 style={{ ...styles.btn, ...styles.btnPrimary }}
                 onClick={handleScheduleLinkedInPost}
-                disabled={linkedInScheduling}
+                disabled={linkedInScheduling || !linkedInPostContent.trim()}
               >
                 {linkedInScheduling ? 'Scheduling...' : 'Schedule Post'}
               </button>
+              {linkedInPostContent && (
+                <button
+                  style={{ ...styles.btn, background: '#333', color: '#888' }}
+                  onClick={() => setLinkedInPostContent('')}
+                >
+                  Clear
+                </button>
+              )}
             </div>
-            {/* OAuth warning - hidden until OAuth enabled */}
-            {LINKEDIN_OAUTH_ENABLED && !linkedInAuth?.is_authenticated && (
-              <div style={{ fontSize: '12px', color: '#f59e0b', marginTop: '8px' }}>
-                Connect your LinkedIn account to post directly. Scheduled posts will be ready when you connect.
-              </div>
-            )}
             {!LINKEDIN_OAUTH_ENABLED && (
               <div style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
                 Posts will be saved and marked "ready" when scheduled time arrives. Copy and post manually to LinkedIn.

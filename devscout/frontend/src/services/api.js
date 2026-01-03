@@ -1227,6 +1227,88 @@ export function getIdeasForSubreddit(subreddit) {
   return allIdeas;
 }
 
+// ============= LINKEDIN POST TEMPLATES =============
+
+// LinkedIn post templates organized by category - professional dev content
+export const LINKEDIN_POST_TEMPLATES = {
+  lessons_learned: [
+    { title: "The automation mistake that cost me a week of debugging", tags: ['automation', 'lessons'] },
+    { title: "Why I stopped over-engineering integrations", tags: ['integration', 'lessons'] },
+    { title: "3 things I wish I knew before building my first API integration", tags: ['api', 'lessons'] },
+    { title: "The hidden complexity of 'simple' data sync projects", tags: ['data', 'lessons'] },
+    { title: "What working with legacy APIs taught me about modern development", tags: ['api', 'lessons'] },
+  ],
+  technical_insights: [
+    { title: "How I approach debugging complex API integrations", tags: ['api', 'debugging', 'technical'] },
+    { title: "The architecture pattern I use for reliable data pipelines", tags: ['architecture', 'technical'] },
+    { title: "Why webhooks fail silently and how to prevent it", tags: ['webhooks', 'technical'] },
+    { title: "Building fault-tolerant automation: my go-to patterns", tags: ['automation', 'technical'] },
+    { title: "Rate limiting strategies that actually work in production", tags: ['api', 'technical'] },
+  ],
+  industry_observations: [
+    { title: "The real reason most automation projects fail", tags: ['automation', 'industry'] },
+    { title: "Why businesses are still struggling with data silos in 2026", tags: ['data', 'industry'] },
+    { title: "The growing gap between no-code tools and real integration needs", tags: ['nocode', 'industry'] },
+    { title: "What I'm seeing in the API integration landscape right now", tags: ['api', 'industry'] },
+    { title: "Why 'just use Zapier' isn't always the answer", tags: ['automation', 'industry'] },
+  ],
+  how_i_built: [
+    { title: "How I built a real-time sync between two systems that 'don't talk to each other'", tags: ['integration', 'casestudy'] },
+    { title: "Building an automated reporting system from scratch", tags: ['automation', 'casestudy'] },
+    { title: "How I automated a 4-hour manual process down to 5 minutes", tags: ['automation', 'casestudy'] },
+    { title: "Creating a custom dashboard that pulls from 5 different APIs", tags: ['api', 'casestudy'] },
+    { title: "The workflow automation that saved my client 20 hours/week", tags: ['automation', 'casestudy'] },
+  ],
+  tips_and_tricks: [
+    { title: "5 things to check before any API integration project", tags: ['api', 'tips'] },
+    { title: "My checklist for bulletproof webhook handlers", tags: ['webhooks', 'tips'] },
+    { title: "Quick wins for making your automation more reliable", tags: ['automation', 'tips'] },
+    { title: "The questions I always ask before starting an integration project", tags: ['integration', 'tips'] },
+    { title: "Tools I use daily for API debugging and testing", tags: ['api', 'tools'] },
+  ],
+  services_soft_sell: [
+    { title: "What I look for when evaluating integration projects", tags: ['integration', 'services'] },
+    { title: "The difference between a quick fix and a proper automation solution", tags: ['automation', 'services'] },
+    { title: "Why I focus on automation and API integrations", tags: ['automation', 'services'] },
+    { title: "How I scope custom integration projects", tags: ['integration', 'services'] },
+    { title: "My approach to building automation that lasts", tags: ['automation', 'services'] },
+  ],
+};
+
+// Generate a LinkedIn post using AI
+export async function generateLinkedInPost({ ideaTemplate, category }) {
+  const res = await fetch(`${API_BASE}/api/linkedin/generate-post`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      idea_template: ideaTemplate,
+      category: category,
+    }),
+  });
+  if (!res.ok) throw new Error('Failed to generate LinkedIn post');
+  const data = await res.json();
+  return data.response;
+}
+
+// Get LinkedIn post ideas for a category or all categories
+export function getLinkedInPostIdeas(category = null) {
+  if (category) {
+    return LINKEDIN_POST_TEMPLATES[category] || [];
+  }
+  return Object.values(LINKEDIN_POST_TEMPLATES).flat();
+}
+
+// Get LinkedIn post category names
+export function getLinkedInPostCategories() {
+  return Object.keys(LINKEDIN_POST_TEMPLATES);
+}
+
+// Get a random LinkedIn post idea
+export function getRandomLinkedInPostIdea() {
+  const allIdeas = getLinkedInPostIdeas();
+  return allIdeas[Math.floor(Math.random() * allIdeas.length)];
+}
+
 // ============= PROSPECTS (Outreach) =============
 
 // ============= PROSPECT SEARCHES =============

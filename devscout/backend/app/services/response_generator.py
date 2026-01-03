@@ -385,6 +385,103 @@ Fill in this template with specific, believable examples from a developer's expe
             return None
 
 
+    async def generate_linkedin_post(
+        self,
+        idea_template: str,
+        category: str,
+    ) -> Optional[str]:
+        """
+        Generate a LinkedIn post for professional dev audience.
+
+        Args:
+            idea_template: The post idea template
+            category: Post category (lessons_learned, technical_insights, etc.)
+
+        Returns:
+            Generated LinkedIn post content, or None on error
+        """
+        if not self.api_key:
+            print("OpenRouter API key not configured")
+            return None
+
+        linkedin_prompt = """You're Jesse Eldridge, a developer who specializes in automation, API integrations, and workflow solutions. You're writing a LinkedIn post to share insights with your professional network.
+
+BACKGROUND:
+- You build custom automation tools, API integrations, and data pipelines
+- Tech stack: Python, JavaScript/TypeScript, FastAPI, React, various APIs (Salesforce, HubSpot, Stripe, etc.)
+- You're a freelance developer offering these services
+- Portfolio: itsjesse.dev
+- You write genuine, helpful content that establishes expertise
+
+LINKEDIN POST GUIDELINES:
+- Professional but conversational tone - not stiff corporate speak
+- Use short paragraphs (1-3 sentences each) for readability
+- Add line breaks between paragraphs (LinkedIn formatting)
+- Include a hook in the first line that grabs attention
+- Share genuine insights, lessons, or tips
+- End with a question or call-to-action to encourage engagement
+- Use relevant hashtags at the end (3-5 max)
+- Keep total length 150-300 words (optimal for LinkedIn engagement)
+- For 'services_soft_sell' category: subtly mention you work with clients, but focus on VALUE not selling
+
+AVOID:
+- Starting with "I'm excited to share..." or similar clichés
+- Being preachy or lecturing
+- Overly formal corporate language
+- Excessive self-promotion (unless services_soft_sell category)
+- Using emojis excessively (1-2 max if any)
+- Generic advice that could apply to anyone
+
+FORMAT:
+Write the post directly - no title needed (LinkedIn posts don't have titles).
+Include hashtags at the end on their own line.
+
+Example structure:
+[Hook - attention-grabbing first line]
+
+[Main content - 2-4 short paragraphs with insights]
+
+[Call-to-action or question]
+
+#relevanthashtag #anotherhashtag"""
+
+        context = f"""POST CATEGORY: {category.replace('_', ' ')}
+POST IDEA: {idea_template}
+
+Write a LinkedIn post based on this idea. Make it specific, genuine, and engaging. Use real-world examples that would resonate with other developers and potential clients."""
+
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    self.base_url,
+                    headers={
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": self.model,
+                        "messages": [
+                            {"role": "system", "content": linkedin_prompt},
+                            {"role": "user", "content": context},
+                        ],
+                        "temperature": 0.8,
+                        "max_tokens": 600,
+                    },
+                    timeout=30.0,
+                )
+
+                if response.status_code != 200:
+                    print(f"OpenRouter error: {response.status_code} - {response.text}")
+                    return None
+
+                data = response.json()
+                return data["choices"][0]["message"]["content"].strip()
+
+        except Exception as e:
+            print(f"Error generating LinkedIn post: {e}")
+            return None
+
+
 # Singleton
 _generator: Optional[ResponseGenerator] = None
 

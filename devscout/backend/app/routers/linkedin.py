@@ -356,6 +356,28 @@ async def generate_linkedin_response(request: GenerateResponseRequest):
     return {"response": response}
 
 
+class GenerateLinkedInPostRequest(BaseModel):
+    """Request to generate a LinkedIn post."""
+    idea_template: str
+    category: str
+
+
+@router.post("/generate-post")
+async def generate_linkedin_post(request: GenerateLinkedInPostRequest):
+    """Generate an AI-written LinkedIn post."""
+    generator = ResponseGenerator()
+
+    response = await generator.generate_linkedin_post(
+        idea_template=request.idea_template,
+        category=request.category,
+    )
+
+    if not response:
+        raise HTTPException(status_code=500, detail="Failed to generate LinkedIn post")
+
+    return {"response": response}
+
+
 # ============== Job Leads Endpoints ==============
 
 @router.get("/job-leads")
@@ -366,13 +388,34 @@ async def fetch_job_leads(
     if not APIFY_API_KEY:
         raise HTTPException(status_code=500, detail="Apify API key not configured")
 
+    # Focus on freelance/contract opportunities only
     search_terms = [
-        "looking for a developer",
         "need freelance developer",
         "hiring freelance developer",
-        "looking for freelancer",
-        "need a programmer",
+        "looking for freelancer developer",
+        "freelance python developer",
+        "contract developer needed",
+        "looking for contractor developer",
+        "freelance automation",
+        "freelance API integration",
     ]
+
+    # Exclude full-time/permanent positions
+    exclude_patterns = [
+        "full-time", "full time", "fulltime",
+        "permanent position", "permanent role",
+        "w-2", "w2 position",
+        "direct hire", "perm role",
+        "salary range", "annual salary",
+        "benefits package", "401k", "health insurance",
+        "we are hiring", "we're hiring",  # Usually company job postings
+        "join our team", "apply now",  # Job board style
+    ]
+
+    def is_fulltime_posting(text: str) -> bool:
+        """Check if post is for a full-time position."""
+        text_lower = text.lower()
+        return any(pattern in text_lower for pattern in exclude_patterns)
 
     all_posts = []
     seen_ids = set()
@@ -403,6 +446,11 @@ async def fetch_job_leads(
                             seen_ids.add(post_id)
 
                             text = item.get("text") or ""
+
+                            # Skip full-time job postings
+                            if is_fulltime_posting(text):
+                                continue
+
                             author_obj = item.get("author") or {}
                             stats = item.get("stats") or {}
                             posted_at_obj = item.get("posted_at") or {}
