@@ -12,7 +12,7 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
 
 // LinkedIn OAuth is disabled until Company Page + Developer App are set up
 // Set to true once LinkedIn credentials are added to the backend .env
-const LINKEDIN_OAUTH_ENABLED = false;
+const LINKEDIN_OAUTH_ENABLED = true;
 
 // ==============================================================================
 // TAB CONFIGURATION
@@ -1206,7 +1206,10 @@ function App() {
   // OPPORTUNITIES TAB STATE
   // ==============================================================================
   // AI-Powered Prospects (non-LinkedIn)
-  const [aiProspects, setAiProspects] = useState(() => loadPersistedData('ai_prospects'));
+  const [aiProspects, setAiProspects] = useState(() => {
+    const loaded = loadPersistedData('ai_prospects');
+    return Array.isArray(loaded) ? loaded : [];
+  });
   const [aiProspectsStats, setAiProspectsStats] = useState(null);
   const [aiScoring, setAiScoring] = useState(false);
   const [aiScoringProgress, setAiScoringProgress] = useState(null);
@@ -1214,14 +1217,20 @@ function App() {
   const [prospectNotes, setProspectNotes] = useState({});
 
   // News (HN, Lobsters, Dev.to, Hashnode)
-  const [news, setNews] = useState(() => loadPersistedData('news'));
+  const [news, setNews] = useState(() => {
+    const loaded = loadPersistedData('news');
+    return Array.isArray(loaded) ? loaded : [];
+  });
   const [newsFetching, setNewsFetching] = useState(false);
   const [newsProgress, setNewsProgress] = useState(null);
   const [newsResponses, setNewsResponses] = useState({});
   const [generatingNews, setGeneratingNews] = useState({});
 
   // GitHub Issues - persisted
-  const [githubIssues, setGithubIssues] = useState(() => loadPersistedData('github_issues'));
+  const [githubIssues, setGithubIssues] = useState(() => {
+    const loaded = loadPersistedData('github_issues');
+    return Array.isArray(loaded) ? loaded : [];
+  });
   const [githubFetching, setGithubFetching] = useState(false);
   const [githubProgress, setGithubProgress] = useState(null);
 
@@ -1274,6 +1283,49 @@ function App() {
       }
     };
     loadProspectsFromDB();
+  }, []);
+
+  // Handle LinkedIn OAuth callback (when redirected back from LinkedIn)
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+
+      // Check if this is an OAuth callback (has code parameter)
+      if (code && (window.location.pathname === '/linkedin/callback' || window.location.pathname === '/')) {
+        console.log('[LinkedIn OAuth] Handling callback with code');
+        try {
+          const response = await fetch(`/api/linkedin/auth/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || '')}`, {
+            method: 'POST',
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log('[LinkedIn OAuth] Connected successfully:', data.person_name);
+            // Refresh auth status
+            const statusResponse = await fetch('/api/linkedin/auth/status');
+            if (statusResponse.ok) {
+              const statusData = await statusResponse.json();
+              setLinkedInAuth(statusData);
+            }
+            alert(`LinkedIn connected successfully as ${data.person_name}!`);
+          } else {
+            const errorData = await response.json();
+            console.error('[LinkedIn OAuth] Callback failed:', errorData);
+            alert('Failed to connect LinkedIn: ' + (errorData.detail || 'Unknown error'));
+          }
+        } catch (err) {
+          console.error('[LinkedIn OAuth] Error handling callback:', err);
+          alert('Failed to connect LinkedIn: ' + err.message);
+        }
+
+        // Clean up URL (remove OAuth params)
+        window.history.replaceState({}, document.title, '/');
+      }
+    };
+
+    handleOAuthCallback();
   }, []);
 
   // Load LinkedIn auth status on mount
@@ -1684,6 +1736,10 @@ function App() {
         if (data.length === 0) {
           alert('No freelance job leads found. Try again later.');
         }
+      } else if (response.status === 503) {
+        // VPS blocked by search engines - guide user to Prospects
+        alert('LinkedIn Job Leads are temporarily unavailable (VPS IP blocked by search engines). ' +
+              'Use the Opportunities → All Sources tab instead - it fetches LinkedIn from your browser.');
       } else {
         const error = await response.json();
         alert('Failed to fetch job leads: ' + (error.detail || 'Unknown error'));
@@ -1707,6 +1763,10 @@ function App() {
         if (data.length === 0) {
           alert('No engagement posts found. Try again later.');
         }
+      } else if (response.status === 503) {
+        // VPS blocked by search engines - guide user to Prospects
+        alert('LinkedIn Engagement is temporarily unavailable (VPS IP blocked by search engines). ' +
+              'Use the Opportunities → All Sources tab instead - it fetches LinkedIn from your browser.');
       } else {
         const error = await response.json();
         alert('Failed to fetch engagement posts: ' + (error.detail || 'Unknown error'));

@@ -15,6 +15,8 @@ from ..config import get_settings
 from ..database import get_db
 from ..models import LinkedInAuth
 from ..services.response_generator import ResponseGenerator
+# NOTE: linkedin_scraper.py exists but is not used - VPS IP is blocked by all search engines
+# LinkedIn scraping only works with Apify or from client-side browser requests
 
 logger = logging.getLogger("uvicorn.error")
 
@@ -28,9 +30,6 @@ LINKEDIN_CLIENT_ID = settings.linkedin_client_id
 LINKEDIN_CLIENT_SECRET = settings.linkedin_client_secret
 LINKEDIN_REDIRECT_URI = settings.linkedin_redirect_uri
 LINKEDIN_SCOPES = "openid profile email w_member_social"
-
-# Apify Configuration (from settings)
-APIFY_API_KEY = settings.apify_api_key
 
 
 class LinkedInAuthStatus(BaseModel):
@@ -272,68 +271,22 @@ async def fetch_engagement_posts(
     ),
     limit: int = Query(50, le=100),
 ):
-    """Fetch LinkedIn posts for engagement using Apify."""
-    if not APIFY_API_KEY:
-        raise HTTPException(status_code=500, detail="Apify API key not configured")
+    """Fetch LinkedIn posts for engagement.
 
+    Note: VPS IP is blocked by search engines, so this endpoint
+    will return an empty list unless Apify is available.
+    LinkedIn scraping from datacenter IPs is not reliable.
+    """
     terms = [t.strip() for t in search_terms.split(",") if t.strip()]
-    all_posts = []
-    seen_ids = set()
 
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        for term in terms[:3]:  # Limit to 3 terms to control costs
-            try:
-                response = await client.post(
-                    "https://api.apify.com/v2/acts/apimaestro~linkedin-posts-search-scraper-no-cookies/run-sync-get-dataset-items",
-                    headers={
-                        "Authorization": f"Bearer {APIFY_API_KEY}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "keyword": term,
-                        "limit": limit // len(terms),
-                        "sort": "relevance",
-                    },
-                )
-
-                if response.status_code in [200, 201]:
-                    data = response.json()
-                    if isinstance(data, list):
-                        for item in data:
-                            post_id = item.get("activity_id") or item.get("full_urn") or item.get("post_url", "")
-                            if not post_id or post_id in seen_ids:
-                                continue
-                            seen_ids.add(post_id)
-
-                            text = item.get("text") or ""
-                            author_obj = item.get("author") or {}
-                            stats = item.get("stats") or {}
-                            posted_at_obj = item.get("posted_at") or {}
-
-                            # Convert timestamp
-                            posted_at_str = None
-                            if isinstance(posted_at_obj, dict):
-                                ts = posted_at_obj.get("timestamp")
-                                if ts:
-                                    posted_at_str = datetime.fromtimestamp(ts / 1000).isoformat()
-
-                            all_posts.append(LinkedInEngagementPost(
-                                source_id=f"li_{hash(post_id) % 10**8}",
-                                url=item.get("post_url") or "",
-                                author=author_obj.get("name", "") if isinstance(author_obj, dict) else str(author_obj),
-                                author_url=author_obj.get("profile_url", "") if isinstance(author_obj, dict) else None,
-                                author_headline=author_obj.get("headline", "") if isinstance(author_obj, dict) else None,
-                                text=text[:2000] if text else "",
-                                posted_at=posted_at_str,
-                                reactions=stats.get("total_reactions", 0) if isinstance(stats, dict) else 0,
-                                comments=stats.get("comments", 0) if isinstance(stats, dict) else 0,
-                            ))
-
-            except Exception as e:
-                logger.warning(f"Failed to fetch LinkedIn posts for '{term}': {e}")
-                continue
-
-    return all_posts[:limit]
+    # VPS is blocked by search engines (DuckDuckGo, Bing, Google all block datacenter IPs)
+    # Return helpful error message
+    logger.info("LinkedIn engagement fetch requested - VPS blocked by search engines")
+    raise HTTPException(
+        status_code=503,
+        detail="LinkedIn scraping temporarily unavailable. Search engines block VPS IPs. "
+               "Use the Prospects tab which fetches from your browser instead."
+    )
 
 
 @router.post("/generate-response")
@@ -383,109 +336,16 @@ async def generate_linkedin_post(request: GenerateLinkedInPostRequest):
 async def fetch_job_leads(
     limit: int = Query(50, le=100),
 ):
-    """Fetch LinkedIn job/hiring posts using Apify (same as prospects linkedin endpoint)."""
-    if not APIFY_API_KEY:
-        raise HTTPException(status_code=500, detail="Apify API key not configured")
+    """Fetch LinkedIn job/hiring posts.
 
-    # Focus on freelance/contract opportunities only
-    # NOTE: Each term = 1 Apify API call. Limit to 2 terms to conserve credits.
-    search_terms = [
-        "freelance developer needed",
-        "looking for freelancer",
-    ]
-
-    # Exclude full-time/permanent positions
-    exclude_patterns = [
-        "full-time", "full time", "fulltime",
-        "permanent position", "permanent role",
-        "w-2", "w2 position",
-        "direct hire", "perm role",
-        "salary range", "annual salary",
-        "benefits package", "401k", "health insurance",
-        "we are hiring", "we're hiring",  # Usually company job postings
-        "join our team", "apply now",  # Job board style
-    ]
-
-    def is_fulltime_posting(text: str) -> bool:
-        """Check if post is for a full-time position."""
-        text_lower = text.lower()
-        return any(pattern in text_lower for pattern in exclude_patterns)
-
-    all_posts = []
-    seen_ids = set()
-
-    async with httpx.AsyncClient(timeout=120.0) as client:
-        for term in search_terms:
-            try:
-                response = await client.post(
-                    "https://api.apify.com/v2/acts/apimaestro~linkedin-posts-search-scraper-no-cookies/run-sync-get-dataset-items",
-                    headers={
-                        "Authorization": f"Bearer {APIFY_API_KEY}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "keyword": term,
-                        "limit": 20,
-                        "sort": "date",
-                    },
-                )
-
-                logger.info(f"Apify job-leads response for '{term}': status={response.status_code}")
-                if response.status_code == 403:
-                    error_data = response.json()
-                    if error_data.get("error", {}).get("type") == "platform-feature-disabled":
-                        raise HTTPException(status_code=402, detail="Apify usage limit exceeded. Check your Apify account billing.")
-                if response.status_code in [200, 201]:
-                    data = response.json()
-                    logger.info(f"Apify job-leads data for '{term}': count={len(data) if isinstance(data, list) else 'N/A'}")
-                    if isinstance(data, list):
-                        for item in data:
-                            post_id = item.get("activity_id") or item.get("full_urn") or item.get("post_url", "")
-                            if not post_id or post_id in seen_ids:
-                                continue
-                            seen_ids.add(post_id)
-
-                            text = item.get("text") or ""
-
-                            # Skip full-time job postings
-                            if is_fulltime_posting(text):
-                                continue
-
-                            author_obj = item.get("author") or {}
-                            stats = item.get("stats") or {}
-                            posted_at_obj = item.get("posted_at") or {}
-
-                            posted_at_str = None
-                            if isinstance(posted_at_obj, dict):
-                                ts = posted_at_obj.get("timestamp")
-                                if ts:
-                                    posted_at_str = datetime.fromtimestamp(ts / 1000).isoformat()
-
-                            all_posts.append({
-                                "source_id": f"li_post_{hash(post_id) % 10**8}",
-                                "title": text[:100] + "..." if len(text) > 100 else text,
-                                "body": text[:2000] if text else None,
-                                "url": item.get("post_url") or "",
-                                "author": author_obj.get("name", "") if isinstance(author_obj, dict) else str(author_obj),
-                                "author_url": author_obj.get("profile_url", "") if isinstance(author_obj, dict) else None,
-                                "author_headline": author_obj.get("headline", "") if isinstance(author_obj, dict) else None,
-                                "posted_at": posted_at_str,
-                                "reactions": stats.get("total_reactions", 0) if isinstance(stats, dict) else 0,
-                                "comments": stats.get("comments", 0) if isinstance(stats, dict) else 0,
-                            })
-
-            except Exception as e:
-                logger.warning(f"Failed to fetch LinkedIn job leads for '{term}': {e}")
-                continue
-
-    # Sort: newest first, then by fewer comments (less competition)
-    def sort_key(post):
-        # Parse posted_at, default to old date if missing
-        posted = post.get("posted_at") or "1970-01-01"
-        comments = post.get("comments") or 0
-        # Return tuple: (posted_at descending, comments ascending)
-        return (posted, -comments)
-
-    all_posts.sort(key=sort_key, reverse=True)
-
-    return all_posts[:limit]
+    Note: VPS IP is blocked by search engines, so this endpoint
+    is temporarily unavailable. Use Prospects tab instead which
+    fetches from your browser.
+    """
+    # VPS is blocked by search engines (DuckDuckGo, Bing, Google all block datacenter IPs)
+    logger.info("LinkedIn job leads fetch requested - VPS blocked by search engines")
+    raise HTTPException(
+        status_code=503,
+        detail="LinkedIn job leads temporarily unavailable. Search engines block VPS IPs. "
+               "LinkedIn leads are still available in the Prospects tab (fetched from your browser)."
+    )
