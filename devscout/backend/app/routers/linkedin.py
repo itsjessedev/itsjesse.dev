@@ -346,11 +346,10 @@ async def generate_linkedin_response(request: GenerateResponseRequest):
     if request.author_headline:
         context += f" ({request.author_headline})"
 
-    response = await generator.generate_response(
+    response = await generator.generate(
         title=context,
         body=request.post_text,
         subreddit="linkedin",  # Will be handled specially by generator
-        author=request.author,
     )
 
     return {"response": response}
