@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     # OpenRouter API (reuse from DealScout)
     openrouter_api_key: str = ""
 
+    # Apify API (for LinkedIn jobs scraper)
+    apify_api_key: str = ""
+
     # Subreddits to monitor (comma-separated)
     target_subreddits: str = "webdev,programming,learnprogramming,automation,smallbusiness,Entrepreneur,freelance,SaaS,startups,zapier,n8n"
 

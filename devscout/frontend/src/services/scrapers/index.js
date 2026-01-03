@@ -72,7 +72,7 @@ export const PLATFORMS = {
   },
   linkedin: {
     name: 'LinkedIn',
-    enabled: false, // Requires backend Apify integration
+    enabled: true, // Requires APIFY_API_KEY in backend .env
     fetch: fetchAllLinkedIn,
   },
   wellfound: {

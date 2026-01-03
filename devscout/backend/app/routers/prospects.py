@@ -462,3 +462,95 @@ def _prospect_to_response(prospect: Prospect) -> ProspectResponse:
         discovered_at=prospect.discovered_at,
         last_scored_at=prospect.last_scored_at,
     )
+
+
+# ============================================================================
+# LinkedIn via Apify
+# ============================================================================
+
+class LinkedInRequest(BaseModel):
+    """Request to fetch LinkedIn jobs via Apify."""
+    search_term: str = "freelance developer"
+    filters: dict = {}
+
+
+class LinkedInJob(BaseModel):
+    """LinkedIn job listing."""
+    source: str = "linkedin"
+    source_id: str
+    platform_detail: Optional[str] = None
+    title: str
+    body: Optional[str] = None
+    url: str
+    author: Optional[str] = None
+    company_name: Optional[str] = None
+    location: Optional[str] = None
+    posted_at: Optional[str] = None
+
+
+@router.post("/linkedin")
+async def fetch_linkedin_jobs(request: LinkedInRequest):
+    """
+    Fetch LinkedIn jobs via Apify's LinkedIn Jobs Scraper.
+
+    Cost: ~$1 per 1,000 jobs
+    Free tier: $5/month credit (~5,000 jobs)
+
+    Requires APIFY_API_KEY in .env
+    """
+    import httpx
+    from ..config import get_settings
+
+    settings = get_settings()
+
+    if not settings.apify_api_key:
+        return {"jobs": [], "error": "Apify API key not configured. Add APIFY_API_KEY to .env"}
+
+    try:
+        # Apify LinkedIn Jobs Scraper actor
+        actor_id = "practicaltools~linkedin-jobs"
+        run_url = f"https://api.apify.com/v2/acts/{actor_id}/run-sync-get-dataset-items"
+
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                run_url,
+                headers={
+                    "Authorization": f"Bearer {settings.apify_api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "keywords": request.search_term,
+                    "location": request.filters.get("location", "remote"),
+                    "datePosted": request.filters.get("datePosted", "past-week"),
+                    "jobType": request.filters.get("workType", ["contract", "temporary"]),
+                    "maxResults": request.filters.get("limit", 50),
+                },
+            )
+
+            if response.status_code != 200:
+                return {"jobs": [], "error": f"Apify API error: {response.status_code}"}
+
+            data = response.json()
+
+            # Transform Apify results to our format
+            jobs = []
+            for item in data:
+                job = LinkedInJob(
+                    source_id=f"li_{item.get('id', item.get('link', '').split('/')[-1])}",
+                    platform_detail="LinkedIn Jobs",
+                    title=item.get("title", ""),
+                    body=item.get("description", ""),
+                    url=item.get("link", item.get("url", "")),
+                    author=item.get("companyName", ""),
+                    company_name=item.get("companyName", ""),
+                    location=item.get("location", ""),
+                    posted_at=item.get("postedAt", item.get("publishedAt", "")),
+                )
+                jobs.append(job.model_dump())
+
+            return {"jobs": jobs, "count": len(jobs)}
+
+    except httpx.TimeoutException:
+        return {"jobs": [], "error": "Apify request timed out (LinkedIn scraping can take 1-2 minutes)"}
+    except Exception as e:
+        return {"jobs": [], "error": f"Error fetching LinkedIn jobs: {str(e)}"}

@@ -897,7 +897,7 @@ function App() {
   const [prospectsFetching, setProspectsFetching] = useState(false);
   const [prospectsProgress, setProspectsProgress] = useState(null);
   // AI-Powered Prospects System
-  const [prospectsMode, setProspectsMode] = useState('ai'); // 'quick' (old) or 'ai' (new)
+  // AI-Powered mode only (removed legacy Quick Scan)
   const [aiProspects, setAiProspects] = useState(() => loadPersistedData('ai_prospects'));
   const [aiProspectsStats, setAiProspectsStats] = useState(null);
   const [aiScoring, setAiScoring] = useState(false);
@@ -2370,89 +2370,39 @@ function App() {
       {/* Prospects Controls */}
       {mode === 'prospects' && (
         <div style={{ marginBottom: '20px' }}>
-          {/* Mode Toggle */}
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+          <div style={styles.controls} className="devscout-controls">
             <button
-              style={{
-                ...styles.btn,
-                ...(prospectsMode === 'ai' ? styles.btnPrimary : styles.btnSecondary),
-              }}
-              onClick={() => setProspectsMode('ai')}
+              style={{ ...styles.btn, ...styles.btnPrimary }}
+              onClick={handleFetchAIProspects}
+              disabled={prospectsFetching}
             >
-              AI-Powered
+              {prospectsFetching
+                ? aiScoring
+                  ? `AI Scoring... (${aiScoringProgress?.current || 0}%)`
+                  : prospectsProgress
+                    ? `Fetching ${prospectsProgress.search} (${prospectsProgress.current}/${prospectsProgress.total})`
+                    : 'Starting...'
+                : 'Find AI Leads'}
             </button>
             <button
-              style={{
-                ...styles.btn,
-                ...(prospectsMode === 'quick' ? styles.btnPrimary : styles.btnSecondary),
-              }}
-              onClick={() => setProspectsMode('quick')}
+              style={{ ...styles.btn, ...styles.btnSecondary }}
+              onClick={handleLoadStoredProspects}
+              disabled={prospectsFetching}
             >
-              Quick Scan
+              Load Saved
             </button>
-          </div>
-
-          {/* AI Mode Controls */}
-          {prospectsMode === 'ai' && (
-            <div style={styles.controls} className="devscout-controls">
-              <button
-                style={{ ...styles.btn, ...styles.btnPrimary }}
-                onClick={handleFetchAIProspects}
-                disabled={prospectsFetching}
-              >
-                {prospectsFetching
-                  ? aiScoring
-                    ? `AI Scoring... (${aiScoringProgress?.current || 0}%)`
-                    : prospectsProgress
-                      ? `Fetching ${prospectsProgress.search} (${prospectsProgress.current}/${prospectsProgress.total})`
-                      : 'Starting...'
-                  : 'Find AI Leads'}
-              </button>
+            {aiProspects.length > 0 && !prospectsFetching && (
               <button
                 style={{ ...styles.btn, ...styles.btnSecondary }}
-                onClick={handleLoadStoredProspects}
-                disabled={prospectsFetching}
+                onClick={handleClearAIProspects}
               >
-                Load Saved
+                Clear All
               </button>
-              {aiProspects.length > 0 && !prospectsFetching && (
-                <button
-                  style={{ ...styles.btn, ...styles.btnSecondary }}
-                  onClick={handleClearAIProspects}
-                >
-                  Clear All
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Quick Mode Controls (legacy) */}
-          {prospectsMode === 'quick' && (
-            <div style={styles.controls} className="devscout-controls">
-              <button
-                style={{ ...styles.btn, ...styles.btnPrimary }}
-                onClick={() => handleFetchProspects(false)}
-                disabled={prospectsFetching}
-              >
-                {prospectsFetching
-                  ? prospectsProgress
-                    ? `Searching ${prospectsProgress.search} (${prospectsProgress.current}/${prospectsProgress.total})`
-                    : 'Fetching...'
-                  : 'Find Hot Prospects'}
-              </button>
-              {prospects.length > 0 && !prospectsFetching && (
-                <button
-                  style={{ ...styles.btn, ...styles.btnSecondary }}
-                  onClick={handleClearProspects}
-                >
-                  Clear All
-                </button>
-              )}
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Stats Summary */}
-          {prospectsMode === 'ai' && aiProspects.length > 0 && (
+          {aiProspects.length > 0 && (
             <div style={{ display: 'flex', gap: '16px', marginTop: '12px', fontSize: '14px', color: '#9ca3af' }}>
               <span><strong style={{ color: '#dc2626' }}>{aiProspects.filter(p => p.fit_score >= 70).length}</strong> HOT</span>
               <span><strong style={{ color: '#f59e0b' }}>{aiProspects.filter(p => p.fit_score >= 40 && p.fit_score < 70).length}</strong> WARM</span>
@@ -2464,8 +2414,8 @@ function App() {
         </div>
       )}
 
-      {/* Prospects View - AI Mode */}
-      {mode === 'prospects' && prospectsMode === 'ai' && (
+      {/* Prospects View */}
+      {mode === 'prospects' && (
         <div style={styles.postList}>
           {aiProspects.length === 0 ? (
             <div style={styles.empty} className="devscout-empty">
@@ -2638,84 +2588,6 @@ function App() {
                   </div>
                 );
               })
-          )}
-        </div>
-      )}
-
-      {/* Prospects View - Quick Mode (Legacy) */}
-      {mode === 'prospects' && prospectsMode === 'quick' && (
-        <div style={styles.postList}>
-          {prospects.length === 0 ? (
-            <div style={styles.empty} className="devscout-empty">
-              No prospects loaded. Click "Find Hot Prospects" to search for freelance opportunities.
-            </div>
-          ) : (
-            [...prospects].sort((a, b) => b.score - a.score).map((prospect) => {
-              const category = getProspectCategory(prospect.score);
-              return (
-                <div key={prospect.id} style={styles.post} className="devscout-post">
-                  <div style={styles.postHeader} className="devscout-post-header">
-                    {prospect.source === 'hackernews' ? (
-                      <a href={prospect.thread_url || 'https://news.ycombinator.com'} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none', background: '#ff6600' }} className="devscout-subreddit">HN</a>
-                    ) : (
-                      <a href={`https://reddit.com/r/${prospect.subreddit}`} target="_blank" rel="noopener noreferrer" style={{ ...styles.subreddit, textDecoration: 'none' }} className="devscout-subreddit">r/{prospect.subreddit}</a>
-                    )}
-                    <span style={{
-                      ...styles.score,
-                      background: category.bg,
-                      color: category.color,
-                    }}>
-                      {category.label} ({prospect.score})
-                    </span>
-                  </div>
-
-                  <h3 style={styles.postTitle} className="devscout-post-title">
-                    <a
-                      href={prospect.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={styles.postLink}
-                    >
-                      {prospect.title}
-                    </a>
-                  </h3>
-
-                  <div style={styles.postMeta}>
-                    {prospect.source === 'hackernews' ? prospect.author : `u/${prospect.author}`} · {formatTime(new Date(prospect.created_utc * 1000).toISOString())}
-                    {prospect.source !== 'hackernews' && ` · ${prospect.num_comments} comments · ${prospect.ups || prospect.score} upvotes`}
-                  </div>
-
-                  {prospect.body && (
-                    <div style={styles.postBody} className="devscout-post-body">{prospect.body}</div>
-                  )}
-
-                  {prospect.matchedKeywords && prospect.matchedKeywords.length > 0 && (
-                    <div style={styles.keywords} className="devscout-keywords">
-                      {prospect.matchedKeywords.map((kw, i) => (
-                        <span key={i} style={styles.keyword}>{kw}</span>
-                      ))}
-                    </div>
-                  )}
-
-                  <div style={styles.actions} className="devscout-actions">
-                    <a
-                      href={prospect.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ ...styles.btn, ...styles.btnPrimary, textDecoration: 'none', display: 'inline-block' }}
-                    >
-                      View Post
-                    </a>
-                    <button
-                      style={{ ...styles.btn, ...styles.btnSecondary }}
-                      onClick={() => handleDismissProspect(prospect.id)}
-                    >
-                      Dismiss
-                    </button>
-                  </div>
-                </div>
-              );
-            })
           )}
         </div>
       )}
