@@ -1946,15 +1946,23 @@ function App() {
 
   const handleFetchProspects = async () => {
     setAiScoring(true);
+    setAiProspects([]); // Clear old data
     try {
-      const prospects = await fetchAndScoreProspects(
-        { platforms: ['reddit', 'hackernews', 'craigslist', 'devto', 'indiehackers', 'github'] },
-        (current, total, source) => {
-          setAiScoringProgress({ current, total, source });
-        }
-      );
+      const result = await fetchAndScoreProspects({
+        onFetchProgress: (current, total, source) => {
+          setAiScoringProgress({ current, total, source: `Fetching ${source}` });
+        },
+        onScoreProgress: (current, total, source) => {
+          setAiScoringProgress({ current, total, source: `Scoring...` });
+        },
+        storeLeads: true,
+      });
+      const prospects = result.leads || [];
       setAiProspects(prospects);
       savePersistedData('ai_prospects', prospects);
+      if (prospects.length === 0) {
+        alert('No opportunities found matching your criteria.');
+      }
     } catch (err) {
       alert('Failed to fetch prospects: ' + err.message);
     } finally {

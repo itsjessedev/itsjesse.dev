@@ -388,15 +388,10 @@ async def fetch_job_leads(
         raise HTTPException(status_code=500, detail="Apify API key not configured")
 
     # Focus on freelance/contract opportunities only
+    # NOTE: Each term = 1 Apify API call. Limit to 2 terms to conserve credits.
     search_terms = [
-        "need freelance developer",
-        "hiring freelance developer",
-        "looking for freelancer developer",
-        "freelance python developer",
-        "contract developer needed",
-        "looking for contractor developer",
-        "freelance automation",
-        "freelance API integration",
+        "freelance developer needed",
+        "looking for freelancer",
     ]
 
     # Exclude full-time/permanent positions
