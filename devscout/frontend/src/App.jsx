@@ -5,6 +5,14 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
 } from './services/api';
 
 // ==============================================================================
+// FEATURE FLAGS
+// ==============================================================================
+
+// LinkedIn OAuth is disabled until Company Page + Developer App are set up
+// Set to true once LinkedIn credentials are added to the backend .env
+const LINKEDIN_OAUTH_ENABLED = false;
+
+// ==============================================================================
 // TAB CONFIGURATION
 // ==============================================================================
 
@@ -2654,35 +2662,37 @@ function App() {
       {/* LinkedIn > Job Leads */}
       {mainTab === 'linkedin' && currentSubTab === 'leads' && (
         <div>
-          {/* LinkedIn Auth Status Card */}
-          <div style={styles.linkedInAuthCard}>
-            <div style={styles.linkedInAuthHeader}>
-              <div style={styles.linkedInAuthStatus}>
-                <div style={{
-                  ...styles.authDot,
-                  background: linkedInAuth?.is_authenticated ? '#22c55e' : '#ef4444'
-                }} />
-                <span style={{ fontWeight: '500' }}>
-                  {linkedInAuthLoading ? 'Checking...' :
-                    linkedInAuth?.is_authenticated
-                      ? `Connected as ${linkedInAuth.person_name}`
-                      : 'Not connected'}
-                </span>
+          {/* LinkedIn Auth Status Card - hidden until OAuth enabled */}
+          {LINKEDIN_OAUTH_ENABLED && (
+            <div style={styles.linkedInAuthCard}>
+              <div style={styles.linkedInAuthHeader}>
+                <div style={styles.linkedInAuthStatus}>
+                  <div style={{
+                    ...styles.authDot,
+                    background: linkedInAuth?.is_authenticated ? '#22c55e' : '#ef4444'
+                  }} />
+                  <span style={{ fontWeight: '500' }}>
+                    {linkedInAuthLoading ? 'Checking...' :
+                      linkedInAuth?.is_authenticated
+                        ? `Connected as ${linkedInAuth.person_name}`
+                        : 'Not connected'}
+                  </span>
+                </div>
+                <button
+                  data-btn="linkedin"
+                  style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                  onClick={handleLinkedInConnect}
+                >
+                  {linkedInAuth?.is_authenticated ? 'Reconnect' : 'Connect LinkedIn'}
+                </button>
               </div>
-              <button
-                data-btn="linkedin"
-                style={{ ...styles.btn, ...styles.btnLinkedIn }}
-                onClick={handleLinkedInConnect}
-              >
-                {linkedInAuth?.is_authenticated ? 'Reconnect' : 'Connect LinkedIn'}
-              </button>
+              {linkedInAuth?.needs_refresh && (
+                <div style={{ color: '#f59e0b', fontSize: '13px', marginTop: '8px' }}>
+                  ⚠️ Token expires in {linkedInAuth.expires_in_days} days. Please reconnect soon.
+                </div>
+              )}
             </div>
-            {linkedInAuth?.needs_refresh && (
-              <div style={{ color: '#f59e0b', fontSize: '13px', marginTop: '8px' }}>
-                ⚠️ Token expires in {linkedInAuth.expires_in_days} days. Please reconnect soon.
-              </div>
-            )}
-          </div>
+          )}
 
           <div style={styles.controls} className="devscout-controls">
             <button
@@ -2738,35 +2748,37 @@ function App() {
       {/* LinkedIn > Post Schedule */}
       {mainTab === 'linkedin' && currentSubTab === 'schedule' && (
         <div>
-          {/* LinkedIn Auth Status Card */}
-          <div style={styles.linkedInAuthCard}>
-            <div style={styles.linkedInAuthHeader}>
-              <div style={styles.linkedInAuthStatus}>
-                <div style={{
-                  ...styles.authDot,
-                  background: linkedInAuth?.is_authenticated ? '#22c55e' : '#ef4444'
-                }} />
-                <span style={{ fontWeight: '500' }}>
-                  {linkedInAuthLoading ? 'Checking...' :
-                    linkedInAuth?.is_authenticated
-                      ? `Connected as ${linkedInAuth.person_name}`
-                      : 'Not connected'}
-                </span>
+          {/* LinkedIn Auth Status Card - hidden until OAuth enabled */}
+          {LINKEDIN_OAUTH_ENABLED && (
+            <div style={styles.linkedInAuthCard}>
+              <div style={styles.linkedInAuthHeader}>
+                <div style={styles.linkedInAuthStatus}>
+                  <div style={{
+                    ...styles.authDot,
+                    background: linkedInAuth?.is_authenticated ? '#22c55e' : '#ef4444'
+                  }} />
+                  <span style={{ fontWeight: '500' }}>
+                    {linkedInAuthLoading ? 'Checking...' :
+                      linkedInAuth?.is_authenticated
+                        ? `Connected as ${linkedInAuth.person_name}`
+                        : 'Not connected'}
+                  </span>
+                </div>
+                <button
+                  data-btn="linkedin"
+                  style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                  onClick={handleLinkedInConnect}
+                >
+                  {linkedInAuth?.is_authenticated ? 'Reconnect' : 'Connect LinkedIn'}
+                </button>
               </div>
-              <button
-                data-btn="linkedin"
-                style={{ ...styles.btn, ...styles.btnLinkedIn }}
-                onClick={handleLinkedInConnect}
-              >
-                {linkedInAuth?.is_authenticated ? 'Reconnect' : 'Connect LinkedIn'}
-              </button>
+              {linkedInAuth?.needs_refresh && (
+                <div style={{ color: '#f59e0b', fontSize: '13px', marginTop: '8px' }}>
+                  ⚠️ Token expires in {linkedInAuth.expires_in_days} days. Please reconnect soon.
+                </div>
+              )}
             </div>
-            {linkedInAuth?.needs_refresh && (
-              <div style={{ color: '#f59e0b', fontSize: '13px', marginTop: '8px' }}>
-                ⚠️ Token expires in {linkedInAuth.expires_in_days} days. Please reconnect soon.
-              </div>
-            )}
-          </div>
+          )}
 
           {/* Compose Post */}
           <div style={{ ...styles.post, marginBottom: '20px' }}>
@@ -2795,26 +2807,35 @@ function App() {
               {linkedInPostContent.length}/3000 characters
             </div>
             <div style={{ ...styles.actions, marginTop: '12px' }}>
-              <button
-                data-btn="linkedin"
-                style={{ ...styles.btn, ...styles.btnLinkedIn }}
-                onClick={handlePublishLinkedInPost}
-                disabled={linkedInPublishing || !linkedInAuth?.is_authenticated}
-              >
-                {linkedInPublishing ? 'Publishing...' : 'Post Now'}
-              </button>
+              {/* Post Now button - hidden until OAuth enabled */}
+              {LINKEDIN_OAUTH_ENABLED && (
+                <button
+                  data-btn="linkedin"
+                  style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                  onClick={handlePublishLinkedInPost}
+                  disabled={linkedInPublishing || !linkedInAuth?.is_authenticated}
+                >
+                  {linkedInPublishing ? 'Publishing...' : 'Post Now'}
+                </button>
+              )}
               <button
                 data-btn="primary"
                 style={{ ...styles.btn, ...styles.btnPrimary }}
                 onClick={handleScheduleLinkedInPost}
                 disabled={linkedInScheduling}
               >
-                {linkedInScheduling ? 'Scheduling...' : 'Auto-Schedule (Best Time)'}
+                {linkedInScheduling ? 'Scheduling...' : 'Schedule Post'}
               </button>
             </div>
-            {!linkedInAuth?.is_authenticated && (
+            {/* OAuth warning - hidden until OAuth enabled */}
+            {LINKEDIN_OAUTH_ENABLED && !linkedInAuth?.is_authenticated && (
               <div style={{ fontSize: '12px', color: '#f59e0b', marginTop: '8px' }}>
                 Connect your LinkedIn account to post directly. Scheduled posts will be ready when you connect.
+              </div>
+            )}
+            {!LINKEDIN_OAUTH_ENABLED && (
+              <div style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
+                Posts will be saved and marked "ready" when scheduled time arrives. Copy and post manually to LinkedIn.
               </div>
             )}
           </div>
@@ -2826,7 +2847,7 @@ function App() {
           <div style={styles.postList}>
             {linkedInScheduledPosts.length === 0 ? (
               <div style={styles.empty} className="devscout-empty">
-                No scheduled posts. Write a post above and click "Auto-Schedule" to queue it.
+                No scheduled posts. Write a post above and click "Schedule Post" to queue it.
               </div>
             ) : (
               linkedInScheduledPosts.map((post) => (
@@ -2922,30 +2943,32 @@ function App() {
       {/* LinkedIn > Comments */}
       {mainTab === 'linkedin' && currentSubTab === 'comments' && (
         <div>
-          {/* LinkedIn Auth Status Card */}
-          <div style={styles.linkedInAuthCard}>
-            <div style={styles.linkedInAuthHeader}>
-              <div style={styles.linkedInAuthStatus}>
-                <div style={{
-                  ...styles.authDot,
-                  background: linkedInAuth?.is_authenticated ? '#22c55e' : '#ef4444'
-                }} />
-                <span style={{ fontWeight: '500' }}>
-                  {linkedInAuthLoading ? 'Checking...' :
-                    linkedInAuth?.is_authenticated
-                      ? `Connected as ${linkedInAuth.person_name}`
-                      : 'Not connected'}
-                </span>
+          {/* LinkedIn Auth Status Card - hidden until OAuth enabled */}
+          {LINKEDIN_OAUTH_ENABLED && (
+            <div style={styles.linkedInAuthCard}>
+              <div style={styles.linkedInAuthHeader}>
+                <div style={styles.linkedInAuthStatus}>
+                  <div style={{
+                    ...styles.authDot,
+                    background: linkedInAuth?.is_authenticated ? '#22c55e' : '#ef4444'
+                  }} />
+                  <span style={{ fontWeight: '500' }}>
+                    {linkedInAuthLoading ? 'Checking...' :
+                      linkedInAuth?.is_authenticated
+                        ? `Connected as ${linkedInAuth.person_name}`
+                        : 'Not connected'}
+                  </span>
+                </div>
+                <button
+                  data-btn="linkedin"
+                  style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                  onClick={handleLinkedInConnect}
+                >
+                  {linkedInAuth?.is_authenticated ? 'Reconnect' : 'Connect LinkedIn'}
+                </button>
               </div>
-              <button
-                data-btn="linkedin"
-                style={{ ...styles.btn, ...styles.btnLinkedIn }}
-                onClick={handleLinkedInConnect}
-              >
-                {linkedInAuth?.is_authenticated ? 'Reconnect' : 'Connect LinkedIn'}
-              </button>
             </div>
-          </div>
+          )}
 
           <div style={styles.postList}>
             <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
@@ -2954,13 +2977,15 @@ function App() {
                 LinkedIn Comment Tracking
               </div>
               <div style={{ color: '#888', lineHeight: '1.6', maxWidth: '400px', margin: '0 auto' }}>
-                Track your LinkedIn comments and replies here. This feature requires LinkedIn API integration which is available after connecting your account.
+                {LINKEDIN_OAUTH_ENABLED
+                  ? 'Track your LinkedIn comments and replies here. This feature requires LinkedIn API integration which is available after connecting your account.'
+                  : 'Comment tracking coming soon. This feature requires LinkedIn API integration.'}
               </div>
-              {linkedInAuth?.is_authenticated ? (
+              {LINKEDIN_OAUTH_ENABLED && linkedInAuth?.is_authenticated ? (
                 <div style={{ marginTop: '20px', color: '#22c55e', fontSize: '14px' }}>
                   ✓ LinkedIn connected. Comment tracking will be available in a future update.
                 </div>
-              ) : (
+              ) : LINKEDIN_OAUTH_ENABLED ? (
                 <button
                   data-btn="linkedin"
                   style={{ ...styles.btn, ...styles.btnLinkedIn, marginTop: '20px' }}
@@ -2968,7 +2993,7 @@ function App() {
                 >
                   Connect LinkedIn to Enable
                 </button>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

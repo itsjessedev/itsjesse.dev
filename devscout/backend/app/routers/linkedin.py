@@ -1,6 +1,5 @@
 """API routes for LinkedIn integration."""
 
-import os
 import logging
 from typing import Optional
 from datetime import datetime, timedelta
@@ -12,6 +11,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..config import get_settings
 from ..database import get_db
 from ..models import LinkedInAuth
 from ..services.response_generator import ResponseGenerator
@@ -20,14 +20,17 @@ logger = logging.getLogger("uvicorn.error")
 
 router = APIRouter(prefix="/api/linkedin", tags=["linkedin"])
 
-# LinkedIn OAuth Configuration
-LINKEDIN_CLIENT_ID = os.getenv("LINKEDIN_CLIENT_ID", "")
-LINKEDIN_CLIENT_SECRET = os.getenv("LINKEDIN_CLIENT_SECRET", "")
-LINKEDIN_REDIRECT_URI = os.getenv("LINKEDIN_REDIRECT_URI", "https://devscout.junipr.io/linkedin/callback")
+# Get settings
+settings = get_settings()
+
+# LinkedIn OAuth Configuration (from settings)
+LINKEDIN_CLIENT_ID = settings.linkedin_client_id
+LINKEDIN_CLIENT_SECRET = settings.linkedin_client_secret
+LINKEDIN_REDIRECT_URI = settings.linkedin_redirect_uri
 LINKEDIN_SCOPES = "openid profile email w_member_social"
 
-# Apify Configuration
-APIFY_API_KEY = os.getenv("APIFY_API_KEY", "")
+# Apify Configuration (from settings)
+APIFY_API_KEY = settings.apify_api_key
 
 
 class LinkedInAuthStatus(BaseModel):

@@ -1,0 +1,17 @@
+[Unit]
+Description=DevScout Post Publisher - Publishes scheduled social media posts
+After=network.target devscout.service
+Wants=devscout-publisher.timer
+
+[Service]
+Type=oneshot
+User=deploy
+Group=deploy
+WorkingDirectory=/home/deploy/devscout/backend
+Environment=PATH=/home/deploy/devscout/backend/venv/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/deploy/devscout/backend/venv/bin/python run_publisher.py --once
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

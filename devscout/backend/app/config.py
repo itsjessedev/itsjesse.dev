@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     # Apify API (for LinkedIn jobs scraper)
     apify_api_key: str = ""
 
+    # LinkedIn OAuth
+    linkedin_client_id: str = ""
+    linkedin_client_secret: str = ""
+    linkedin_redirect_uri: str = "https://devscout.junipr.io/linkedin/callback"
+
     # Subreddits to monitor (comma-separated)
     target_subreddits: str = "webdev,programming,learnprogramming,automation,smallbusiness,Entrepreneur,freelance,SaaS,startups,zapier,n8n"
 
