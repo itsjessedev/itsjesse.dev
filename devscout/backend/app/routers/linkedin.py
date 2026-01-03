@@ -435,8 +435,14 @@ async def fetch_job_leads(
                     },
                 )
 
+                logger.info(f"Apify job-leads response for '{term}': status={response.status_code}")
+                if response.status_code == 403:
+                    error_data = response.json()
+                    if error_data.get("error", {}).get("type") == "platform-feature-disabled":
+                        raise HTTPException(status_code=402, detail="Apify usage limit exceeded. Check your Apify account billing.")
                 if response.status_code in [200, 201]:
                     data = response.json()
+                    logger.info(f"Apify job-leads data for '{term}': count={len(data) if isinstance(data, list) else 'N/A'}")
                     if isinstance(data, list):
                         for item in data:
                             post_id = item.get("activity_id") or item.get("full_urn") or item.get("post_url", "")

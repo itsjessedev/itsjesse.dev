@@ -1675,14 +1675,22 @@ function App() {
 
   const handleFetchLinkedInLeads = async () => {
     setLinkedInLeadsFetching(true);
+    setLinkedInLeads([]); // Clear old data
     try {
       const response = await fetch('/api/linkedin/job-leads?limit=50');
       if (response.ok) {
         const data = await response.json();
         setLinkedInLeads(data);
+        if (data.length === 0) {
+          alert('No freelance job leads found. Try again later.');
+        }
+      } else {
+        const error = await response.json();
+        alert('Failed to fetch job leads: ' + (error.detail || 'Unknown error'));
       }
     } catch (err) {
       console.error('Failed to fetch LinkedIn leads:', err);
+      alert('Failed to fetch job leads: ' + err.message);
     } finally {
       setLinkedInLeadsFetching(false);
     }
@@ -1690,14 +1698,22 @@ function App() {
 
   const handleFetchLinkedInEngagement = async () => {
     setLinkedInEngagementFetching(true);
+    setLinkedInEngagement([]); // Clear old data
     try {
       const response = await fetch('/api/linkedin/engagement?limit=50');
       if (response.ok) {
         const data = await response.json();
         setLinkedInEngagement(data);
+        if (data.length === 0) {
+          alert('No engagement posts found. Try again later.');
+        }
+      } else {
+        const error = await response.json();
+        alert('Failed to fetch engagement posts: ' + (error.detail || 'Unknown error'));
       }
     } catch (err) {
       console.error('Failed to fetch LinkedIn engagement posts:', err);
+      alert('Failed to fetch engagement posts: ' + err.message);
     } finally {
       setLinkedInEngagementFetching(false);
     }
