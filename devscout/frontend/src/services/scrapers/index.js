@@ -52,7 +52,7 @@ export const PLATFORMS = {
   },
   remoteok: {
     name: 'RemoteOK',
-    enabled: true,
+    enabled: false, // Job board, not direct clients
     fetch: fetchRemoteOK,
   },
   devto: {
@@ -72,7 +72,7 @@ export const PLATFORMS = {
   },
   linkedin: {
     name: 'LinkedIn',
-    enabled: true, // Requires APIFY_API_KEY in backend .env
+    enabled: false, // Job board, not direct clients
     fetch: fetchAllLinkedIn,
   },
   wellfound: {
