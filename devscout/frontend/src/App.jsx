@@ -3073,8 +3073,22 @@ function App() {
                   {/* Generated Response Area */}
                   {linkedInEngagementResponses[post.source_id] && (
                     <div style={{ marginTop: '12px' }}>
+                      <div style={{ fontSize: '12px', color: '#0A66C2', marginBottom: '6px', fontWeight: '500' }}>
+                        Generated Response:
+                      </div>
                       <textarea
-                        style={styles.textarea}
+                        style={{
+                          width: '100%',
+                          padding: '12px',
+                          background: '#1a1a2e',
+                          border: '1px solid #0A66C2',
+                          borderRadius: '8px',
+                          color: '#e5e5e5',
+                          fontSize: '14px',
+                          lineHeight: '1.5',
+                          resize: 'vertical',
+                          fontFamily: 'inherit',
+                        }}
                         value={linkedInEngagementResponses[post.source_id]}
                         onChange={(e) => setLinkedInEngagementResponses(prev => ({
                           ...prev,
@@ -3103,6 +3117,13 @@ function App() {
                           onClick={() => {
                             navigator.clipboard.writeText(linkedInEngagementResponses[post.source_id]);
                             window.open(post.url, '_blank');
+                            // Auto-remove from list
+                            setLinkedInEngagement(prev => prev.filter(p => p.source_id !== post.source_id));
+                            setLinkedInEngagementResponses(prev => {
+                              const updated = { ...prev };
+                              delete updated[post.source_id];
+                              return updated;
+                            });
                           }}
                         >
                           📋 Copy & View on LinkedIn
