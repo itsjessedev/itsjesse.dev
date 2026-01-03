@@ -1,10 +1,13 @@
 """API routes for prospects (AI-enhanced lead scoring)."""
 
 import json
+import logging
 from datetime import datetime
 from typing import Optional, List
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+
+logger = logging.getLogger("uvicorn.error")
 from pydantic import BaseModel
 from sqlalchemy import select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -540,39 +543,65 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
                         },
                     )
 
-                    if response.status_code != 200:
-                        print(f"LinkedIn API error for '{search_term}': {response.status_code}")
+                    if response.status_code not in (200, 201):
+                        logger.error(f"LinkedIn API error for '{search_term}': {response.status_code}")
                         continue
 
                     data = response.json()
 
                     # Transform Apify results to our format
+                    # Apify fields: activity_id, post_url, text, full_urn, author (object),
+                    #               stats (object), posted_at, hashtags, content, is_reshare
                     for item in data:
-                        post_id = item.get("postId") or item.get("urn") or item.get("url", "")
+                        post_id = item.get("activity_id") or item.get("full_urn") or item.get("post_url", "")
                         if not post_id or post_id in seen_ids:
                             continue
                         seen_ids.add(post_id)
 
                         # Get post text
-                        text = item.get("text") or item.get("postText") or ""
+                        text = item.get("text") or ""
                         title = text[:100] + "..." if len(text) > 100 else text
+
+                        # Extract author info (author is an object with name, headline, profile_url)
+                        author_obj = item.get("author") or {}
+                        author_name = author_obj.get("name", "") if isinstance(author_obj, dict) else str(author_obj)
+                        author_url = author_obj.get("profile_url", "") if isinstance(author_obj, dict) else ""
+                        author_headline = author_obj.get("headline", "") if isinstance(author_obj, dict) else ""
+
+                        # Extract stats (stats is an object with total_reactions, comments, shares)
+                        stats = item.get("stats") or {}
+                        reactions = stats.get("total_reactions", 0) if isinstance(stats, dict) else 0
+                        comments_count = stats.get("comments", 0) if isinstance(stats, dict) else 0
+
+                        # Extract posted_at (it's an object with display_text and timestamp)
+                        posted_at_obj = item.get("posted_at") or {}
+                        if isinstance(posted_at_obj, dict):
+                            # Convert Unix timestamp (ms) to ISO string
+                            ts = posted_at_obj.get("timestamp")
+                            if ts:
+                                from datetime import datetime
+                                posted_at_str = datetime.fromtimestamp(ts / 1000).isoformat()
+                            else:
+                                posted_at_str = posted_at_obj.get("display_text", "")
+                        else:
+                            posted_at_str = str(posted_at_obj)
 
                         post = LinkedInPost(
                             source_id=f"li_post_{hash(post_id) % 10**8}",
                             title=title,
                             body=text[:2000] if text else None,
-                            url=item.get("postUrl") or item.get("url") or "",
-                            author=item.get("authorName") or item.get("author", {}).get("name", ""),
-                            author_url=item.get("authorProfileUrl") or item.get("author", {}).get("url", ""),
-                            author_headline=item.get("authorHeadline") or item.get("author", {}).get("headline", ""),
-                            posted_at=item.get("postedAt") or item.get("publishedAt") or item.get("date", ""),
-                            reactions=item.get("totalReactions") or item.get("likes", 0),
-                            comments=item.get("totalComments") or item.get("comments", 0),
+                            url=item.get("post_url") or "",
+                            author=author_name,
+                            author_url=author_url,
+                            author_headline=author_headline,
+                            posted_at=posted_at_str,
+                            reactions=reactions,
+                            comments=comments_count,
                         )
                         all_posts.append(post.model_dump())
 
                 except Exception as e:
-                    print(f"Error searching LinkedIn for '{search_term}': {e}")
+                    logger.error(f"Error searching LinkedIn for '{search_term}': {e}")
                     continue
 
         return {"posts": all_posts, "count": len(all_posts)}

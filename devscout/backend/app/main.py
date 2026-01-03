@@ -1,4 +1,4 @@
-"""Reddit Scout API - Find relevant posts and generate responses."""
+"""DevScout API - Find opportunities and build credibility."""
 
 from contextlib import asynccontextmanager
 
@@ -7,7 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
 from .database import init_db
-from .routers import posts_router, prospects_router
+from .routers import (
+    posts_router,
+    prospects_router,
+    dismissals_router,
+    scheduling_router,
+    comments_router,
+    linkedin_router,
+)
 
 
 @asynccontextmanager
@@ -18,9 +25,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Reddit Scout",
-    description="Find relevant Reddit posts and generate responses",
-    version="1.0.0",
+    title="DevScout",
+    description="Find opportunities and build developer credibility",
+    version="2.0.0",
     lifespan=lifespan,
     # Disable docs for stealth
     docs_url=None,
@@ -76,3 +83,7 @@ async def health():
 # Register routers
 app.include_router(posts_router)
 app.include_router(prospects_router)
+app.include_router(dismissals_router)
+app.include_router(scheduling_router)
+app.include_router(comments_router)
+app.include_router(linkedin_router)
