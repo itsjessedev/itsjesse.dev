@@ -4,6 +4,10 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
   fetchAndScoreProspects, getStoredProspects, getProspectStats, updateProspect as updateProspectAPI, deleteProspect as deleteProspectAPI, clearAllProspects, getAvailablePlatforms, getTotalSourceCount,
   // LinkedIn Post Templates
   LINKEDIN_POST_TEMPLATES, generateLinkedInPost, getLinkedInPostIdeas, getLinkedInPostCategories,
+  // LinkedIn Comments
+  postLinkedInComment,
+  // Dismissals (cross-device persistence)
+  dismissItem, getDismissedIds, clearDismissals,
 } from './services/api';
 
 // ==============================================================================
@@ -33,12 +37,11 @@ const TAB_CONFIG = {
     label: 'LinkedIn',
     color: '#0A66C2',
     subTabs: [
-      { id: 'leads', label: 'Job Leads' },
       { id: 'schedule', label: 'Post Schedule' },
       { id: 'engagement', label: 'Engagement' },
       { id: 'comments', label: 'Comments' },
     ],
-    defaultSubTab: 'leads',
+    defaultSubTab: 'schedule',
   },
   opportunities: {
     label: 'Opportunities',
@@ -1115,7 +1118,7 @@ function App() {
   const [mainTab, setMainTab] = useState('reddit'); // 'reddit', 'linkedin', 'opportunities'
   const [subTabs, setSubTabs] = useState({
     reddit: 'schedule',    // 'schedule', 'engagement', 'comments'
-    linkedin: 'leads',     // 'leads', 'schedule', 'engagement', 'comments'
+    linkedin: 'schedule',  // 'schedule', 'engagement', 'comments'
     opportunities: 'all',  // 'all', 'tech', 'github'
   });
 
@@ -1161,7 +1164,7 @@ function App() {
 
   const [respondedPosts, setRespondedPosts] = useState(() => loadPersistedData('responded_posts'));
   const [postRepliesData, setPostRepliesData] = useState(() => loadPersistedData('replies_data', {}));
-  const [dismissedReplies, setDismissedReplies] = useState(() => loadPersistedData('dismissed_replies', []));
+  const [dismissedReplies, setDismissedReplies] = useState([]);
   const [repliesFetching, setRepliesFetching] = useState(false);
   const [expandedPosts, setExpandedPosts] = useState({}); // postId -> boolean
   const [pollingActive, setPollingActive] = useState(false);
@@ -1189,6 +1192,8 @@ function App() {
   const [linkedInEngagementFetching, setLinkedInEngagementFetching] = useState(false);
   const [linkedInEngagementResponses, setLinkedInEngagementResponses] = useState({}); // postId -> response text
   const [generatingLinkedInEngagement, setGeneratingLinkedInEngagement] = useState({}); // postId -> boolean
+  const [postingLinkedInComment, setPostingLinkedInComment] = useState({}); // postId -> boolean
+  const [dismissedLinkedInEngagement, setDismissedLinkedInEngagement] = useState([]);
 
   // LinkedIn Post Schedule
   const [linkedInScheduledPosts, setLinkedInScheduledPosts] = useState([]);
@@ -1225,6 +1230,7 @@ function App() {
   const [newsProgress, setNewsProgress] = useState(null);
   const [newsResponses, setNewsResponses] = useState({});
   const [generatingNews, setGeneratingNews] = useState({});
+  const [dismissedNews, setDismissedNews] = useState([]);
 
   // GitHub Issues - persisted
   const [githubIssues, setGithubIssues] = useState(() => {
@@ -1233,6 +1239,7 @@ function App() {
   });
   const [githubFetching, setGithubFetching] = useState(false);
   const [githubProgress, setGithubProgress] = useState(null);
+  const [dismissedGitHub, setDismissedGitHub] = useState([]);
 
   // ==============================================================================
   // NOTIFICATIONS
@@ -1649,9 +1656,18 @@ function App() {
     }
   }, [postRepliesData]);
 
+  // Load dismissed replies from backend (cross-device sync)
   useEffect(() => {
-    savePersistedData('dismissed_replies', dismissedReplies);
-  }, [dismissedReplies]);
+    const loadDismissedReplies = async () => {
+      try {
+        const ids = await getDismissedIds('reddit_reply');
+        setDismissedReplies(ids);
+      } catch (err) {
+        console.error('Failed to load dismissed replies:', err);
+      }
+    };
+    loadDismissedReplies();
+  }, []);
 
   // Persist LinkedIn leads
   useEffect(() => {
@@ -1662,6 +1678,45 @@ function App() {
   useEffect(() => {
     savePersistedData('linkedin_engagement', linkedInEngagement);
   }, [linkedInEngagement]);
+
+  // Load dismissed LinkedIn engagement posts from backend (cross-device sync)
+  useEffect(() => {
+    const loadDismissed = async () => {
+      try {
+        const ids = await getDismissedIds('linkedin_engagement');
+        setDismissedLinkedInEngagement(ids);
+      } catch (err) {
+        console.error('Failed to load dismissed LinkedIn engagement:', err);
+      }
+    };
+    loadDismissed();
+  }, []);
+
+  // Load dismissed News from backend (cross-device sync)
+  useEffect(() => {
+    const loadDismissedNews = async () => {
+      try {
+        const ids = await getDismissedIds('news_item');
+        setDismissedNews(ids);
+      } catch (err) {
+        console.error('Failed to load dismissed news:', err);
+      }
+    };
+    loadDismissedNews();
+  }, []);
+
+  // Load dismissed GitHub issues from backend (cross-device sync)
+  useEffect(() => {
+    const loadDismissedGitHub = async () => {
+      try {
+        const ids = await getDismissedIds('github_issue');
+        setDismissedGitHub(ids);
+      } catch (err) {
+        console.error('Failed to load dismissed GitHub issues:', err);
+      }
+    };
+    loadDismissedGitHub();
+  }, []);
 
   // Persist GitHub issues
   useEffect(() => {
@@ -1693,8 +1748,16 @@ function App() {
     setExpandedPosts(prev => ({ ...prev, [postId]: !prev[postId] }));
   };
 
-  const dismissReply = (replyId) => {
+  const dismissReply = async (replyId, replyUrl = null) => {
+    // Optimistic update
     setDismissedReplies(prev => [...prev, replyId]);
+    // Persist to backend
+    try {
+      await dismissItem('reddit_reply', 'reddit', replyId, replyUrl);
+    } catch (err) {
+      console.error('Failed to persist reply dismissal:', err);
+      setDismissedReplies(prev => prev.filter(id => id !== replyId));
+    }
   };
 
   const handleGenerateReply = async (reply, parentComment) => {
@@ -1759,8 +1822,12 @@ function App() {
       const response = await fetch('/api/linkedin/engagement?limit=50');
       if (response.ok) {
         const data = await response.json();
-        setLinkedInEngagement(data);
-        if (data.length === 0) {
+        // Filter out previously dismissed posts
+        const filteredData = data.filter(post => !dismissedLinkedInEngagement.includes(post.source_id));
+        setLinkedInEngagement(filteredData);
+        if (filteredData.length === 0 && data.length > 0) {
+          alert('All fetched posts were previously dismissed. Try again later for new posts.');
+        } else if (data.length === 0) {
           alert('No engagement posts found. Try again later.');
         }
       } else if (response.status === 503) {
@@ -1804,6 +1871,66 @@ function App() {
       alert('Failed to generate response: ' + err.message);
     } finally {
       setGeneratingLinkedInEngagement(prev => ({ ...prev, [postId]: false }));
+    }
+  };
+
+  // Post a comment directly to LinkedIn
+  const handlePostLinkedInComment = async (post) => {
+    const postId = post.source_id;
+    const commentText = linkedInEngagementResponses[postId];
+
+    if (!commentText || !commentText.trim()) {
+      alert('No response to post. Generate a response first.');
+      return;
+    }
+
+    setPostingLinkedInComment(prev => ({ ...prev, [postId]: true }));
+    try {
+      await postLinkedInComment(post.url, commentText);
+      // Success - remove from list
+      setLinkedInEngagement(prev => prev.filter(p => p.source_id !== postId));
+      setLinkedInEngagementResponses(prev => {
+        const updated = { ...prev };
+        delete updated[postId];
+        return updated;
+      });
+      alert('Comment posted successfully!');
+    } catch (err) {
+      console.error('Failed to post LinkedIn comment:', err);
+      alert('Failed to post comment: ' + err.message);
+    } finally {
+      setPostingLinkedInComment(prev => ({ ...prev, [postId]: false }));
+    }
+  };
+
+  // Dismiss a LinkedIn engagement post (persisted to backend for cross-device sync)
+  const handleDismissLinkedInEngagement = async (post) => {
+    const postId = post.source_id;
+    // Optimistic update - remove from UI immediately
+    setDismissedLinkedInEngagement(prev => [...prev, postId]);
+    setLinkedInEngagement(prev => prev.filter(p => p.source_id !== postId));
+
+    // Persist to backend
+    try {
+      await dismissItem('linkedin_engagement', 'linkedin', postId, post.url);
+    } catch (err) {
+      console.error('Failed to persist dismissal:', err);
+      // Rollback on error
+      setDismissedLinkedInEngagement(prev => prev.filter(id => id !== postId));
+    }
+  };
+
+  // Clear all dismissed LinkedIn engagement posts
+  const handleClearDismissedLinkedInEngagement = async () => {
+    const count = dismissedLinkedInEngagement.length;
+    if (!confirm(`Clear ${count} dismissed posts? They will reappear on next fetch.`)) return;
+
+    try {
+      await clearDismissals('linkedin_engagement');
+      setDismissedLinkedInEngagement([]);
+    } catch (err) {
+      console.error('Failed to clear dismissals:', err);
+      alert('Failed to clear dismissals: ' + err.message);
     }
   };
 
@@ -1945,8 +2072,10 @@ function App() {
       const newsData = await fetchNews((current, total, source) => {
         setNewsProgress({ current, total, source });
       });
-      setNews(newsData);
-      savePersistedData('news', newsData);
+      // Filter out previously dismissed items
+      const filteredNews = newsData.filter(item => !dismissedNews.includes(item.reddit_id));
+      setNews(filteredNews);
+      savePersistedData('news', filteredNews);
     } catch (err) {
       alert('Failed to fetch news: ' + err.message);
     } finally {
@@ -1968,9 +2097,18 @@ function App() {
     }
   };
 
-  const handleDismissNews = (itemId) => {
+  const handleDismissNews = async (item) => {
+    const itemId = item.reddit_id;
+    // Optimistic update
+    setDismissedNews(prev => [...prev, itemId]);
     setNews(prev => prev.filter(n => n.reddit_id !== itemId));
-    savePersistedData('news', news.filter(n => n.reddit_id !== itemId));
+    // Persist to backend
+    try {
+      await dismissItem('news_item', item.subreddit || 'news', itemId, item.url);
+    } catch (err) {
+      console.error('Failed to persist news dismissal:', err);
+      setDismissedNews(prev => prev.filter(id => id !== itemId));
+    }
   };
 
   const handleClearNews = () => {
@@ -1986,7 +2124,9 @@ function App() {
       const issues = await fetchGitHubIssues((current, total, label) => {
         setGithubProgress({ current, total, label });
       });
-      setGithubIssues(issues);
+      // Filter out previously dismissed issues
+      const filteredIssues = issues.filter(issue => !dismissedGitHub.includes(issue.id) && !dismissedGitHub.includes(String(issue.id)));
+      setGithubIssues(filteredIssues);
     } catch (err) {
       alert('Failed to fetch GitHub issues: ' + err.message);
     } finally {
@@ -2000,8 +2140,18 @@ function App() {
     setGithubIssues([]);
   };
 
-  const handleDismissGitHub = (issueId) => {
+  const handleDismissGitHub = async (issue) => {
+    const issueId = issue.id;
+    // Optimistic update
+    setDismissedGitHub(prev => [...prev, issueId]);
     setGithubIssues(prev => prev.filter(i => i.id !== issueId));
+    // Persist to backend
+    try {
+      await dismissItem('github_issue', 'github', String(issueId), issue.url);
+    } catch (err) {
+      console.error('Failed to persist GitHub dismissal:', err);
+      setDismissedGitHub(prev => prev.filter(id => id !== issueId));
+    }
   };
 
   const handleFetchProspects = async () => {
@@ -2808,92 +2958,6 @@ function App() {
 
       {/* ============== LINKEDIN TAB ============== */}
 
-      {/* LinkedIn > Job Leads */}
-      {mainTab === 'linkedin' && currentSubTab === 'leads' && (
-        <div>
-          {/* LinkedIn Auth Status Card - hidden until OAuth enabled */}
-          {LINKEDIN_OAUTH_ENABLED && (
-            <div style={styles.linkedInAuthCard}>
-              <div style={styles.linkedInAuthHeader}>
-                <div style={styles.linkedInAuthStatus}>
-                  <div style={{
-                    ...styles.authDot,
-                    background: linkedInAuth?.is_authenticated ? '#22c55e' : '#ef4444'
-                  }} />
-                  <span style={{ fontWeight: '500' }}>
-                    {linkedInAuthLoading ? 'Checking...' :
-                      linkedInAuth?.is_authenticated
-                        ? `Connected as ${linkedInAuth.person_name}`
-                        : 'Not connected'}
-                  </span>
-                </div>
-                <button
-                  data-btn="linkedin"
-                  style={{ ...styles.btn, ...styles.btnLinkedIn }}
-                  onClick={handleLinkedInConnect}
-                >
-                  {linkedInAuth?.is_authenticated ? 'Reconnect' : 'Connect LinkedIn'}
-                </button>
-              </div>
-              {linkedInAuth?.needs_refresh && (
-                <div style={{ color: '#f59e0b', fontSize: '13px', marginTop: '8px' }}>
-                  ⚠️ Token expires in {linkedInAuth.expires_in_days} days. Please reconnect soon.
-                </div>
-              )}
-            </div>
-          )}
-
-          <div style={styles.controls} className="devscout-controls">
-            <button
-              data-btn="primary"
-              style={{ ...styles.btn, ...styles.btnPrimary }}
-              onClick={handleFetchLinkedInLeads}
-              disabled={linkedInLeadsFetching}
-            >
-              {linkedInLeadsFetching ? 'Fetching...' : 'Find Job Leads'}
-            </button>
-          </div>
-
-          <div style={styles.postList}>
-            {linkedInLeads.length === 0 ? (
-              <div style={styles.empty} className="devscout-empty">
-                No LinkedIn job leads found. Click "Find Job Leads" to search for people looking for developers.
-              </div>
-            ) : (
-              linkedInLeads.map((lead) => (
-                <div key={lead.source_id} style={styles.post} className="devscout-post">
-                  <div style={styles.postHeader}>
-                    <span style={{ ...styles.subreddit, color: '#0A66C2', background: '#0A66C220' }}>LinkedIn</span>
-                    <span style={styles.score}>{lead.reactions} reactions</span>
-                  </div>
-                  <h3 style={styles.postTitle}>
-                    <a href={lead.url} target="_blank" rel="noopener noreferrer" style={styles.postLink}>
-                      {lead.title}
-                    </a>
-                  </h3>
-                  <div style={styles.postMeta}>
-                    {lead.author} · {lead.author_headline}
-                  </div>
-                  {lead.body && (
-                    <div style={styles.postBody}>{lead.body}</div>
-                  )}
-                  <div style={styles.actions}>
-                    <a
-                      href={lead.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ ...styles.btn, ...styles.btnLinkedIn, textDecoration: 'none' }}
-                    >
-                      View on LinkedIn
-                    </a>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
-
       {/* LinkedIn > Post Schedule */}
       {mainTab === 'linkedin' && currentSubTab === 'schedule' && (
         <div>
@@ -3130,6 +3194,15 @@ function App() {
             >
               {linkedInEngagementFetching ? 'Fetching...' : 'Find Posts to Engage With'}
             </button>
+            {dismissedLinkedInEngagement.length > 0 && (
+              <button
+                data-btn="secondary"
+                style={{ ...styles.btn, background: '#374151', color: '#9ca3af' }}
+                onClick={handleClearDismissedLinkedInEngagement}
+              >
+                Clear Dismissed ({dismissedLinkedInEngagement.length})
+              </button>
+            )}
           </div>
 
           <div style={styles.postList}>
@@ -3185,16 +3258,40 @@ function App() {
 
                   <div style={styles.actions}>
                     {!linkedInEngagementResponses[post.source_id] ? (
-                      <button
-                        data-btn="primary"
-                        style={{ ...styles.btn, ...styles.btnPrimary }}
-                        onClick={() => handleGenerateLinkedInEngagementResponse(post)}
-                        disabled={generatingLinkedInEngagement[post.source_id]}
-                      >
-                        {generatingLinkedInEngagement[post.source_id] ? 'Generating...' : 'Generate Response'}
-                      </button>
+                      <>
+                        <button
+                          data-btn="primary"
+                          style={{ ...styles.btn, ...styles.btnPrimary }}
+                          onClick={() => handleGenerateLinkedInEngagementResponse(post)}
+                          disabled={generatingLinkedInEngagement[post.source_id]}
+                        >
+                          {generatingLinkedInEngagement[post.source_id] ? 'Generating...' : 'Generate Response'}
+                        </button>
+                        <button
+                          data-btn="dismiss"
+                          style={{ ...styles.btn, background: '#374151', color: '#9ca3af' }}
+                          onClick={() => handleDismissLinkedInEngagement(post)}
+                        >
+                          Dismiss
+                        </button>
+                      </>
                     ) : (
                       <>
+                        {LINKEDIN_OAUTH_ENABLED && (
+                          <button
+                            data-btn="linkedin-post"
+                            style={{
+                              ...styles.btn,
+                              background: 'linear-gradient(135deg, #0A66C2 0%, #004182 100%)',
+                              color: '#fff',
+                              fontWeight: '600',
+                            }}
+                            onClick={() => handlePostLinkedInComment(post)}
+                            disabled={postingLinkedInComment[post.source_id]}
+                          >
+                            {postingLinkedInComment[post.source_id] ? '⏳ Posting...' : '💬 Post Comment'}
+                          </button>
+                        )}
                         <button
                           data-btn="linkedin"
                           style={{ ...styles.btn, ...styles.btnLinkedIn }}
@@ -3210,7 +3307,7 @@ function App() {
                             });
                           }}
                         >
-                          📋 Copy & View on LinkedIn
+                          📋 Copy & Open
                         </button>
                         <button
                           data-btn="secondary"
@@ -3223,7 +3320,7 @@ function App() {
                         <button
                           data-btn="dismiss"
                           style={{ ...styles.btn, background: '#374151', color: '#9ca3af' }}
-                          onClick={() => setLinkedInEngagement(prev => prev.filter(p => p.source_id !== post.source_id))}
+                          onClick={() => handleDismissLinkedInEngagement(post)}
                         >
                           Dismiss
                         </button>
@@ -3349,7 +3446,10 @@ function App() {
               aiProspects.map((prospect) => (
                 <div key={prospect.id} style={styles.post} className="devscout-post">
                   <div style={styles.postHeader}>
-                    <span style={{ ...styles.subreddit, color: '#22c55e' }}>{prospect.platform}</span>
+                    <span style={{ ...styles.subreddit, color: '#22c55e', textTransform: 'capitalize' }}>
+                      {prospect.source || prospect.platform || 'Unknown'}
+                      {prospect.platform_detail && ` · ${prospect.platform_detail}`}
+                    </span>
                     <span style={{
                       ...styles.score,
                       background: prospect.fit_score >= 70 ? '#ef4444' : prospect.fit_score >= 40 ? '#f59e0b' : '#3b82f6'
@@ -3484,7 +3584,7 @@ function App() {
                         <button
                           data-btn="skip"
                           style={{ ...styles.btn, ...styles.btnSkip }}
-                          onClick={() => handleDismissNews(item.reddit_id)}
+                          onClick={() => handleDismissNews(item)}
                         >
                           Dismiss
                         </button>
@@ -3618,7 +3718,7 @@ function App() {
                     <button
                       data-btn="skip"
                       style={{ ...styles.btn, ...styles.btnSkip }}
-                      onClick={() => handleDismissGitHub(issue.id)}
+                      onClick={() => handleDismissGitHub(issue)}
                     >
                       Dismiss
                     </button>

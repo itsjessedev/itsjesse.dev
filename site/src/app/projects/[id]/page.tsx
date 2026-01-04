@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { projects, Project } from "@/data/projects";
 import ImageCarousel from "@/components/ImageCarousel";
+import HeaderLogo from "@/components/HeaderLogo";
 
 // Generate static params for all projects
 export function generateStaticParams() {
@@ -412,9 +413,7 @@ export default async function ProjectPage({
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-[var(--bg-primary)]/80 border-b border-[var(--border)]">
         <div className="container flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold text-gradient">
-            Jesse Eldridge
-          </Link>
+          <HeaderLogo />
           <div className="flex items-center gap-3 md:gap-6">
             <Link
               href="/projects"

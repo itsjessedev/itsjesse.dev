@@ -223,7 +223,7 @@ export const projects: Project[] = [
     category: 'native-apps',
     image: '/projects/itsjesse-mobile/hero.png',
     githubUrl: 'https://github.com/itsjessedev/itsjesse-mobile',
-    downloadUrl: 'https://dl.itsjesse.dev/itsjesse-mobile-v11.apk',
+    downloadUrl: 'https://dl.itsjesse.dev/itsjesse-mobile-v12.apk',
     featured: false,
   },
   {

@@ -94,9 +94,50 @@ class ProspectScorer:
     """Scores prospects using LLM analysis."""
 
     def __init__(self):
-        self.api_key = settings.openrouter_api_key
+        self.api_keys = [k for k in [settings.openrouter_api_key, settings.openrouter_api_key_2] if k]
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.model = "google/gemini-2.0-flash-001"
+
+    async def _call_openrouter(self, messages: list) -> Optional[str]:
+        """Call OpenRouter API with automatic fallback between keys."""
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
+            return None
+
+        for i, api_key in enumerate(self.api_keys):
+            try:
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(
+                        self.base_url,
+                        headers={
+                            "Authorization": f"Bearer {api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json={
+                            "model": self.model,
+                            "messages": messages,
+                            "temperature": 0.3,
+                            "max_tokens": 500,
+                        },
+                        timeout=30.0,
+                    )
+
+                    if response.status_code == 200:
+                        data = response.json()
+                        return data["choices"][0]["message"]["content"].strip()
+                    elif response.status_code == 402:
+                        print(f"OpenRouter key {i+1} exhausted, trying next...")
+                        continue
+                    else:
+                        print(f"OpenRouter error: {response.status_code} - {response.text}")
+                        return None
+
+            except Exception as e:
+                print(f"Error calling OpenRouter with key {i+1}: {e}")
+                continue
+
+        print("All OpenRouter API keys exhausted or failed")
+        return None
 
     async def score_single(self, prospect: ProspectInput) -> Dict[str, Any]:
         """
@@ -104,8 +145,8 @@ class ProspectScorer:
 
         Returns the original prospect data merged with AI scoring.
         """
-        if not self.api_key:
-            print("OpenRouter API key not configured")
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
             return self._error_response(prospect, "API key not configured")
 
         # Build the prompt
@@ -117,77 +158,52 @@ class ProspectScorer:
             author=prospect.author or "unknown",
         )
 
+        ai_response = await self._call_openrouter([{"role": "user", "content": prompt}])
+
+        if not ai_response:
+            return self._error_response(prospect, "API call failed")
+
+        # Parse the JSON response
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.base_url,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "model": self.model,
-                        "messages": [
-                            {"role": "user", "content": prompt},
-                        ],
-                        "temperature": 0.3,  # Lower temp for consistent scoring
-                        "max_tokens": 500,
-                    },
-                    timeout=30.0,
-                )
+            # Handle potential markdown code blocks
+            if ai_response.startswith("```"):
+                ai_response = ai_response.split("```")[1]
+                if ai_response.startswith("json"):
+                    ai_response = ai_response[4:]
 
-                if response.status_code != 200:
-                    print(f"OpenRouter error: {response.status_code} - {response.text}")
-                    return self._error_response(prospect, f"API error: {response.status_code}")
+            ai_score = json.loads(ai_response)
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse AI response: {e}")
+            print(f"Response was: {ai_response[:500]}")
+            return self._error_response(prospect, "Failed to parse AI response")
 
-                data = response.json()
-                ai_response = data["choices"][0]["message"]["content"].strip()
-
-                # Parse the JSON response
-                try:
-                    # Handle potential markdown code blocks
-                    if ai_response.startswith("```"):
-                        ai_response = ai_response.split("```")[1]
-                        if ai_response.startswith("json"):
-                            ai_response = ai_response[4:]
-
-                    ai_score = json.loads(ai_response)
-                except json.JSONDecodeError as e:
-                    print(f"Failed to parse AI response: {e}")
-                    print(f"Response was: {ai_response[:500]}")
-                    return self._error_response(prospect, "Failed to parse AI response")
-
-                # Merge prospect data with AI score
-                return {
-                    # Original prospect data
-                    "source": prospect.source,
-                    "source_id": prospect.source_id,
-                    "platform_detail": prospect.platform_detail,
-                    "title": prospect.title,
-                    "body": prospect.body,
-                    "url": prospect.url,
-                    "author": prospect.author,
-                    "posted_at": prospect.posted_at,
-                    # AI scoring
-                    "ai_score": ai_score,
-                    "is_lead": ai_score.get("is_lead", False),
-                    "confidence": ai_score.get("confidence", 0.0),
-                    "fit_score": ai_score.get("fit_score", 0),
-                    "urgency": ai_score.get("urgency", "unknown"),
-                    "budget_signal": ai_score.get("budget_signal", "unknown"),
-                    "lead_type": ai_score.get("lead_type", "unknown"),
-                    "key_need": ai_score.get("key_need", ""),
-                    "services_needed": ai_score.get("services_needed", []),
-                    "contact_info": ai_score.get("contact_info"),
-                    "company_name": ai_score.get("company_name"),
-                    "recommended_approach": ai_score.get("recommended_approach", ""),
-                    "red_flags": ai_score.get("red_flags", []),
-                    "skip_reason": ai_score.get("skip_reason"),
-                }
-
-        except Exception as e:
-            print(f"Error scoring prospect: {e}")
-            return self._error_response(prospect, str(e))
+        # Merge prospect data with AI score
+        return {
+            # Original prospect data
+            "source": prospect.source,
+            "source_id": prospect.source_id,
+            "platform_detail": prospect.platform_detail,
+            "title": prospect.title,
+            "body": prospect.body,
+            "url": prospect.url,
+            "author": prospect.author,
+            "posted_at": prospect.posted_at,
+            # AI scoring
+            "ai_score": ai_score,
+            "is_lead": ai_score.get("is_lead", False),
+            "confidence": ai_score.get("confidence", 0.0),
+            "fit_score": ai_score.get("fit_score", 0),
+            "urgency": ai_score.get("urgency", "unknown"),
+            "budget_signal": ai_score.get("budget_signal", "unknown"),
+            "lead_type": ai_score.get("lead_type", "unknown"),
+            "key_need": ai_score.get("key_need", ""),
+            "services_needed": ai_score.get("services_needed", []),
+            "contact_info": ai_score.get("contact_info"),
+            "company_name": ai_score.get("company_name"),
+            "recommended_approach": ai_score.get("recommended_approach", ""),
+            "red_flags": ai_score.get("red_flags", []),
+            "skip_reason": ai_score.get("skip_reason"),
+        }
 
     async def score_batch(
         self,

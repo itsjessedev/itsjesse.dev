@@ -67,6 +67,12 @@ class GenerateResponseRequest(BaseModel):
     author_headline: Optional[str] = None
 
 
+class LinkedInCommentRequest(BaseModel):
+    """Request to post a comment on a LinkedIn post."""
+    post_url: str  # LinkedIn post URL
+    comment_text: str
+
+
 # ============== OAuth Endpoints ==============
 
 @router.get("/auth/url")
@@ -261,6 +267,85 @@ async def publish_post(
         }
 
 
+@router.post("/comments")
+async def post_comment(
+    request: LinkedInCommentRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Post a comment on a LinkedIn post."""
+    import re
+
+    access_token = await get_linkedin_token(db)
+    auth = await db.get(LinkedInAuth, 1)
+
+    if not auth or not auth.person_id:
+        raise HTTPException(status_code=400, detail="Missing LinkedIn person ID")
+
+    # Extract activity ID from various LinkedIn URL formats
+    # Format 1: https://www.linkedin.com/feed/update/urn:li:activity:7123456789/
+    # Format 2: https://www.linkedin.com/posts/username_text-activity-7123456789-xxxx
+    # Format 3: https://www.linkedin.com/feed/update/urn:li:share:7123456789/
+
+    activity_urn = None
+    url = request.post_url
+
+    # Try to find activity URN directly in URL
+    urn_match = re.search(r'urn:li:(activity|share|ugcPost):(\d+)', url)
+    if urn_match:
+        urn_type = urn_match.group(1)
+        urn_id = urn_match.group(2)
+        activity_urn = f"urn:li:{urn_type}:{urn_id}"
+    else:
+        # Try to extract from posts URL format (activity ID after last hyphen before the end)
+        activity_match = re.search(r'-activity-(\d+)', url)
+        if activity_match:
+            activity_urn = f"urn:li:activity:{activity_match.group(1)}"
+
+    if not activity_urn:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not extract activity ID from LinkedIn URL. Please provide a valid post URL."
+        )
+
+    # LinkedIn Comments API
+    comment_data = {
+        "actor": f"urn:li:person:{auth.person_id}",
+        "message": {
+            "text": request.comment_text
+        }
+    }
+
+    # URL encode the URN for the API path
+    encoded_urn = activity_urn.replace(":", "%3A")
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"https://api.linkedin.com/v2/socialActions/{encoded_urn}/comments",
+            json=comment_data,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+                "X-Restli-Protocol-Version": "2.0.0",
+            },
+        )
+
+        if response.status_code not in [200, 201]:
+            logger.error(f"LinkedIn comment failed: {response.text}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to post comment: {response.text}"
+            )
+
+        result = response.json()
+        comment_id = result.get("id", "")
+
+        return {
+            "status": "posted",
+            "comment_id": comment_id,
+            "activity_urn": activity_urn,
+        }
+
+
 # ============== Engagement Endpoints ==============
 
 @router.get("/engagement", response_model=list[LinkedInEngagementPost])
@@ -312,6 +397,7 @@ class GenerateLinkedInPostRequest(BaseModel):
     """Request to generate a LinkedIn post."""
     idea_template: str
     category: str
+    length: str = "medium"  # short, medium, long
 
 
 @router.post("/generate-post")
@@ -322,6 +408,7 @@ async def generate_linkedin_post(request: GenerateLinkedInPostRequest):
     response = await generator.generate_linkedin_post(
         idea_template=request.idea_template,
         category=request.category,
+        length=request.length,
     )
 
     if not response:

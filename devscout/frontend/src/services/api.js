@@ -1232,62 +1232,156 @@ export function getIdeasForSubreddit(subreddit) {
 // LinkedIn post templates organized by category - professional dev content
 export const LINKEDIN_POST_TEMPLATES = {
   lessons_learned: [
-    { title: "The automation mistake that cost me a week of debugging", tags: ['automation', 'lessons'] },
-    { title: "Why I stopped over-engineering integrations", tags: ['integration', 'lessons'] },
-    { title: "3 things I wish I knew before building my first API integration", tags: ['api', 'lessons'] },
-    { title: "The hidden complexity of 'simple' data sync projects", tags: ['data', 'lessons'] },
-    { title: "What working with legacy APIs taught me about modern development", tags: ['api', 'lessons'] },
+    { title: "The automation mistake that cost me a week of debugging", tags: ['automation', 'lessons'], length: 'medium' },
+    { title: "Why I stopped over-engineering integrations", tags: ['integration', 'lessons'], length: 'short' },
+    { title: "3 things I wish I knew before building my first API integration", tags: ['api', 'lessons'], length: 'medium' },
+    { title: "The hidden complexity of 'simple' data sync projects", tags: ['data', 'lessons'], length: 'medium' },
+    { title: "What working with legacy APIs taught me about modern development", tags: ['api', 'lessons'], length: 'long' },
+    { title: "I broke a client's production system. Here's what I learned.", tags: ['lessons', 'mistakes'], length: 'medium' },
+    { title: "The best code I ever deleted", tags: ['lessons', 'refactoring'], length: 'short' },
+    { title: "Why my first automation project was a complete failure", tags: ['automation', 'lessons'], length: 'long' },
   ],
   technical_insights: [
-    { title: "How I approach debugging complex API integrations", tags: ['api', 'debugging', 'technical'] },
-    { title: "The architecture pattern I use for reliable data pipelines", tags: ['architecture', 'technical'] },
-    { title: "Why webhooks fail silently and how to prevent it", tags: ['webhooks', 'technical'] },
-    { title: "Building fault-tolerant automation: my go-to patterns", tags: ['automation', 'technical'] },
-    { title: "Rate limiting strategies that actually work in production", tags: ['api', 'technical'] },
+    { title: "How I approach debugging complex API integrations", tags: ['api', 'debugging'], length: 'medium' },
+    { title: "The architecture pattern I use for reliable data pipelines", tags: ['architecture'], length: 'long' },
+    { title: "Why webhooks fail silently and how to prevent it", tags: ['webhooks'], length: 'medium' },
+    { title: "Building fault-tolerant automation: my go-to patterns", tags: ['automation'], length: 'long' },
+    { title: "Rate limiting strategies that actually work in production", tags: ['api'], length: 'medium' },
+    { title: "The one thing most developers get wrong about error handling", tags: ['debugging'], length: 'short' },
+    { title: "Stop polling. Here's why webhooks are (usually) better.", tags: ['webhooks', 'architecture'], length: 'medium' },
+    { title: "How I structure Python projects for maintainability", tags: ['python', 'architecture'], length: 'long' },
+  ],
+  hot_takes: [
+    { title: "Unpopular opinion: most 'automation' just creates new problems", tags: ['automation', 'opinion'], length: 'short' },
+    { title: "No-code tools aren't killing developer jobs. Here's why.", tags: ['nocode', 'opinion'], length: 'medium' },
+    { title: "The 'move fast and break things' mentality is broken", tags: ['opinion', 'industry'], length: 'short' },
+    { title: "Stop calling everything an 'integration'. It's not.", tags: ['opinion'], length: 'short' },
+    { title: "AI won't replace developers. Bad developers will replace themselves.", tags: ['ai', 'opinion'], length: 'medium' },
+    { title: "Your startup doesn't need microservices", tags: ['architecture', 'opinion'], length: 'short' },
+    { title: "The obsession with 'clean code' is making worse code", tags: ['opinion', 'code'], length: 'medium' },
+  ],
+  quick_tips: [
+    { title: "One line that makes API debugging 10x easier", tags: ['api', 'tips'], length: 'short' },
+    { title: "The fastest way to test webhooks locally", tags: ['webhooks', 'tips'], length: 'short' },
+    { title: "Stop hardcoding API keys. Do this instead.", tags: ['security', 'tips'], length: 'short' },
+    { title: "A simple trick for handling API rate limits gracefully", tags: ['api', 'tips'], length: 'short' },
+    { title: "The Chrome DevTools feature most developers don't know about", tags: ['debugging', 'tips'], length: 'short' },
+    { title: "Quick way to mock any API response for testing", tags: ['testing', 'tips'], length: 'short' },
+    { title: "The logging pattern that's saved me countless hours", tags: ['debugging', 'tips'], length: 'short' },
+  ],
+  storytelling: [
+    { title: "A client asked me to 'just connect these two apps'. 3 months later...", tags: ['story', 'integration'], length: 'long' },
+    { title: "The 2am debugging session that changed how I write code", tags: ['story', 'debugging'], length: 'medium' },
+    { title: "How a 'quick fix' turned into my biggest project ever", tags: ['story', 'freelance'], length: 'long' },
+    { title: "The weirdest API bug I've ever encountered", tags: ['story', 'api'], length: 'medium' },
+    { title: "I automated myself out of a job. Best decision ever.", tags: ['story', 'automation'], length: 'medium' },
+    { title: "The project that almost made me quit freelancing", tags: ['story', 'freelance'], length: 'long' },
   ],
   industry_observations: [
-    { title: "The real reason most automation projects fail", tags: ['automation', 'industry'] },
-    { title: "Why businesses are still struggling with data silos in 2026", tags: ['data', 'industry'] },
-    { title: "The growing gap between no-code tools and real integration needs", tags: ['nocode', 'industry'] },
-    { title: "What I'm seeing in the API integration landscape right now", tags: ['api', 'industry'] },
-    { title: "Why 'just use Zapier' isn't always the answer", tags: ['automation', 'industry'] },
+    { title: "The real reason most automation projects fail", tags: ['automation', 'industry'], length: 'medium' },
+    { title: "Why businesses are still struggling with data silos in 2025", tags: ['data', 'industry'], length: 'long' },
+    { title: "The growing gap between no-code tools and real integration needs", tags: ['nocode', 'industry'], length: 'medium' },
+    { title: "What I'm seeing in the API integration landscape right now", tags: ['api', 'industry'], length: 'medium' },
+    { title: "Why 'just use Zapier' isn't always the answer", tags: ['automation', 'industry'], length: 'short' },
+    { title: "The tools that are quietly changing how we build software", tags: ['tools', 'industry'], length: 'medium' },
+    { title: "Freelancing in 2025: what's actually working", tags: ['freelance', 'industry'], length: 'long' },
   ],
   how_i_built: [
-    { title: "How I built a real-time sync between two systems that 'don't talk to each other'", tags: ['integration', 'casestudy'] },
-    { title: "Building an automated reporting system from scratch", tags: ['automation', 'casestudy'] },
-    { title: "How I automated a 4-hour manual process down to 5 minutes", tags: ['automation', 'casestudy'] },
-    { title: "Creating a custom dashboard that pulls from 5 different APIs", tags: ['api', 'casestudy'] },
-    { title: "The workflow automation that saved my client 20 hours/week", tags: ['automation', 'casestudy'] },
+    { title: "How I built a real-time sync between two systems that 'don't talk to each other'", tags: ['integration', 'casestudy'], length: 'long' },
+    { title: "Building an automated reporting system from scratch", tags: ['automation', 'casestudy'], length: 'long' },
+    { title: "How I automated a 4-hour manual process down to 5 minutes", tags: ['automation', 'casestudy'], length: 'medium' },
+    { title: "Creating a custom dashboard that pulls from 5 different APIs", tags: ['api', 'casestudy'], length: 'long' },
+    { title: "The workflow automation that saved my client 20 hours/week", tags: ['automation', 'casestudy'], length: 'medium' },
+    { title: "Building a Slack bot that actually gets used", tags: ['bots', 'casestudy'], length: 'medium' },
+    { title: "How I built a web scraper that runs itself", tags: ['scraping', 'casestudy'], length: 'long' },
   ],
-  tips_and_tricks: [
-    { title: "How I debug API integrations when the error messages make no sense", tags: ['api', 'tips'] },
-    { title: "My checklist for bulletproof webhook handlers", tags: ['webhooks', 'tips'] },
-    { title: "Quick wins for making your automation more reliable", tags: ['automation', 'tips'] },
-    { title: "The questions I always ask before starting an integration project", tags: ['integration', 'tips'] },
-    { title: "Tools I use daily for API debugging and testing", tags: ['api', 'tools'] },
+  questions: [
+    { title: "What's the worst API you've ever had to work with?", tags: ['api', 'discussion'], length: 'short' },
+    { title: "Developers: what's your biggest time sink that could be automated?", tags: ['automation', 'discussion'], length: 'short' },
+    { title: "What tool do you use that you think more people should know about?", tags: ['tools', 'discussion'], length: 'short' },
+    { title: "What's a 'best practice' you've learned to ignore?", tags: ['discussion', 'opinion'], length: 'short' },
+    { title: "How do you explain what you do to non-technical people?", tags: ['discussion', 'freelance'], length: 'short' },
+    { title: "What's the most underrated programming skill?", tags: ['discussion', 'skills'], length: 'short' },
+  ],
+  personal_updates: [
+    { title: "What I've been working on lately", tags: ['update', 'personal'], length: 'short' },
+    { title: "Lessons from my first year of freelancing", tags: ['freelance', 'personal'], length: 'long' },
+    { title: "Why I chose to specialize in automation", tags: ['personal', 'career'], length: 'medium' },
+    { title: "Taking on a new challenge this month", tags: ['update', 'personal'], length: 'short' },
+    { title: "Reflecting on my biggest wins (and failures) this quarter", tags: ['personal', 'reflection'], length: 'medium' },
+  ],
+  value_posts: [
+    { title: "Free resources I recommend for learning API development", tags: ['resources', 'learning'], length: 'medium' },
+    { title: "The tech stack I use for most automation projects", tags: ['tools', 'tech'], length: 'medium' },
+    { title: "5 signs your business needs custom automation (not another SaaS tool)", tags: ['automation', 'business'], length: 'long' },
+    { title: "A simple framework for scoping any integration project", tags: ['integration', 'framework'], length: 'medium' },
+    { title: "How to evaluate if an API is worth building against", tags: ['api', 'evaluation'], length: 'medium' },
+    { title: "Red flags I look for before taking on a project", tags: ['freelance', 'advice'], length: 'medium' },
   ],
   services_soft_sell: [
-    { title: "What I look for when evaluating integration projects", tags: ['integration', 'services'] },
-    { title: "The difference between a quick fix and a proper automation solution", tags: ['automation', 'services'] },
-    { title: "Why I focus on automation and API integrations", tags: ['automation', 'services'] },
-    { title: "How I scope custom integration projects", tags: ['integration', 'services'] },
-    { title: "My approach to building automation that lasts", tags: ['automation', 'services'] },
+    // API Integration
+    { title: "Just finished connecting Salesforce to a client's inventory system. The sync runs every 5 minutes now instead of weekly CSV exports.", tags: ['api', 'integration', 'services'], length: 'medium' },
+    { title: "APIs that 'don't have integrations' usually do. You just need someone who reads the docs.", tags: ['api', 'integration', 'services'], length: 'short' },
+    { title: "Built a custom Shopify + Amazon + eBay sync this week. Multi-platform e-commerce is messy, but it doesn't have to stay that way.", tags: ['api', 'ecommerce', 'services'], length: 'medium' },
+    { title: "If you're manually moving data between two systems, there's probably an API for that.", tags: ['api', 'automation', 'services'], length: 'short' },
+    // Workflow Automation
+    { title: "Automated a 4-hour weekly reporting process down to a 15-minute cron job. The ROI on automation projects like this is usually measured in weeks, not months.", tags: ['automation', 'services'], length: 'medium' },
+    { title: "The best automation isn't flashy. It just quietly runs in the background while you focus on actual work.", tags: ['automation', 'services'], length: 'short' },
+    { title: "Replaced 3 Zapier zaps with one Python script. Sometimes the 'no-code' solution costs more than the code solution.", tags: ['automation', 'services'], length: 'short' },
+    { title: "Every manual process is a candidate for automation. The question is whether the time saved is worth the build time. Usually, yes.", tags: ['automation', 'services'], length: 'medium' },
+    // Web Scraping
+    { title: "Set up a competitor price monitoring system this week. Web scraping gets a bad rap, but for market research it's invaluable.", tags: ['scraping', 'services'], length: 'medium' },
+    { title: "If the data exists on a website, it can be collected. Ethically. Automatically. Without copy-pasting into spreadsheets.", tags: ['scraping', 'data', 'services'], length: 'short' },
+    { title: "Built a lead generation scraper that finds prospects and enriches them automatically. Cold outreach starts with good data.", tags: ['scraping', 'services'], length: 'medium' },
+    // Bots (Discord/Slack/Telegram)
+    { title: "Deployed a Slack bot that handles support ticket routing. Your team's Slack can be more than just a chat app.", tags: ['bots', 'slack', 'services'], length: 'medium' },
+    { title: "Discord bots aren't just for gaming communities. Built one for a SaaS company's customer community last month.", tags: ['bots', 'discord', 'services'], length: 'short' },
+    { title: "Custom bots can automate notifications, approvals, data lookups—anything your team does repeatedly in chat.", tags: ['bots', 'services'], length: 'short' },
+    // Dashboards & Web Apps
+    { title: "Built a custom dashboard that pulls from 5 different APIs. Sometimes the off-the-shelf tools just don't fit.", tags: ['dashboard', 'services'], length: 'medium' },
+    { title: "When your spreadsheet has more tabs than rows, it might be time for a proper dashboard.", tags: ['dashboard', 'services'], length: 'short' },
+    { title: "Internal tools don't need to be ugly. Built a clean admin panel this week that the ops team actually enjoys using.", tags: ['dashboard', 'webapp', 'services'], length: 'medium' },
+    // AI Integration
+    { title: "Added GPT to a client's support workflow. AI handles the first response, humans handle the edge cases. Best of both worlds.", tags: ['ai', 'services'], length: 'medium' },
+    { title: "AI isn't magic, but it's pretty good at summarizing, categorizing, and drafting. The trick is knowing where to apply it.", tags: ['ai', 'services'], length: 'short' },
+    { title: "Integrated an AI classifier into a document processing pipeline. What took 2 hours now takes 2 minutes.", tags: ['ai', 'automation', 'services'], length: 'medium' },
+    // General availability
+    { title: "Taking on a new automation project this month. If you've got a manual process that's eating up your team's time, let's talk.", tags: ['services', 'availability'], length: 'short' },
+    { title: "Wrapping up a project soon. Looking for interesting API integration or automation challenges for Q1.", tags: ['services', 'availability'], length: 'short' },
   ],
 };
 
 // Generate a LinkedIn post using AI
-export async function generateLinkedInPost({ ideaTemplate, category }) {
+export async function generateLinkedInPost({ ideaTemplate, category, length = 'medium' }) {
   const res = await fetch(`${API_BASE}/api/linkedin/generate-post`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       idea_template: ideaTemplate,
       category: category,
+      length: length,  // short, medium, long
     }),
   });
   if (!res.ok) throw new Error('Failed to generate LinkedIn post');
   const data = await res.json();
   return data.response;
+}
+
+// Post a comment on a LinkedIn post
+export async function postLinkedInComment(postUrl, commentText) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      post_url: postUrl,
+      comment_text: commentText,
+    }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to post comment' }));
+    throw new Error(error.detail || 'Failed to post comment');
+  }
+  return res.json();
 }
 
 // Get LinkedIn post ideas for a category or all categories
@@ -1301,6 +1395,50 @@ export function getLinkedInPostIdeas(category = null) {
 // Get LinkedIn post category names
 export function getLinkedInPostCategories() {
   return Object.keys(LINKEDIN_POST_TEMPLATES);
+}
+
+// ==============================================================================
+// DISMISSALS API (cross-device persistence)
+// ==============================================================================
+
+// Dismiss an item (stores in backend database)
+export async function dismissItem(itemType, source, sourceId, url = null) {
+  const res = await fetch(`${API_BASE}/api/dismissals/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      item_type: itemType,
+      source: source,
+      source_id: sourceId,
+      url: url,
+    }),
+  });
+  if (!res.ok) {
+    throw new Error('Failed to dismiss item');
+  }
+  return res.json();
+}
+
+// Get dismissed source IDs for a specific item type
+export async function getDismissedIds(itemType) {
+  const res = await fetch(`${API_BASE}/api/dismissals/?item_type=${itemType}&limit=1000`);
+  if (!res.ok) {
+    throw new Error('Failed to fetch dismissed items');
+  }
+  const items = await res.json();
+  return items.map(item => item.source_id);
+}
+
+// Clear all dismissals for a specific item type
+export async function clearDismissals(itemType, source = null) {
+  const url = source
+    ? `${API_BASE}/api/dismissals/clear/${itemType}?source=${source}`
+    : `${API_BASE}/api/dismissals/clear/${itemType}`;
+  const res = await fetch(url, { method: 'DELETE' });
+  if (!res.ok) {
+    throw new Error('Failed to clear dismissals');
+  }
+  return res.json();
 }
 
 // Get a random LinkedIn post idea

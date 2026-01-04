@@ -64,53 +64,95 @@ class CalendarEvent(BaseModel):
     subreddit: Optional[str]
 
 
-# Best practice posting times (in user's timezone - we'll use UTC and let frontend convert)
+# Best practice posting times (UTC - frontend converts to local)
+# 7 days/week, 2 slots per day
 BEST_TIMES = {
     "linkedin": [
-        {"day": 1, "hour": 7},   # Tuesday 7 AM
-        {"day": 1, "hour": 12},  # Tuesday 12 PM
-        {"day": 1, "hour": 17},  # Tuesday 5 PM
-        {"day": 2, "hour": 7},   # Wednesday 7 AM
-        {"day": 2, "hour": 12},  # Wednesday 12 PM
-        {"day": 2, "hour": 17},  # Wednesday 5 PM
-        {"day": 3, "hour": 7},   # Thursday 7 AM
-        {"day": 3, "hour": 12},  # Thursday 12 PM
-        {"day": 3, "hour": 17},  # Thursday 5 PM
+        # Monday
+        {"day": 0, "hour": 12},  # 7 AM EST
+        {"day": 0, "hour": 17},  # 12 PM EST
+        # Tuesday
+        {"day": 1, "hour": 12},
+        {"day": 1, "hour": 17},
+        # Wednesday
+        {"day": 2, "hour": 12},
+        {"day": 2, "hour": 17},
+        # Thursday
+        {"day": 3, "hour": 12},
+        {"day": 3, "hour": 17},
+        # Friday
+        {"day": 4, "hour": 12},
+        {"day": 4, "hour": 17},
+        # Saturday
+        {"day": 5, "hour": 14},  # 9 AM EST (slightly later on weekends)
+        {"day": 5, "hour": 18},  # 1 PM EST
+        # Sunday
+        {"day": 6, "hour": 14},
+        {"day": 6, "hour": 18},
     ],
     "reddit": [
-        {"day": 0, "hour": 9},   # Monday 9 AM
-        {"day": 0, "hour": 14},  # Monday 2 PM
-        {"day": 1, "hour": 9},   # Tuesday 9 AM
-        {"day": 1, "hour": 14},  # Tuesday 2 PM
-        {"day": 2, "hour": 9},   # Wednesday 9 AM
-        {"day": 2, "hour": 14},  # Wednesday 2 PM
-        {"day": 3, "hour": 9},   # Thursday 9 AM
-        {"day": 3, "hour": 14},  # Thursday 2 PM
-        {"day": 4, "hour": 9},   # Friday 9 AM
+        # Monday
+        {"day": 0, "hour": 14},  # 9 AM EST
+        {"day": 0, "hour": 19},  # 2 PM EST
+        # Tuesday
+        {"day": 1, "hour": 14},
+        {"day": 1, "hour": 19},
+        # Wednesday
+        {"day": 2, "hour": 14},
+        {"day": 2, "hour": 19},
+        # Thursday
+        {"day": 3, "hour": 14},
+        {"day": 3, "hour": 19},
+        # Friday
+        {"day": 4, "hour": 14},
+        {"day": 4, "hour": 19},
+        # Saturday
+        {"day": 5, "hour": 15},  # 10 AM EST
+        {"day": 5, "hour": 20},  # 3 PM EST
+        # Sunday
+        {"day": 6, "hour": 15},
+        {"day": 6, "hour": 20},
     ],
 }
 
 
+MAX_POSTS_PER_DAY = 2  # Optimal LinkedIn/Reddit frequency
+
+
 def get_next_available_slot(platform: str, db_scheduled: list[datetime]) -> datetime:
-    """Find the next available best-practice time slot."""
+    """Find the next available best-practice time slot (max 2 posts/day)."""
     now = datetime.utcnow()
     best_times = BEST_TIMES.get(platform, BEST_TIMES["reddit"])
+
+    # Count posts per day from existing schedule
+    def posts_on_date(date: datetime) -> int:
+        return sum(1 for s in db_scheduled if s.date() == date.date())
 
     # Look ahead up to 2 weeks
     for days_ahead in range(14):
         check_date = now + timedelta(days=days_ahead)
 
+        # Skip if already at max posts for this day
+        if posts_on_date(check_date) >= MAX_POSTS_PER_DAY:
+            continue
+
         for slot in best_times:
             if check_date.weekday() == slot["day"]:
                 slot_time = check_date.replace(hour=slot["hour"], minute=0, second=0, microsecond=0)
 
-                # Must be in the future
-                if slot_time <= now:
+                # Must be in the future (at least 30 min buffer)
+                if slot_time <= now + timedelta(minutes=30):
                     continue
 
-                # Check if slot is taken
-                if slot_time not in db_scheduled:
-                    return slot_time
+                # Check if exact slot is taken
+                if slot_time in db_scheduled:
+                    continue
+
+                # Check daily limit again (in case multiple slots same day)
+                if posts_on_date(slot_time) >= MAX_POSTS_PER_DAY:
+                    continue
+
+                return slot_time
 
     # Fallback: next hour
     return now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)

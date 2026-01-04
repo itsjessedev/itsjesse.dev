@@ -59,6 +59,66 @@ OPENING_STYLES = [
     },
 ]
 
+# LinkedIn opening styles - randomly selected for each post
+# Professional but human - sounds like an expert who knows their stuff
+LINKEDIN_OPENING_STYLES = [
+    # Expert observations
+    {"style": "pattern_recognition", "instruction": "Start by identifying a pattern from experience. Example: 'After building 50+ integrations, I've noticed the ones that fail share one thing in common.'"},
+    {"style": "industry_insight", "instruction": "Start with a sharp industry observation. Example: 'Every company wants AI. Few have the data infrastructure to support it.'"},
+    {"style": "counterintuitive", "instruction": "Start with something counterintuitive. Example: 'The fastest way to ship isn't to write more code. It's to delete it.'"},
+    {"style": "truth_bomb", "instruction": "Start with an uncomfortable truth. Example: 'Most automation projects fail not because of technology, but because of unclear requirements.'"},
+    {"style": "myth_busting", "instruction": "Start by busting a common myth. Example: 'APIs are easy to integrate. That's what everyone thinks until they actually try.'"},
+
+    # Questions (thought-provoking)
+    {"style": "rhetorical_question", "instruction": "Start with a thought-provoking question. Example: 'Why do companies spend $10k/month on tools that a $500 automation could replace?'"},
+    {"style": "challenge_assumption", "instruction": "Start by questioning a common belief. Example: 'Everyone says you need microservices to scale. Do you, though?'"},
+    {"style": "diagnostic_question", "instruction": "Start with a question that diagnoses a problem. Example: 'How much time does your team spend on manual data entry? The answer is usually \"too much.\"'"},
+
+    # Bold statements
+    {"style": "hot_take", "instruction": "Start with 'Hot take:' followed by a confident opinion. Example: 'Hot take: most companies don't have a technology problem. They have a process problem.'"},
+    {"style": "unpopular_opinion", "instruction": "Start with 'Unpopular opinion:' and a contrarian view. Example: 'Unpopular opinion: you don't need a $50k enterprise solution for most integration needs.'"},
+    {"style": "direct_claim", "instruction": "Start with a strong declarative statement. Example: 'The best automation is the one your team actually uses.'"},
+    {"style": "definitive_statement", "instruction": "Start with a confident, definitive take. Example: 'There are two types of API documentation: outdated and very outdated.'"},
+
+    # Experience-based
+    {"style": "years_of_experience", "instruction": "Start by referencing your experience. Example: 'After years of building integrations, here's what I've learned about scoping projects.'"},
+    {"style": "client_insight", "instruction": "Start with an insight from client work. Example: 'A client came to me last month with a \"simple\" integration request. Spoiler: it wasn't simple.'"},
+    {"style": "project_retrospective", "instruction": "Start with a project reflection. Example: 'Just wrapped up a 3-month automation project. Here's what went right and what I'd do differently.'"},
+    {"style": "lesson_from_failure", "instruction": "Start with a lesson from a mistake. Example: 'I once deployed an automation without proper error handling. Cost the client 8 hours of manual cleanup.'"},
+    {"style": "before_after", "instruction": "Start with a transformation story. Example: 'Before: 6 hours of daily manual data entry. After: 15-minute automated sync. Here's how.'"},
+
+    # Numbers and specifics
+    {"style": "specific_number", "instruction": "Start with a specific, credible number. Example: '47 API endpoints. 12 different authentication methods. One integration. Welcome to enterprise software.'"},
+    {"style": "time_saved", "instruction": "Start with time/money saved. Example: 'Saved a client 20 hours per week with a script that took 3 days to build. That's the ROI of automation.'"},
+    {"style": "percentage_insight", "instruction": "Start with a percentage or ratio. Example: '80% of integration bugs come from 20% of the codebase. Usually the error handling.'"},
+
+    # Teaching/Value
+    {"style": "common_mistake", "instruction": "Start by addressing a common mistake. Example: 'The #1 mistake I see in automation projects: building before understanding the workflow.'"},
+    {"style": "overlooked_factor", "instruction": "Start with something people overlook. Example: 'Everyone focuses on the API. Nobody talks about the webhook reliability.'"},
+    {"style": "framework", "instruction": "Start by introducing a framework or approach. Example: 'Three questions I ask before starting any integration: What breaks? What scales? What changes?'"},
+    {"style": "principle", "instruction": "Start with a guiding principle. Example: 'Principle I live by: automate the boring stuff, but keep humans in the loop for decisions.'"},
+
+    # Contrarian/Debate
+    {"style": "pushback", "instruction": "Start by pushing back on conventional wisdom. Example: 'Stop telling developers to \"just use Zapier.\" Some problems need real code.'"},
+    {"style": "controversial_take", "instruction": "Start with a mildly controversial position. Example: 'Most startups don't need a dedicated DevOps engineer. They need better automation.'"},
+    {"style": "reframing", "instruction": "Start by reframing a problem. Example: 'It's not a \"legacy system\" problem. It's an integration strategy problem.'"},
+
+    # Timely/Current
+    {"style": "recent_observation", "instruction": "Start with a recent observation (no 'so' or 'okay'). Example: 'Noticed something interesting while reviewing client architectures this week.'"},
+    {"style": "trend_commentary", "instruction": "Start with commentary on a trend. Example: 'The rush to add AI to everything is creating a new category of technical debt.'"},
+    {"style": "current_project", "instruction": "Start with current work insight. Example: 'Working on an API integration right now that's a masterclass in what not to do.'"},
+
+    # Professional reflection
+    {"style": "honest_assessment", "instruction": "Start with an honest professional take. Example: 'Honest assessment: most companies underestimate how long integrations take by 3-5x.'"},
+    {"style": "professional_opinion", "instruction": "Start with a grounded opinion. Example: 'In my experience, the best integrations are boring. Reliable beats clever every time.'"},
+    {"style": "hard_truth", "instruction": "Start with a hard truth. Example: 'Hard truth: if your automation requires a manual step, it's not really automated.'"},
+
+    # Results-focused
+    {"style": "outcome_first", "instruction": "Start with the outcome, then explain. Example: 'Cut a client's reporting time from 2 days to 2 hours. Here's the approach that made it possible.'"},
+    {"style": "problem_solution", "instruction": "Start by stating a problem you solved. Example: 'The problem: data scattered across 5 systems. The solution: one automated pipeline.'"},
+    {"style": "case_study_hook", "instruction": "Start like a mini case study. Example: 'E-commerce client. 10,000 orders/day. Zero automated fulfillment. Here's how we fixed it.'"},
+]
+
 # Base system prompt (opening style is added dynamically)
 BASE_RESPONSE_PROMPT = """You're an experienced developer engaging authentically on Reddit. You've built real systems and have practical insights to share.
 
@@ -104,9 +164,51 @@ class ResponseGenerator:
     """Generates Reddit responses using OpenRouter API."""
 
     def __init__(self):
-        self.api_key = settings.openrouter_api_key
+        self.api_keys = [k for k in [settings.openrouter_api_key, settings.openrouter_api_key_2] if k]
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.model = "google/gemini-2.0-flash-001"
+
+    async def _call_openrouter(self, messages: list, max_tokens: int, temperature: float = 0.8) -> Optional[str]:
+        """Call OpenRouter API with automatic fallback between keys."""
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
+            return None
+
+        for i, api_key in enumerate(self.api_keys):
+            try:
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(
+                        self.base_url,
+                        headers={
+                            "Authorization": f"Bearer {api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json={
+                            "model": self.model,
+                            "messages": messages,
+                            "temperature": temperature,
+                            "max_tokens": max_tokens,
+                        },
+                        timeout=30.0,
+                    )
+
+                    if response.status_code == 200:
+                        data = response.json()
+                        return data["choices"][0]["message"]["content"].strip()
+                    elif response.status_code == 402:
+                        # Insufficient credits - try next key
+                        print(f"OpenRouter key {i+1} exhausted, trying next...")
+                        continue
+                    else:
+                        print(f"OpenRouter error: {response.status_code} - {response.text}")
+                        return None
+
+            except Exception as e:
+                print(f"Error calling OpenRouter with key {i+1}: {e}")
+                continue
+
+        print("All OpenRouter API keys exhausted or failed")
+        return None
 
     async def generate(
         self,
@@ -127,8 +229,8 @@ class ResponseGenerator:
         Returns:
             Generated response text, or None on error
         """
-        if not self.api_key:
-            print("OpenRouter API key not configured")
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
             return None
 
         # Build the user prompt
@@ -183,36 +285,11 @@ class ResponseGenerator:
             # Complex post - allow fuller response
             max_tokens = 450
 
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.base_url,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "model": self.model,
-                        "messages": [
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": post_content},
-                        ],
-                        "temperature": 0.8,
-                        "max_tokens": max_tokens,
-                    },
-                    timeout=30.0,
-                )
-
-                if response.status_code != 200:
-                    print(f"OpenRouter error: {response.status_code} - {response.text}")
-                    return None
-
-                data = response.json()
-                return data["choices"][0]["message"]["content"].strip()
-
-        except Exception as e:
-            print(f"Error generating response: {e}")
-            return None
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": post_content},
+        ]
+        return await self._call_openrouter(messages, max_tokens, temperature=0.8)
 
 
     async def generate_reply(
@@ -232,8 +309,8 @@ class ResponseGenerator:
         Returns:
             Generated response text, or None on error
         """
-        if not self.api_key:
-            print("OpenRouter API key not configured")
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
             return None
 
         reply_prompt = """You're a friendly, experienced developer continuing a conversation on Reddit. Someone replied to your comment and you want to respond naturally.
@@ -268,36 +345,11 @@ YOUR ORIGINAL COMMENT:
 THEIR REPLY TO YOU:
 {their_reply[:1500]}"""
 
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.base_url,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "model": self.model,
-                        "messages": [
-                            {"role": "system", "content": reply_prompt},
-                            {"role": "user", "content": context},
-                        ],
-                        "temperature": 0.7,
-                        "max_tokens": 400,
-                    },
-                    timeout=30.0,
-                )
-
-                if response.status_code != 200:
-                    print(f"OpenRouter error: {response.status_code} - {response.text}")
-                    return None
-
-                data = response.json()
-                return data["choices"][0]["message"]["content"].strip()
-
-        except Exception as e:
-            print(f"Error generating reply: {e}")
-            return None
+        messages = [
+            {"role": "system", "content": reply_prompt},
+            {"role": "user", "content": context},
+        ]
+        return await self._call_openrouter(messages, max_tokens=400, temperature=0.7)
 
 
     async def generate_engage_post(
@@ -317,8 +369,8 @@ THEIR REPLY TO YOU:
         Returns:
             Generated post content (title and body), or None on error
         """
-        if not self.api_key:
-            print("OpenRouter API key not configured")
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
             return None
 
         engage_prompt = """You're an experienced developer who specializes in automation and integrations. You want to start a genuine discussion on Reddit that will engage the community.
@@ -353,42 +405,18 @@ POST IDEA TEMPLATE: {idea_template}
 
 Fill in this template with specific, believable examples from a developer's experience in automation and integrations. Make it genuine and engaging."""
 
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.base_url,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "model": self.model,
-                        "messages": [
-                            {"role": "system", "content": engage_prompt},
-                            {"role": "user", "content": context},
-                        ],
-                        "temperature": 0.8,  # Higher creativity for unique posts
-                        "max_tokens": 800,
-                    },
-                    timeout=30.0,
-                )
-
-                if response.status_code != 200:
-                    print(f"OpenRouter error: {response.status_code} - {response.text}")
-                    return None
-
-                data = response.json()
-                return data["choices"][0]["message"]["content"].strip()
-
-        except Exception as e:
-            print(f"Error generating engage post: {e}")
-            return None
+        messages = [
+            {"role": "system", "content": engage_prompt},
+            {"role": "user", "content": context},
+        ]
+        return await self._call_openrouter(messages, max_tokens=800, temperature=0.8)
 
 
     async def generate_linkedin_post(
         self,
         idea_template: str,
         category: str,
+        length: str = "medium",
     ) -> Optional[str]:
         """
         Generate a LinkedIn post for professional dev audience.
@@ -396,90 +424,96 @@ Fill in this template with specific, believable examples from a developer's expe
         Args:
             idea_template: The post idea template
             category: Post category (lessons_learned, technical_insights, etc.)
+            length: Post length - short (50-100 words), medium (150-250 words), long (300-500 words)
 
         Returns:
             Generated LinkedIn post content, or None on error
         """
-        if not self.api_key:
-            print("OpenRouter API key not configured")
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
             return None
 
-        linkedin_prompt = """You're Jesse Eldridge, a developer who specializes in automation, API integrations, and workflow solutions. You're writing a LinkedIn post to share insights with your professional network.
+        # Length-specific instructions
+        length_configs = {
+            "short": {
+                "words": "50-100 words",
+                "style": "Punchy and direct. One main point. Maybe just 2-3 short paragraphs. Great for hot takes, quick tips, or questions.",
+                "max_tokens": 200,
+            },
+            "medium": {
+                "words": "150-250 words",
+                "style": "Balanced depth. Set up the context, share the insight, invite discussion. 3-5 paragraphs.",
+                "max_tokens": 450,
+            },
+            "long": {
+                "words": "300-500 words",
+                "style": "Full story or deep dive. Build narrative, include specifics/examples, end with takeaway. Good for case studies and lessons learned.",
+                "max_tokens": 700,
+            },
+        }
+        config = length_configs.get(length, length_configs["medium"])
 
-BACKGROUND:
-- You build custom automation tools, API integrations, and data pipelines
-- Tech stack: Python, JavaScript/TypeScript, FastAPI, React, various APIs (Salesforce, HubSpot, Stripe, etc.)
-- You're a freelance developer offering these services
-- Portfolio: itsjesse.dev
-- You write genuine, helpful content that establishes expertise
+        # Select random opening style to force variety
+        opening_style = random.choice(LINKEDIN_OPENING_STYLES)
 
-LINKEDIN POST GUIDELINES:
-- Professional but conversational tone - not stiff corporate speak
-- Use short paragraphs (1-3 sentences each) for readability
-- Add line breaks between paragraphs (LinkedIn formatting)
-- Include a hook in the first line that grabs attention
-- Share genuine insights, lessons, or tips
-- End with a question or call-to-action to encourage engagement
-- Use relevant hashtags at the end (3-5 max)
-- Keep total length 150-300 words (optimal for LinkedIn engagement)
-- For 'services_soft_sell' category: subtly mention you work with clients, but focus on VALUE not selling
+        linkedin_prompt = f"""You're Jesse, a freelance developer who builds automation and API integrations. Write a LinkedIn post that sounds like YOU wrote it - not a marketing team.
 
-AVOID:
-- Starting with "I'm excited to share..." or similar clichés
-- Being preachy or lecturing
-- Overly formal corporate language
-- Excessive self-promotion (unless services_soft_sell category)
-- Using emojis excessively (1-2 max if any)
-- Generic advice that could apply to anyone
+IMPORTANT: The current year is 2026. If you reference the year, use 2026.
 
-FORMAT:
-Write the post directly - no title needed (LinkedIn posts don't have titles).
-Include hashtags at the end on their own line.
+⚠️ REQUIRED OPENING STYLE: {opening_style['style'].upper()}
+{opening_style['instruction']}
 
-Example structure:
-[Hook - attention-grabbing first line]
+YOUR VOICE:
+- Casual but smart. Like texting a friend who's also a developer.
+- You've been doing this for years. You have opinions. Share them.
+- You make mistakes and learn from them. That's interesting.
+- You're not trying to be an influencer. You're just sharing what you know.
 
-[Main content - 2-4 short paragraphs with insights]
+THIS POST SHOULD BE: {config['words']}
+STYLE: {config['style']}
 
-[Call-to-action or question]
+WHAT MAKES POSTS FEEL HUMAN:
+- Use contractions (I'm, don't, that's, it's)
+- Incomplete sentences are fine. For emphasis.
+- Specific details make stories real (not "a client" but "a SaaS startup" or "an e-commerce client")
+- Admit uncertainty when appropriate: "I might be wrong but..." or "Still figuring this out..."
 
-#relevanthashtag #anotherhashtag"""
+DON'T ALWAYS END THE SAME WAY:
+- Sometimes end with a question
+- Sometimes just end (no call to action)
+- Sometimes end with a takeaway
+- Sometimes end with what you're trying next
+- Hashtags: 0-3 max. Skip them often.
 
-        context = f"""POST CATEGORY: {category.replace('_', ' ')}
+BANNED OPENINGS (never start with these - they sound unprofessional or generic):
+- "Okay, so..." / "Okay so..." / "Ok so..."
+- "So I was..." / "So, I was..."
+- "So I've been..." / "So, I've been..."
+- "Alright, so..."
+- "Well, I..."
+- "I'm excited to..."
+- "In today's..."
+- "Let me share..."
+- "I wanted to talk about..."
+- "I thought I'd share..."
+- "Just wanted to..."
+- Any sentence starting with "So," or "So "
+
+BANNED PHRASES:
+- 🚀 emoji spam 🔥 like 💯 this 📈
+- "Here are 5 tips..."
+- "What do you think? Let me know in the comments!"
+- Corporate buzzwords: leverage, synergy, game-changer, thought leader
+
+CATEGORY: {category.replace('_', ' ')}
 POST IDEA: {idea_template}
 
-Write a LinkedIn post based on this idea. Make it specific, genuine, and engaging. Use real-world examples that would resonate with other developers and potential clients."""
+Write this post as Jesse would actually write it. Use the required opening style above. Be specific. Be real."""
 
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.base_url,
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "model": self.model,
-                        "messages": [
-                            {"role": "system", "content": linkedin_prompt},
-                            {"role": "user", "content": context},
-                        ],
-                        "temperature": 0.8,
-                        "max_tokens": 600,
-                    },
-                    timeout=30.0,
-                )
-
-                if response.status_code != 200:
-                    print(f"OpenRouter error: {response.status_code} - {response.text}")
-                    return None
-
-                data = response.json()
-                return data["choices"][0]["message"]["content"].strip()
-
-        except Exception as e:
-            print(f"Error generating LinkedIn post: {e}")
-            return None
+        messages = [
+            {"role": "user", "content": linkedin_prompt},
+        ]
+        return await self._call_openrouter(messages, max_tokens=config["max_tokens"], temperature=0.9)
 
 
 # Singleton

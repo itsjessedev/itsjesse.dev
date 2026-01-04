@@ -10,8 +10,9 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "sqlite+aiosqlite:///./reddit_scout.db"
 
-    # OpenRouter API (reuse from DealScout)
+    # OpenRouter API (with fallback key)
     openrouter_api_key: str = ""
+    openrouter_api_key_2: str = ""  # Fallback key if primary exhausted
 
     # Apify API (for LinkedIn jobs scraper)
     apify_api_key: str = ""

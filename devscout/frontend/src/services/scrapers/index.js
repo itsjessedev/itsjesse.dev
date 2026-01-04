@@ -34,7 +34,7 @@ export { fetchWellfound } from './wellfound.js';
 export const PLATFORMS = {
   reddit: {
     name: 'Reddit',
-    enabled: true,
+    enabled: false, // Reddit has its own tab
     fetch: async (onProgress) => {
       const searches = getAllRedditSearches();
       return batchSearchReddit(searches, onProgress);
@@ -72,7 +72,7 @@ export const PLATFORMS = {
   },
   linkedin: {
     name: 'LinkedIn',
-    enabled: true, // Posts from people looking for developers (via Apify)
+    enabled: true, // Uses free client-side Google search (not Apify)
     fetch: fetchAllLinkedIn,
   },
   wellfound: {
