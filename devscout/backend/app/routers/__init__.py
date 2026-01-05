@@ -6,6 +6,7 @@ from .dismissals import router as dismissals_router
 from .scheduling import router as scheduling_router
 from .comments import router as comments_router
 from .linkedin import router as linkedin_router
+from .persistence import router as persistence_router
 
 __all__ = [
     "posts_router",
@@ -14,4 +15,5 @@ __all__ = [
     "scheduling_router",
     "comments_router",
     "linkedin_router",
+    "persistence_router",
 ]

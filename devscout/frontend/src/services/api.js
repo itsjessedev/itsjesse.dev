@@ -1384,6 +1384,29 @@ export async function postLinkedInComment(postUrl, commentText) {
   return res.json();
 }
 
+// Fetch LinkedIn engagement posts via Apify (limit 20 per fetch)
+export async function fetchLinkedInEngagementViaApify(searchTerms = null, limit = 20) {
+  const res = await fetch(`${API_BASE}/api/linkedin/engagement/fetch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      search_terms: searchTerms || [
+        'developer tips',
+        'coding lessons learned',
+        'software engineering',
+        'automation workflow',
+        'API integration',
+      ],
+      limit: limit,
+    }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to fetch engagement posts' }));
+    throw new Error(error.detail || 'Failed to fetch engagement posts');
+  }
+  return res.json();
+}
+
 // Get LinkedIn post ideas for a category or all categories
 export function getLinkedInPostIdeas(category = null) {
   if (category) {
@@ -1883,4 +1906,238 @@ export {
 // Re-export platform list and scrapers for UI controls
 export { getAvailablePlatforms, fetchAllProspects as fetchProspectsRaw } from './scrapers/index.js';
 export { getAllRedditSearches, getTotalSourceCount } from './sources.js';
+
+
+// =============================================================================
+// PERSISTENCE API - Cross-device persistence for all data
+// =============================================================================
+
+const PERSISTENCE_BASE = import.meta.env.PROD
+  ? 'https://devscout.junipr.io/api/persistence'
+  : 'http://localhost:8004/api/persistence';
+
+// LinkedIn Jobs
+export async function saveLinkedInJobs(jobs) {
+  const res = await fetch(`${PERSISTENCE_BASE}/linkedin/jobs/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(jobs),
+  });
+  return res.json();
+}
+
+export async function getLinkedInJobs(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/linkedin/jobs?status=${status}`
+    : `${PERSISTENCE_BASE}/linkedin/jobs`;
+  const res = await fetch(url);
+  return res.json();
+}
+
+export async function updateLinkedInJobStatus(sourceId, status, suggestedResponse = null) {
+  const res = await fetch(`${PERSISTENCE_BASE}/linkedin/jobs/${sourceId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, suggested_response: suggestedResponse }),
+  });
+  return res.json();
+}
+
+export async function clearLinkedInJobs(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/linkedin/jobs/clear?status=${status}`
+    : `${PERSISTENCE_BASE}/linkedin/jobs/clear`;
+  const res = await fetch(url, { method: 'DELETE' });
+  return res.json();
+}
+
+// LinkedIn Engagement
+export async function saveLinkedInEngagement(posts) {
+  const res = await fetch(`${PERSISTENCE_BASE}/linkedin/engagement/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(posts),
+  });
+  return res.json();
+}
+
+export async function getLinkedInEngagement(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/linkedin/engagement?status=${status}`
+    : `${PERSISTENCE_BASE}/linkedin/engagement`;
+  const res = await fetch(url);
+  return res.json();
+}
+
+export async function updateLinkedInEngagementStatus(sourceId, status, suggestedResponse = null) {
+  const res = await fetch(`${PERSISTENCE_BASE}/linkedin/engagement/${sourceId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, suggested_response: suggestedResponse }),
+  });
+  return res.json();
+}
+
+export async function clearLinkedInEngagement(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/linkedin/engagement/clear?status=${status}`
+    : `${PERSISTENCE_BASE}/linkedin/engagement/clear`;
+  const res = await fetch(url, { method: 'DELETE' });
+  return res.json();
+}
+
+// Reddit Jobs
+export async function saveRedditJobs(jobs) {
+  const res = await fetch(`${PERSISTENCE_BASE}/reddit/jobs/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(jobs),
+  });
+  return res.json();
+}
+
+export async function getRedditJobs(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/reddit/jobs?status=${status}`
+    : `${PERSISTENCE_BASE}/reddit/jobs`;
+  const res = await fetch(url);
+  return res.json();
+}
+
+export async function updateRedditJobStatus(redditId, status, suggestedResponse = null) {
+  const res = await fetch(`${PERSISTENCE_BASE}/reddit/jobs/${redditId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, suggested_response: suggestedResponse }),
+  });
+  return res.json();
+}
+
+export async function clearRedditJobs(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/reddit/jobs/clear?status=${status}`
+    : `${PERSISTENCE_BASE}/reddit/jobs/clear`;
+  const res = await fetch(url, { method: 'DELETE' });
+  return res.json();
+}
+
+// Reddit Engagement
+export async function saveRedditEngagement(posts) {
+  const res = await fetch(`${PERSISTENCE_BASE}/reddit/engagement/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(posts),
+  });
+  return res.json();
+}
+
+export async function getRedditEngagement(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/reddit/engagement?status=${status}`
+    : `${PERSISTENCE_BASE}/reddit/engagement`;
+  const res = await fetch(url);
+  return res.json();
+}
+
+export async function updateRedditEngagementStatus(redditId, status, suggestedResponse = null) {
+  const res = await fetch(`${PERSISTENCE_BASE}/reddit/engagement/${redditId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, suggested_response: suggestedResponse }),
+  });
+  return res.json();
+}
+
+export async function clearRedditEngagement(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/reddit/engagement/clear?status=${status}`
+    : `${PERSISTENCE_BASE}/reddit/engagement/clear`;
+  const res = await fetch(url, { method: 'DELETE' });
+  return res.json();
+}
+
+// News Posts
+export async function saveNewsPosts(posts) {
+  const res = await fetch(`${PERSISTENCE_BASE}/news/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(posts),
+  });
+  return res.json();
+}
+
+export async function getNewsPosts(source = null, status = null) {
+  const params = new URLSearchParams();
+  if (source) params.append('source', source);
+  if (status) params.append('status', status);
+  const url = params.toString()
+    ? `${PERSISTENCE_BASE}/news?${params}`
+    : `${PERSISTENCE_BASE}/news`;
+  const res = await fetch(url);
+  return res.json();
+}
+
+export async function updateNewsPostStatus(source, sourceId, status, suggestedResponse = null) {
+  const res = await fetch(`${PERSISTENCE_BASE}/news/${source}/${sourceId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, suggested_response: suggestedResponse }),
+  });
+  return res.json();
+}
+
+export async function clearNewsPosts(source = null, status = null) {
+  const params = new URLSearchParams();
+  if (source) params.append('source', source);
+  if (status) params.append('status', status);
+  const url = params.toString()
+    ? `${PERSISTENCE_BASE}/news/clear?${params}`
+    : `${PERSISTENCE_BASE}/news/clear`;
+  const res = await fetch(url, { method: 'DELETE' });
+  return res.json();
+}
+
+// GitHub Issues
+export async function saveGitHubIssues(issues) {
+  const res = await fetch(`${PERSISTENCE_BASE}/github/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(issues),
+  });
+  return res.json();
+}
+
+export async function getGitHubIssues(status = null, language = null) {
+  const params = new URLSearchParams();
+  if (status) params.append('status', status);
+  if (language) params.append('language', language);
+  const url = params.toString()
+    ? `${PERSISTENCE_BASE}/github?${params}`
+    : `${PERSISTENCE_BASE}/github`;
+  const res = await fetch(url);
+  return res.json();
+}
+
+export async function updateGitHubIssueStatus(githubId, status) {
+  const res = await fetch(`${PERSISTENCE_BASE}/github/${githubId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+  return res.json();
+}
+
+export async function clearGitHubIssues(status = null) {
+  const url = status
+    ? `${PERSISTENCE_BASE}/github/clear?status=${status}`
+    : `${PERSISTENCE_BASE}/github/clear`;
+  const res = await fetch(url, { method: 'DELETE' });
+  return res.json();
+}
+
+// Persistence Stats
+export async function getPersistenceStats() {
+  const res = await fetch(`${PERSISTENCE_BASE}/stats`);
+  return res.json();
+}
 

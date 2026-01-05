@@ -6,9 +6,20 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
   LINKEDIN_POST_TEMPLATES, generateLinkedInPost, getLinkedInPostIdeas, getLinkedInPostCategories,
   // LinkedIn Comments
   postLinkedInComment,
+  // LinkedIn Engagement via Apify
+  fetchLinkedInEngagementViaApify,
   // Dismissals (cross-device persistence)
   dismissItem, getDismissedIds, clearDismissals,
+  // Persistence API (cross-device)
+  saveLinkedInJobs, getLinkedInJobs, updateLinkedInJobStatus, clearLinkedInJobs,
+  saveLinkedInEngagement, getLinkedInEngagement, updateLinkedInEngagementStatus, clearLinkedInEngagement,
+  saveRedditJobs, getRedditJobs, updateRedditJobStatus, clearRedditJobs,
+  saveRedditEngagement, getRedditEngagement, updateRedditEngagementStatus, clearRedditEngagement,
+  saveNewsPosts, getNewsPosts, updateNewsPostStatus, clearNewsPosts,
+  saveGitHubIssues, getGitHubIssues as fetchPersistedGitHubIssues, updateGitHubIssueStatus, clearGitHubIssues,
+  getPersistenceStats,
 } from './services/api';
+import { fetchLinkedInPosts } from './services/scrapers/linkedin.js';
 
 // ==============================================================================
 // FEATURE FLAGS
@@ -27,21 +38,23 @@ const TAB_CONFIG = {
     label: 'Reddit',
     color: '#ff4500',
     subTabs: [
+      { id: 'jobs', label: 'Job Search' },
       { id: 'schedule', label: 'Post Schedule' },
       { id: 'engagement', label: 'Engagement' },
       { id: 'comments', label: 'Comments' },
     ],
-    defaultSubTab: 'schedule',
+    defaultSubTab: 'jobs',
   },
   linkedin: {
     label: 'LinkedIn',
     color: '#0A66C2',
     subTabs: [
+      { id: 'jobs', label: 'Job Search' },
       { id: 'schedule', label: 'Post Schedule' },
       { id: 'engagement', label: 'Engagement' },
       { id: 'comments', label: 'Comments' },
     ],
-    defaultSubTab: 'schedule',
+    defaultSubTab: 'jobs',
   },
   opportunities: {
     label: 'Opportunities',
@@ -1117,8 +1130,8 @@ function App() {
   // ==============================================================================
   const [mainTab, setMainTab] = useState('reddit'); // 'reddit', 'linkedin', 'opportunities'
   const [subTabs, setSubTabs] = useState({
-    reddit: 'schedule',    // 'schedule', 'engagement', 'comments'
-    linkedin: 'schedule',  // 'schedule', 'engagement', 'comments'
+    reddit: 'jobs',        // 'jobs', 'schedule', 'engagement', 'comments'
+    linkedin: 'jobs',      // 'jobs', 'schedule', 'engagement', 'comments'
     opportunities: 'all',  // 'all', 'tech', 'github'
   });
 
@@ -1131,6 +1144,12 @@ function App() {
   // ==============================================================================
   // REDDIT TAB STATE
   // ==============================================================================
+  // Reddit Job Search - persisted to DB
+  const [redditJobs, setRedditJobs] = useState([]);
+  const [redditJobsFetching, setRedditJobsFetching] = useState(false);
+  const [redditJobsResponses, setRedditJobsResponses] = useState({}); // jobId -> response text
+  const [generatingRedditJob, setGeneratingRedditJob] = useState({}); // jobId -> boolean
+
   // Reddit Engagement (Posts)
   const [posts, setPosts] = useState([]);
   const [stats, setStats] = useState(null);
@@ -1290,6 +1309,71 @@ function App() {
       }
     };
     loadProspectsFromDB();
+  }, []);
+
+  // Load all persisted data from database on mount
+  useEffect(() => {
+    const loadPersistedDataFromDB = async () => {
+      try {
+        // LinkedIn Jobs
+        const linkedInJobsData = await getLinkedInJobs('new');
+        if (linkedInJobsData && linkedInJobsData.length > 0) {
+          setLinkedInLeads(linkedInJobsData);
+          console.log(`[DevScout] Loaded ${linkedInJobsData.length} LinkedIn jobs from database`);
+        }
+        // Reddit Jobs
+        const redditJobsData = await getRedditJobs('new');
+        if (redditJobsData && redditJobsData.length > 0) {
+          setRedditJobs(redditJobsData);
+          console.log(`[DevScout] Loaded ${redditJobsData.length} Reddit jobs from database`);
+        }
+        // LinkedIn Engagement
+        const linkedInEngData = await getLinkedInEngagement('new');
+        if (linkedInEngData && linkedInEngData.length > 0) {
+          setLinkedInEngagement(linkedInEngData);
+          console.log(`[DevScout] Loaded ${linkedInEngData.length} LinkedIn engagement posts from database`);
+        }
+        // News posts
+        const newsData = await getNewsPosts('new');
+        if (newsData && newsData.length > 0) {
+          // Transform back to frontend format
+          const newsForUI = newsData.map(item => ({
+            reddit_id: item.source_id,
+            subreddit: item.source,
+            url: item.url,
+            title: item.title,
+            body: item.body,
+            author: item.author,
+            score: item.score,
+            num_comments: item.comments,
+            created_utc: item.posted_at ? new Date(item.posted_at).getTime() / 1000 : null,
+          }));
+          setNews(newsForUI);
+          console.log(`[DevScout] Loaded ${newsData.length} news posts from database`);
+        }
+        // GitHub issues
+        const githubData = await fetchPersistedGitHubIssues('new');
+        if (githubData && githubData.length > 0) {
+          // Transform back to frontend format
+          const issuesForUI = githubData.map(issue => ({
+            id: issue.source_id,
+            repo: issue.repo,
+            url: issue.url,
+            title: issue.title,
+            body: issue.body,
+            labels: issue.labels ? issue.labels.split(',') : [],
+            language: issue.language,
+            stars: issue.stars,
+            created_at: issue.created_at,
+          }));
+          setGithubIssues(issuesForUI);
+          console.log(`[DevScout] Loaded ${githubData.length} GitHub issues from database`);
+        }
+      } catch (err) {
+        console.error('Failed to load persisted data from DB:', err);
+      }
+    };
+    loadPersistedDataFromDB();
   }, []);
 
   // Handle LinkedIn OAuth callback (when redirected back from LinkedIn)
@@ -1612,7 +1696,11 @@ function App() {
   // ==============================================================================
   const getTotalUnreadReplies = useCallback(() => {
     let total = 0;
-    Object.values(postRepliesData).forEach(post => {
+    // Only count replies from posts that are still in respondedPosts (not stale data)
+    const activePostIds = new Set(respondedPosts.map(p => p.id));
+    Object.entries(postRepliesData).forEach(([postId, post]) => {
+      // Skip if post is no longer being tracked
+      if (!activePostIds.has(postId)) return;
       if (post.comments) {
         post.comments.forEach(comment => {
           if (comment.replies) {
@@ -1624,7 +1712,7 @@ function App() {
       }
     });
     return total;
-  }, [postRepliesData, dismissedReplies]);
+  }, [postRepliesData, dismissedReplies, respondedPosts]);
 
   const handleFetchReplies = async () => {
     setRepliesFetching(true);
@@ -1817,26 +1905,40 @@ function App() {
 
   const handleFetchLinkedInEngagement = async () => {
     setLinkedInEngagementFetching(true);
-    setLinkedInEngagement([]); // Clear old data
     try {
-      const response = await fetch('/api/linkedin/engagement?limit=50');
-      if (response.ok) {
-        const data = await response.json();
-        // Filter out previously dismissed posts
-        const filteredData = data.filter(post => !dismissedLinkedInEngagement.includes(post.source_id));
-        setLinkedInEngagement(filteredData);
-        if (filteredData.length === 0 && data.length > 0) {
-          alert('All fetched posts were previously dismissed. Try again later for new posts.');
-        } else if (data.length === 0) {
-          alert('No engagement posts found. Try again later.');
+      // Fetch via Apify with limit of 20
+      const result = await fetchLinkedInEngagementViaApify(null, 20);
+
+      if (result.error) {
+        alert('Apify error: ' + result.error);
+        if (result.posts?.length === 0) {
+          setLinkedInEngagementFetching(false);
+          return;
         }
-      } else if (response.status === 503) {
-        // VPS blocked by search engines - guide user to Prospects
-        alert('LinkedIn Engagement is temporarily unavailable (VPS IP blocked by search engines). ' +
-              'Use the Opportunities → All Sources tab instead - it fetches LinkedIn from your browser.');
-      } else {
-        const error = await response.json();
-        alert('Failed to fetch engagement posts: ' + (error.detail || 'Unknown error'));
+      }
+
+      const posts = result.posts || [];
+      if (posts.length === 0) {
+        alert('No engagement posts found. Try again later.');
+        setLinkedInEngagementFetching(false);
+        return;
+      }
+
+      // Get dismissed IDs from database
+      const dismissedIds = await getDismissedIds('linkedin_engagement');
+
+      // Filter out dismissed posts
+      const filteredPosts = posts.filter(post => !dismissedIds.includes(post.source_id));
+
+      // Save to database for cross-device persistence
+      if (filteredPosts.length > 0) {
+        await saveLinkedInEngagement(filteredPosts);
+      }
+
+      setLinkedInEngagement(filteredPosts);
+
+      if (filteredPosts.length === 0 && posts.length > 0) {
+        alert('All fetched posts were previously dismissed. Try again later for new posts.');
       }
     } catch (err) {
       console.error('Failed to fetch LinkedIn engagement posts:', err);
@@ -1910,9 +2012,10 @@ function App() {
     setDismissedLinkedInEngagement(prev => [...prev, postId]);
     setLinkedInEngagement(prev => prev.filter(p => p.source_id !== postId));
 
-    // Persist to backend
+    // Persist to backend (both dismissals table and update status in persistence table)
     try {
       await dismissItem('linkedin_engagement', 'linkedin', postId, post.url);
+      await updateLinkedInEngagementStatus(postId, 'dismissed');
     } catch (err) {
       console.error('Failed to persist dismissal:', err);
       // Rollback on error
@@ -2072,10 +2175,28 @@ function App() {
       const newsData = await fetchNews((current, total, source) => {
         setNewsProgress({ current, total, source });
       });
+      // Get dismissed IDs from database
+      const dismissedIds = await getDismissedIds('news_item');
       // Filter out previously dismissed items
-      const filteredNews = newsData.filter(item => !dismissedNews.includes(item.reddit_id));
+      const filteredNews = newsData.filter(item => !dismissedIds.includes(item.reddit_id));
+
+      // Save to database for cross-device persistence
+      if (filteredNews.length > 0) {
+        const newsForDB = filteredNews.map(item => ({
+          source_id: item.reddit_id,
+          source: item.subreddit || 'news',
+          url: item.url,
+          title: item.title,
+          body: item.body,
+          author: item.author,
+          score: item.score || 0,
+          comments: item.num_comments || 0,
+          posted_at: item.created_utc ? new Date(item.created_utc * 1000).toISOString() : null,
+        }));
+        await saveNewsPosts(newsForDB);
+      }
+
       setNews(filteredNews);
-      savePersistedData('news', filteredNews);
     } catch (err) {
       alert('Failed to fetch news: ' + err.message);
     } finally {
@@ -2102,20 +2223,25 @@ function App() {
     // Optimistic update
     setDismissedNews(prev => [...prev, itemId]);
     setNews(prev => prev.filter(n => n.reddit_id !== itemId));
-    // Persist to backend
+    // Persist to backend (both dismissals table and update status in persistence table)
     try {
       await dismissItem('news_item', item.subreddit || 'news', itemId, item.url);
+      await updateNewsPostStatus(itemId, 'dismissed');
     } catch (err) {
       console.error('Failed to persist news dismissal:', err);
       setDismissedNews(prev => prev.filter(id => id !== itemId));
     }
   };
 
-  const handleClearNews = () => {
+  const handleClearNews = async () => {
     if (!confirm('Clear all news items?')) return;
     setNews([]);
     setNewsResponses({});
-    savePersistedData('news', []);
+    try {
+      await clearNewsPosts();
+    } catch (err) {
+      console.error('Failed to clear news from database:', err);
+    }
   };
 
   const handleFetchGitHub = async () => {
@@ -2124,8 +2250,29 @@ function App() {
       const issues = await fetchGitHubIssues((current, total, label) => {
         setGithubProgress({ current, total, label });
       });
+      // Get dismissed IDs from database
+      const dismissedIds = await getDismissedIds('github_issue');
       // Filter out previously dismissed issues
-      const filteredIssues = issues.filter(issue => !dismissedGitHub.includes(issue.id) && !dismissedGitHub.includes(String(issue.id)));
+      const filteredIssues = issues.filter(issue =>
+        !dismissedIds.includes(issue.id) && !dismissedIds.includes(String(issue.id))
+      );
+
+      // Save to database for cross-device persistence
+      if (filteredIssues.length > 0) {
+        const issuesForDB = filteredIssues.map(issue => ({
+          source_id: String(issue.id),
+          repo: issue.repo,
+          url: issue.url,
+          title: issue.title,
+          body: issue.body,
+          labels: issue.labels?.join(',') || '',
+          language: issue.language,
+          stars: issue.stars || 0,
+          created_at: issue.created_at,
+        }));
+        await saveGitHubIssues(issuesForDB);
+      }
+
       setGithubIssues(filteredIssues);
     } catch (err) {
       alert('Failed to fetch GitHub issues: ' + err.message);
@@ -2135,9 +2282,14 @@ function App() {
     }
   };
 
-  const handleClearGitHub = () => {
+  const handleClearGitHub = async () => {
     if (!confirm('Clear all GitHub issues?')) return;
     setGithubIssues([]);
+    try {
+      await clearGitHubIssues();
+    } catch (err) {
+      console.error('Failed to clear GitHub issues from database:', err);
+    }
   };
 
   const handleDismissGitHub = async (issue) => {
@@ -2145,9 +2297,10 @@ function App() {
     // Optimistic update
     setDismissedGitHub(prev => [...prev, issueId]);
     setGithubIssues(prev => prev.filter(i => i.id !== issueId));
-    // Persist to backend
+    // Persist to backend (both dismissals table and update status in persistence table)
     try {
       await dismissItem('github_issue', 'github', String(issueId), issue.url);
+      await updateGitHubIssueStatus(String(issueId), 'dismissed');
     } catch (err) {
       console.error('Failed to persist GitHub dismissal:', err);
       setDismissedGitHub(prev => prev.filter(id => id !== issueId));
@@ -2344,6 +2497,168 @@ function App() {
       </div>
 
       {/* ============== REDDIT TAB ============== */}
+
+      {/* Reddit > Job Search */}
+      {mainTab === 'reddit' && currentSubTab === 'jobs' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#fff' }}>
+                Reddit Job Opportunities
+              </div>
+              <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
+                Freelance and contract opportunities from hiring subreddits
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                data-btn="reddit"
+                style={{ ...styles.btn, ...styles.btnReddit }}
+                onClick={async () => {
+                  setRedditJobsFetching(true);
+                  try {
+                    // Fetch from hiring subreddits via client-side
+                    const hiringSubreddits = ['forhire', 'slavelabour', 'freelance_forhire', 'remotejobs', 'jobbit'];
+                    const jobPosts = [];
+                    for (const sub of hiringSubreddits) {
+                      try {
+                        const response = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(`https://www.reddit.com/r/${sub}/new.json?limit=10`)}`);
+                        if (response.ok) {
+                          const data = await response.json();
+                          if (data?.data?.children) {
+                            for (const post of data.data.children) {
+                              const p = post.data;
+                              // Filter for hiring posts
+                              const isHiring = p.title?.toLowerCase().includes('[hiring]') ||
+                                              p.link_flair_text?.toLowerCase().includes('hiring') ||
+                                              p.title?.toLowerCase().includes('looking for') ||
+                                              p.title?.toLowerCase().includes('need a');
+                              if (isHiring && jobPosts.length < 30) {
+                                jobPosts.push({
+                                  reddit_id: p.id,
+                                  subreddit: p.subreddit,
+                                  title: p.title,
+                                  body: p.selftext || '',
+                                  url: `https://reddit.com${p.permalink}`,
+                                  author: p.author,
+                                  score: p.score || 0,
+                                  num_comments: p.num_comments || 0,
+                                  created_utc: p.created_utc ? new Date(p.created_utc * 1000).toISOString() : null,
+                                });
+                              }
+                            }
+                          }
+                        }
+                      } catch (e) {
+                        console.warn(`Failed to fetch r/${sub}:`, e);
+                      }
+                    }
+                    if (jobPosts.length > 0) {
+                      await saveRedditJobs(jobPosts);
+                      const jobs = await getRedditJobs('new');
+                      setRedditJobs(jobs);
+                    } else {
+                      alert('No hiring posts found. Try again later.');
+                    }
+                  } catch (err) {
+                    console.error('Reddit jobs fetch error:', err);
+                    alert('Failed to fetch Reddit jobs: ' + err.message);
+                  } finally {
+                    setRedditJobsFetching(false);
+                  }
+                }}
+                disabled={redditJobsFetching}
+              >
+                {redditJobsFetching ? 'Fetching...' : '🔍 Fetch Jobs (30)'}
+              </button>
+              {redditJobs.length > 0 && (
+                <button
+                  data-btn="secondary"
+                  style={{ ...styles.btn, ...styles.btnSecondary }}
+                  onClick={async () => {
+                    if (confirm('Clear all dismissed/responded jobs?')) {
+                      await clearRedditJobs('dismissed');
+                      const jobs = await getRedditJobs('new');
+                      setRedditJobs(jobs);
+                    }
+                  }}
+                >
+                  Clear Dismissed
+                </button>
+              )}
+            </div>
+          </div>
+
+          {redditJobs.length === 0 ? (
+            <div style={styles.empty}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>💼</div>
+              <div style={{ fontSize: '16px', color: '#888' }}>
+                No job opportunities yet. Click "Fetch Jobs" to search hiring subreddits.
+              </div>
+            </div>
+          ) : (
+            <div style={styles.postList}>
+              {redditJobs.filter(job => job.status === 'new').map((job) => (
+                <div key={job.reddit_id || job.id} style={styles.post}>
+                  <div style={styles.postHeader}>
+                    <a
+                      href={`https://reddit.com/r/${job.subreddit}`}
+                      target="_blank"
+                      rel="noopener"
+                      style={styles.subreddit}
+                    >
+                      r/{job.subreddit}
+                    </a>
+                    <span style={{ fontSize: '12px', color: '#888' }}>
+                      {job.score || 0} pts · {job.num_comments || 0} comments
+                    </span>
+                  </div>
+                  <div style={styles.postTitle}>
+                    <a href={job.url} target="_blank" rel="noopener" style={styles.postLink}>
+                      {job.title}
+                    </a>
+                  </div>
+                  <div style={styles.postMeta}>
+                    by u/{job.author}
+                  </div>
+                  {job.body && (
+                    <div style={styles.postBody}>
+                      {job.body.slice(0, 500)}{job.body.length > 500 ? '...' : ''}
+                    </div>
+                  )}
+                  <div style={styles.actions}>
+                    <button
+                      data-btn="reddit"
+                      style={{ ...styles.btn, ...styles.btnReddit }}
+                      onClick={() => {
+                        window.open(job.url + '#comments', '_blank');
+                        updateRedditJobStatus(job.reddit_id, 'responded');
+                        setRedditJobs(prev => prev.map(j =>
+                          j.reddit_id === job.reddit_id ? { ...j, status: 'responded' } : j
+                        ));
+                      }}
+                    >
+                      📋 View & Respond
+                    </button>
+                    <button
+                      data-btn="skip"
+                      style={{ ...styles.btn, ...styles.btnSkip }}
+                      onClick={() => {
+                        updateRedditJobStatus(job.reddit_id, 'dismissed');
+                        setRedditJobs(prev => prev.map(j =>
+                          j.reddit_id === job.reddit_id ? { ...j, status: 'dismissed' } : j
+                        ));
+                      }}
+                    >
+                      ✕ Dismiss
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Reddit > Post Schedule */}
       {mainTab === 'reddit' && currentSubTab === 'schedule' && (
@@ -2958,6 +3273,166 @@ function App() {
 
       {/* ============== LINKEDIN TAB ============== */}
 
+      {/* LinkedIn > Job Search */}
+      {mainTab === 'linkedin' && currentSubTab === 'jobs' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#fff' }}>
+                LinkedIn Job Opportunities
+              </div>
+              <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
+                Freelance and contract opportunities from LinkedIn posts (via Apify)
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                data-btn="linkedin"
+                style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                onClick={async () => {
+                  setLinkedInLeadsFetching(true);
+                  try {
+                    const API_BASE = import.meta.env.PROD
+                      ? 'https://devscout.junipr.io/api/prospects/linkedin'
+                      : 'http://localhost:8004/api/prospects/linkedin';
+                    const res = await fetch(API_BASE, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ limit: 30 }),
+                    });
+                    if (!res.ok) {
+                      if (res.status === 402) {
+                        alert('Apify API quota exceeded. Please wait or add more API keys.');
+                      } else if (res.status === 503) {
+                        const data = await res.json();
+                        alert(data.detail || 'Service unavailable');
+                      } else {
+                        throw new Error(`HTTP ${res.status}`);
+                      }
+                      return;
+                    }
+                    const data = await res.json();
+                    if (data.posts && data.posts.length > 0) {
+                      // Save to database
+                      const jobsToSave = data.posts.map(p => ({
+                        source_id: p.activity_id || p.id,
+                        url: p.post_url || p.url,
+                        title: p.text?.slice(0, 200) || '',
+                        body: p.text || '',
+                        author: p.author?.name || '',
+                        author_url: p.author?.profile_url || '',
+                        author_headline: p.author?.headline || '',
+                        posted_at: p.posted_at?.timestamp ? new Date(p.posted_at.timestamp * 1000).toISOString() : null,
+                        reactions: p.stats?.total_reactions || 0,
+                        comments: p.stats?.comments || 0,
+                      }));
+                      await saveLinkedInJobs(jobsToSave);
+                      // Reload from DB
+                      const jobs = await getLinkedInJobs('new');
+                      setLinkedInLeads(jobs);
+                    } else {
+                      alert('No job posts found. Try again later.');
+                    }
+                  } catch (err) {
+                    console.error('LinkedIn jobs fetch error:', err);
+                    alert('Failed to fetch LinkedIn jobs: ' + err.message);
+                  } finally {
+                    setLinkedInLeadsFetching(false);
+                  }
+                }}
+                disabled={linkedInLeadsFetching}
+              >
+                {linkedInLeadsFetching ? 'Fetching...' : '🔍 Fetch Jobs (30)'}
+              </button>
+              {linkedInLeads.length > 0 && (
+                <button
+                  data-btn="secondary"
+                  style={{ ...styles.btn, ...styles.btnSecondary }}
+                  onClick={async () => {
+                    if (confirm('Clear all dismissed/responded jobs?')) {
+                      await clearLinkedInJobs('dismissed');
+                      const jobs = await getLinkedInJobs('new');
+                      setLinkedInLeads(jobs);
+                    }
+                  }}
+                >
+                  Clear Dismissed
+                </button>
+              )}
+            </div>
+          </div>
+
+          {linkedInLeads.length === 0 ? (
+            <div style={styles.empty}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>💼</div>
+              <div style={{ fontSize: '16px', color: '#888' }}>
+                No job opportunities yet. Click "Fetch Jobs" to search LinkedIn.
+              </div>
+            </div>
+          ) : (
+            <div style={styles.postList}>
+              {linkedInLeads.filter(job => job.status === 'new').map((job) => (
+                <div key={job.source_id || job.id} style={styles.post}>
+                  <div style={styles.postHeader}>
+                    <span style={{ ...styles.subreddit, background: '#0A66C220', color: '#0A66C2' }}>
+                      LinkedIn
+                    </span>
+                    <span style={{ fontSize: '12px', color: '#888' }}>
+                      {job.reactions || 0} reactions · {job.comments || 0} comments
+                    </span>
+                  </div>
+                  <div style={styles.postTitle}>
+                    <a href={job.url} target="_blank" rel="noopener" style={styles.postLink}>
+                      {job.title || job.body?.slice(0, 100) + '...'}
+                    </a>
+                  </div>
+                  <div style={styles.postMeta}>
+                    {job.author && (
+                      <a href={job.author_url} target="_blank" rel="noopener" style={{ color: '#0A66C2' }}>
+                        {job.author}
+                      </a>
+                    )}
+                    {job.author_headline && <span> · {job.author_headline}</span>}
+                  </div>
+                  {job.body && (
+                    <div style={styles.postBody}>
+                      {job.body.slice(0, 500)}{job.body.length > 500 ? '...' : ''}
+                    </div>
+                  )}
+                  <div style={styles.actions}>
+                    <button
+                      data-btn="linkedin"
+                      style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                      onClick={() => {
+                        window.open(job.url, '_blank');
+                        updateLinkedInJobStatus(job.source_id, 'responded');
+                        setLinkedInLeads(prev => prev.map(j =>
+                          j.source_id === job.source_id ? { ...j, status: 'responded' } : j
+                        ));
+                      }}
+                    >
+                      📋 View & Respond
+                    </button>
+                    <button
+                      data-btn="skip"
+                      style={{ ...styles.btn, ...styles.btnSkip }}
+                      onClick={() => {
+                        updateLinkedInJobStatus(job.source_id, 'dismissed');
+                        setLinkedInLeads(prev => prev.map(j =>
+                          j.source_id === job.source_id ? { ...j, status: 'dismissed' } : j
+                        ));
+                      }}
+                    >
+                      ✕ Dismiss
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* LinkedIn > Post Schedule */}
       {mainTab === 'linkedin' && currentSubTab === 'schedule' && (
         <div>
@@ -3295,9 +3770,15 @@ function App() {
                         <button
                           data-btn="linkedin"
                           style={{ ...styles.btn, ...styles.btnLinkedIn }}
-                          onClick={() => {
+                          onClick={async () => {
                             navigator.clipboard.writeText(linkedInEngagementResponses[post.source_id]);
                             window.open(post.url, '_blank');
+                            // Update status to responded in database
+                            try {
+                              await updateLinkedInEngagementStatus(post.source_id, 'responded', linkedInEngagementResponses[post.source_id]);
+                            } catch (err) {
+                              console.error('Failed to update status:', err);
+                            }
                             // Auto-remove from list
                             setLinkedInEngagement(prev => prev.filter(p => p.source_id !== post.source_id));
                             setLinkedInEngagementResponses(prev => {

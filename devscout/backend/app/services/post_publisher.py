@@ -162,6 +162,10 @@ class PostPublisher:
 
         return stats
 
+    async def cleanup(self):
+        """Clean up resources - must be called when done."""
+        await self.engine.dispose()
+
     async def run_forever(self, interval_seconds: int = 60):
         """Run continuously, checking for posts every interval."""
         logger.info(f"Starting post publisher (interval: {interval_seconds}s)")

@@ -509,42 +509,74 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
     Cost: ~$5 per 1,000 posts
     Free tier: $5/month credit (~1,000 posts)
 
-    Requires APIFY_API_KEY in .env
+    Supports multiple API keys with automatic rotation on quota exhaustion.
+    Requires APIFY_API_KEY in .env (optional: APIFY_API_KEY_2, APIFY_API_KEY_3)
     """
     import httpx
     from ..config import get_settings
 
     settings = get_settings()
 
-    if not settings.apify_api_key:
+    # Collect available API keys (supports up to 6 keys with rotation)
+    api_keys = [k for k in [
+        settings.apify_api_key,
+        settings.apify_api_key_2,
+        settings.apify_api_key_3,
+        settings.apify_api_key_4,
+        settings.apify_api_key_5,
+        settings.apify_api_key_6,
+    ] if k]
+
+    if not api_keys:
         return {"posts": [], "error": "Apify API key not configured. Add APIFY_API_KEY to .env"}
 
     all_posts = []
     seen_ids = set()
+    current_key_index = 0
 
-    try:
-        # Apify LinkedIn Posts Search Scraper (no cookies needed)
+    async def call_apify(client: httpx.AsyncClient, search_term: str, api_key: str):
+        """Make Apify API call with given key."""
         actor_id = "apimaestro~linkedin-posts-search-scraper-no-cookies"
         run_url = f"https://api.apify.com/v2/acts/{actor_id}/run-sync-get-dataset-items"
+        return await client.post(
+            run_url,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "keyword": search_term,
+                "sortBy": request.sort_by,
+                "maxPosts": request.max_posts_per_term,
+            },
+        )
 
+    try:
         async with httpx.AsyncClient(timeout=180.0) as client:
             for search_term in request.search_terms:
                 try:
-                    response = await client.post(
-                        run_url,
-                        headers={
-                            "Authorization": f"Bearer {settings.apify_api_key}",
-                            "Content-Type": "application/json",
-                        },
-                        json={
-                            "keyword": search_term,
-                            "sortBy": request.sort_by,
-                            "maxPosts": request.max_posts_per_term,
-                        },
-                    )
+                    # Try with current key, rotate on quota exhaustion (402)
+                    response = None
+                    for attempt in range(len(api_keys)):
+                        key_idx = (current_key_index + attempt) % len(api_keys)
+                        api_key = api_keys[key_idx]
 
-                    if response.status_code not in (200, 201):
-                        logger.error(f"LinkedIn API error for '{search_term}': {response.status_code}")
+                        response = await call_apify(client, search_term, api_key)
+
+                        if response.status_code == 402:
+                            # Quota exhausted, try next key
+                            logger.warning(f"Apify key {key_idx + 1} exhausted (402), trying next...")
+                            if attempt == len(api_keys) - 1:
+                                logger.error("All Apify keys exhausted")
+                                return {"posts": all_posts, "error": "All Apify API keys exhausted. Add more keys or wait for quota reset.", "count": len(all_posts)}
+                            continue
+                        else:
+                            # Success or other error, update current key index
+                            current_key_index = key_idx
+                            break
+
+                    if response is None or response.status_code not in (200, 201):
+                        logger.error(f"LinkedIn API error for '{search_term}': {response.status_code if response else 'no response'}")
                         continue
 
                     data = response.json()

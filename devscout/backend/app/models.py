@@ -215,3 +215,150 @@ class CommentReply(Base):
     __table_args__ = (
         Index('ix_comment_reply_unique', 'my_comment_id', 'platform_reply_id', unique=True),
     )
+
+
+class LinkedInJob(Base):
+    """LinkedIn job/freelance opportunities from Job Search tab."""
+
+    __tablename__ = "linkedin_jobs"
+
+    id = Column(Integer, primary_key=True)
+    source_id = Column(String(200), nullable=False, unique=True, index=True)  # LinkedIn activity ID
+    url = Column(String(500), nullable=False)
+    title = Column(Text)
+    body = Column(Text)
+    author = Column(String(200))
+    author_url = Column(String(500))
+    author_headline = Column(String(500))
+    posted_at = Column(DateTime)
+    reactions = Column(Integer, default=0)
+    comments = Column(Integer, default=0)
+    status = Column(String(20), default="new", index=True)  # new, responded, dismissed
+    responded_at = Column(DateTime)
+    suggested_response = Column(Text)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class LinkedInEngagement(Base):
+    """LinkedIn posts for engagement (comment on relevant posts)."""
+
+    __tablename__ = "linkedin_engagement"
+
+    id = Column(Integer, primary_key=True)
+    source_id = Column(String(200), nullable=False, unique=True, index=True)  # LinkedIn activity ID
+    url = Column(String(500), nullable=False)
+    title = Column(Text)  # First line or snippet
+    body = Column(Text)
+    author = Column(String(200))
+    author_url = Column(String(500))
+    author_headline = Column(String(500))
+    posted_at = Column(DateTime)
+    reactions = Column(Integer, default=0)
+    comments = Column(Integer, default=0)
+    status = Column(String(20), default="new", index=True)  # new, responded, dismissed
+    responded_at = Column(DateTime)
+    suggested_response = Column(Text)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class RedditJob(Base):
+    """Reddit job/freelance opportunities from Job Search tab."""
+
+    __tablename__ = "reddit_jobs"
+
+    id = Column(Integer, primary_key=True)
+    reddit_id = Column(String(20), nullable=False, unique=True, index=True)
+    subreddit = Column(String(100), index=True)
+    title = Column(Text)
+    body = Column(Text)
+    url = Column(String(500), nullable=False)
+    author = Column(String(100))
+    score = Column(Integer, default=0)
+    num_comments = Column(Integer, default=0)
+    created_utc = Column(DateTime)
+    status = Column(String(20), default="new", index=True)  # new, responded, dismissed
+    responded_at = Column(DateTime)
+    suggested_response = Column(Text)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class RedditEngagement(Base):
+    """Reddit posts for engagement (helpful responses)."""
+
+    __tablename__ = "reddit_engagement"
+
+    id = Column(Integer, primary_key=True)
+    reddit_id = Column(String(20), nullable=False, unique=True, index=True)
+    subreddit = Column(String(100), index=True)
+    title = Column(Text)
+    body = Column(Text)
+    url = Column(String(500), nullable=False)
+    author = Column(String(100))
+    score = Column(Integer, default=0)
+    num_comments = Column(Integer, default=0)
+    created_utc = Column(DateTime)
+    relevance_score = Column(Float, default=0.0)
+    keywords_matched = Column(Text)  # JSON array
+    status = Column(String(20), default="new", index=True)  # new, responded, dismissed
+    responded_at = Column(DateTime)
+    suggested_response = Column(Text)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class NewsPost(Base):
+    """Tech news posts from HN, Lobsters, Dev.to, Hashnode."""
+
+    __tablename__ = "news_posts"
+
+    id = Column(Integer, primary_key=True)
+    source = Column(String(50), nullable=False, index=True)  # hackernews, lobsters, devto, hashnode
+    source_id = Column(String(100), nullable=False)
+    title = Column(Text)
+    body = Column(Text)
+    url = Column(String(500), nullable=False)
+    author = Column(String(100))
+    score = Column(Integer, default=0)
+    comments = Column(Integer, default=0)
+    posted_at = Column(DateTime)
+    tags = Column(Text)  # JSON array of tags
+    status = Column(String(20), default="new", index=True)  # new, responded, dismissed
+    responded_at = Column(DateTime)
+    suggested_response = Column(Text)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        Index('ix_news_source_source_id', 'source', 'source_id', unique=True),
+    )
+
+
+class GitHubIssue(Base):
+    """GitHub issues (good-first-issue, help-wanted)."""
+
+    __tablename__ = "github_issues"
+
+    id = Column(Integer, primary_key=True)
+    github_id = Column(Integer, nullable=False, unique=True, index=True)
+    repo_owner = Column(String(100), nullable=False)
+    repo_name = Column(String(100), nullable=False)
+    issue_number = Column(Integer, nullable=False)
+    title = Column(Text)
+    body = Column(Text)
+    url = Column(String(500), nullable=False)
+    author = Column(String(100))
+    labels = Column(Text)  # JSON array of labels
+    language = Column(String(50))  # Primary repo language
+    stars = Column(Integer, default=0)
+    created_at_gh = Column(DateTime)  # GitHub created_at
+    status = Column(String(20), default="new", index=True)  # new, responded, dismissed
+    responded_at = Column(DateTime)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        Index('ix_github_repo_issue', 'repo_owner', 'repo_name', 'issue_number', unique=True),
+    )

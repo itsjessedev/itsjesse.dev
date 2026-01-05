@@ -14,6 +14,7 @@ from .routers import (
     scheduling_router,
     comments_router,
     linkedin_router,
+    persistence_router,
 )
 
 
@@ -87,3 +88,4 @@ app.include_router(dismissals_router)
 app.include_router(scheduling_router)
 app.include_router(comments_router)
 app.include_router(linkedin_router)
+app.include_router(persistence_router)

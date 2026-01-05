@@ -329,6 +329,40 @@ async def post_comment(
             },
         )
 
+        # If we get a 400 with "not the same as the actual threadUrn", extract correct URN and retry
+        if response.status_code == 400:
+            error_text = response.text
+            actual_urn_match = re.search(r'actual threadUrn: (urn:li:\w+:\d+)', error_text)
+            if actual_urn_match:
+                correct_urn = actual_urn_match.group(1)
+                logger.info(f"LinkedIn returned correct URN: {correct_urn}, retrying...")
+                encoded_correct_urn = correct_urn.replace(":", "%3A")
+
+                retry_response = await client.post(
+                    f"https://api.linkedin.com/v2/socialActions/{encoded_correct_urn}/comments",
+                    json=comment_data,
+                    headers={
+                        "Authorization": f"Bearer {access_token}",
+                        "Content-Type": "application/json",
+                        "X-Restli-Protocol-Version": "2.0.0",
+                    },
+                )
+
+                if retry_response.status_code in [200, 201]:
+                    result = retry_response.json()
+                    comment_id = result.get("id", "")
+                    return {
+                        "status": "posted",
+                        "comment_id": comment_id,
+                        "activity_urn": correct_urn,
+                    }
+                else:
+                    logger.error(f"LinkedIn comment retry failed: {retry_response.text}")
+                    raise HTTPException(
+                        status_code=retry_response.status_code,
+                        detail=f"Failed to post comment: {retry_response.text}"
+                    )
+
         if response.status_code not in [200, 201]:
             logger.error(f"LinkedIn comment failed: {response.text}")
             raise HTTPException(
@@ -372,6 +406,154 @@ async def fetch_engagement_posts(
         detail="LinkedIn scraping temporarily unavailable. Search engines block VPS IPs. "
                "Use the Prospects tab which fetches from your browser instead."
     )
+
+
+class EngagementFetchRequest(BaseModel):
+    """Request to fetch LinkedIn engagement posts via Apify."""
+    search_terms: list[str] = [
+        "developer tips",
+        "coding lessons learned",
+        "software engineering",
+        "automation workflow",
+        "API integration",
+    ]
+    limit: int = 20  # Per-fetch limit
+
+
+@router.post("/engagement/fetch")
+async def fetch_engagement_via_apify(request: EngagementFetchRequest):
+    """
+    Fetch LinkedIn posts for engagement via Apify.
+
+    Uses Apify's LinkedIn Posts Search Scraper.
+    Limit is per-fetch (default 20).
+    """
+    settings = get_settings()
+
+    # Collect available API keys (supports up to 6 keys with rotation)
+    api_keys = [k for k in [
+        settings.apify_api_key,
+        settings.apify_api_key_2,
+        settings.apify_api_key_3,
+        settings.apify_api_key_4,
+        settings.apify_api_key_5,
+        settings.apify_api_key_6,
+    ] if k]
+
+    if not api_keys:
+        return {"posts": [], "error": "Apify API key not configured. Add APIFY_API_KEY to .env"}
+
+    all_posts = []
+    seen_ids = set()
+    current_key_index = 0
+    posts_per_term = max(1, request.limit // len(request.search_terms))
+
+    async def call_apify(client: httpx.AsyncClient, search_term: str, api_key: str):
+        """Make Apify API call with given key."""
+        actor_id = "apimaestro~linkedin-posts-search-scraper-no-cookies"
+        run_url = f"https://api.apify.com/v2/acts/{actor_id}/run-sync-get-dataset-items"
+        return await client.post(
+            run_url,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "keyword": search_term,
+                "sortBy": "date_posted",
+                "maxPosts": posts_per_term,
+            },
+        )
+
+    try:
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            for search_term in request.search_terms:
+                if len(all_posts) >= request.limit:
+                    break
+
+                try:
+                    # Try with current key, rotate on quota exhaustion (402)
+                    response = None
+                    for attempt in range(len(api_keys)):
+                        key_idx = (current_key_index + attempt) % len(api_keys)
+                        api_key = api_keys[key_idx]
+
+                        response = await call_apify(client, search_term, api_key)
+
+                        if response.status_code in (402, 403):
+                            logger.warning(f"Apify key {key_idx + 1} failed ({response.status_code}), trying next...")
+                            if attempt == len(api_keys) - 1:
+                                logger.error("All Apify keys exhausted or invalid")
+                                return {"posts": all_posts, "error": "All Apify API keys exhausted or invalid.", "count": len(all_posts)}
+                            continue
+                        else:
+                            current_key_index = key_idx
+                            break
+
+                    if response is None or response.status_code not in (200, 201):
+                        logger.error(f"Apify error for '{search_term}': {response.status_code if response else 'no response'}")
+                        continue
+
+                    data = response.json()
+
+                    # Transform Apify results to engagement format
+                    for item in data:
+                        if len(all_posts) >= request.limit:
+                            break
+
+                        post_id = item.get("activity_id") or item.get("full_urn") or item.get("post_url", "")
+                        if not post_id or post_id in seen_ids:
+                            continue
+                        seen_ids.add(post_id)
+
+                        text = item.get("text") or ""
+                        if not text:
+                            continue
+
+                        # Extract author info
+                        author_obj = item.get("author") or {}
+                        author_name = author_obj.get("name", "") if isinstance(author_obj, dict) else str(author_obj)
+                        author_url = author_obj.get("profile_url", "") if isinstance(author_obj, dict) else ""
+                        author_headline = author_obj.get("headline", "") if isinstance(author_obj, dict) else ""
+
+                        # Extract stats
+                        stats = item.get("stats") or {}
+                        reactions = stats.get("total_reactions", 0) if isinstance(stats, dict) else 0
+                        comments_count = stats.get("comments", 0) if isinstance(stats, dict) else 0
+
+                        # Extract posted_at
+                        posted_at_obj = item.get("posted_at") or {}
+                        posted_at = None
+                        if isinstance(posted_at_obj, dict):
+                            ts = posted_at_obj.get("timestamp")
+                            if ts:
+                                try:
+                                    posted_at = datetime.fromtimestamp(ts / 1000).isoformat()
+                                except (ValueError, TypeError):
+                                    pass
+
+                        all_posts.append({
+                            "source_id": post_id,
+                            "url": item.get("post_url", ""),
+                            "author": author_name,
+                            "author_url": author_url,
+                            "author_headline": author_headline,
+                            "text": text,
+                            "posted_at": posted_at,
+                            "reactions": reactions,
+                            "comments": comments_count,
+                        })
+
+                except Exception as e:
+                    logger.error(f"Error fetching term '{search_term}': {e}")
+                    continue
+
+        logger.info(f"Fetched {len(all_posts)} LinkedIn engagement posts via Apify")
+        return {"posts": all_posts, "count": len(all_posts)}
+
+    except Exception as e:
+        logger.error(f"LinkedIn Apify fetch error: {e}")
+        return {"posts": all_posts, "error": str(e), "count": len(all_posts)}
 
 
 @router.post("/generate-response")

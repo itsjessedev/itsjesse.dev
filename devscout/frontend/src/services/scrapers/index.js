@@ -72,7 +72,7 @@ export const PLATFORMS = {
   },
   linkedin: {
     name: 'LinkedIn',
-    enabled: true, // Uses free client-side Google search (not Apify)
+    enabled: false, // LinkedIn has its own tab with Apify
     fetch: fetchAllLinkedIn,
   },
   wellfound: {

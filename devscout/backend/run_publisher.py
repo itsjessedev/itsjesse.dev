@@ -50,6 +50,7 @@ def main():
         if args.once:
             stats = await publisher.run_once()
             logger.info(f"Run complete: {stats}")
+            await publisher.cleanup()
             return stats
         else:
             await publisher.run_forever(interval_seconds=args.interval)

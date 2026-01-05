@@ -14,8 +14,13 @@ class Settings(BaseSettings):
     openrouter_api_key: str = ""
     openrouter_api_key_2: str = ""  # Fallback key if primary exhausted
 
-    # Apify API (for LinkedIn jobs scraper)
+    # Apify API (for LinkedIn jobs scraper) - supports multiple keys with rotation
     apify_api_key: str = ""
+    apify_api_key_2: str = ""
+    apify_api_key_3: str = ""
+    apify_api_key_4: str = ""
+    apify_api_key_5: str = ""
+    apify_api_key_6: str = ""
 
     # LinkedIn OAuth
     linkedin_client_id: str = ""
