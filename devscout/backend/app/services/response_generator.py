@@ -121,36 +121,137 @@ LINKEDIN_OPENING_STYLES = [
 
 # LinkedIn COMMENT styles - for replying to others' posts
 # These are more casual and conversational - not always teaching/advising
+# Categories help with smart selection based on post content
 LINKEDIN_COMMENT_STYLES = [
-    # Just vibing / casual agreement
-    {"style": "simple_agreement", "instruction": "Just agree and add one small thought. Keep it brief, like 1-2 sentences. Example: 'This is so true. The debugging part especially.' or 'Yep, been there. The auth stuff is always messier than expected.'"},
-    {"style": "relatable_moment", "instruction": "Share a brief relatable moment without turning it into a lesson. Example: 'Ha, this hit close to home. Had this exact conversation with a PM last week.' or 'The accuracy of this post...'"},
-    {"style": "casual_addition", "instruction": "Just add a casual related thought, not advice. Example: 'The part about documentation is what gets me. Nobody wants to write it, everybody needs it.' or 'API versioning is another one that always gets messy.'"},
+    # === AGREEMENT / VIBING ===
+    {"style": "simple_agreement", "category": "agreement", "instruction": "Just agree and add one small thought. Keep it brief, like 1-2 sentences. Example: 'This is so true. The debugging part especially.' or 'Been there. The auth stuff is always messier than expected.'"},
+    {"style": "relatable_moment", "category": "agreement", "instruction": "Share a brief relatable moment without turning it into a lesson. Example: 'Ha, this hit close to home. Had this exact conversation with a PM last week.' or 'The accuracy of this post...'"},
+    {"style": "casual_addition", "category": "agreement", "instruction": "Just add a casual related thought, not advice. Example: 'The part about documentation is what gets me. Nobody wants to write it, everybody needs it.' or 'API versioning is another one that always gets messy.'"},
+    {"style": "fist_bump", "category": "agreement", "instruction": "Brief solidarity/agreement. Example: 'This is the way.' or 'Couldn't agree more.' or 'Exactly this.' or 'Right there with you on this.'"},
 
-    # Genuine curiosity (not "helpful" questions)
-    {"style": "genuine_curiosity", "instruction": "Ask something you're genuinely curious about, not to help them. Example: 'How long did the migration end up taking?' or 'What made you choose that approach over X?' or 'Did you end up sticking with this or changing course?'"},
-    {"style": "tangent_question", "instruction": "Ask about something tangentially related that interests you. Example: 'Curious - are you using this in prod or still experimenting?' or 'What's the team size on this?'"},
+    # === CURIOSITY / QUESTIONS ===
+    {"style": "genuine_curiosity", "category": "curiosity", "instruction": "Ask something you're genuinely curious about, not to help them. Example: 'How long did the migration end up taking?' or 'What made you choose that approach over X?' or 'Did you end up sticking with this or changing course?'"},
+    {"style": "tangent_question", "category": "curiosity", "instruction": "Ask about something tangentially related that interests you. Example: 'Curious - are you using this in prod or still experimenting?' or 'What's the team size on this?'"},
+    {"style": "follow_up", "category": "curiosity", "instruction": "Ask a natural follow-up question. Example: 'What happened next?' or 'How did the team react?' or 'Did that end up working out?'"},
+    {"style": "context_seeking", "category": "curiosity", "instruction": "Ask for more context casually. Example: 'Was this a startup or enterprise context?' or 'How big was the codebase at that point?'"},
 
-    # Brief anecdotes (no lesson attached)
-    {"style": "quick_anecdote", "instruction": "Share a very brief related experience WITHOUT a lesson or advice. Just the story. Example: 'Reminds me of a project where we tried to automate everything and ended up with more work than before.' or 'Had a client insist on this exact approach once. Interesting few months.'"},
-    {"style": "me_too", "instruction": "Just a 'me too' type response with minimal elaboration. Example: 'Same. The refactoring never ends.' or 'This is basically my last three projects.' or 'I feel this in my soul.'"},
+    # === ANECDOTES / PERSONAL ===
+    {"style": "quick_anecdote", "category": "anecdote", "instruction": "Share a very brief related experience WITHOUT a lesson or advice. Just the story. Example: 'Reminds me of a project where we tried to automate everything and ended up with more work than before.' or 'Had a client insist on this exact approach once. Interesting few months.'"},
+    {"style": "me_too", "category": "anecdote", "instruction": "Just a 'me too' type response with minimal elaboration. Example: 'Same. The refactoring never ends.' or 'This is basically my last three projects.' or 'I feel this in my soul.'"},
+    {"style": "parallel_experience", "category": "anecdote", "instruction": "Mention a similar experience briefly. Example: 'Going through something similar right now actually.' or 'Dealt with this last quarter. It's a journey.'"},
+    {"style": "flashback", "category": "anecdote", "instruction": "Brief callback to past experience. Example: 'This takes me back to my first integration project.' or 'Had flashbacks reading this.' or 'Getting deja vu here.'"},
 
-    # Observations (not advice)
-    {"style": "noticing", "instruction": "Just notice or observe something from the post. Example: 'The part about stakeholder communication is underrated.' or 'Interesting that caching was the bottleneck - wouldn't have guessed that.'"},
-    {"style": "pattern_spotting", "instruction": "Point out a pattern you've noticed, casually. Example: 'Seems like every project hits this wall around month 3.' or 'Always funny how the \"quick fix\" becomes the permanent solution.'"},
+    # === OBSERVATIONS ===
+    {"style": "noticing", "category": "observation", "instruction": "Just notice or observe something from the post. Example: 'The part about stakeholder communication is underrated.' or 'Interesting that caching was the bottleneck - wouldn't have guessed that.'"},
+    {"style": "pattern_spotting", "category": "observation", "instruction": "Point out a pattern you've noticed, casually. Example: 'Seems like every project hits this wall around month 3.' or 'Always funny how the \"quick fix\" becomes the permanent solution.'"},
+    {"style": "highlighting", "category": "observation", "instruction": "Highlight a specific part that resonated. Example: 'The bit about testing in production hit different.' or 'That last point though.' or 'The debugging section especially.'"},
+    {"style": "connecting_dots", "category": "observation", "instruction": "Connect to something else casually. Example: 'This connects to something I read about microservices recently.' or 'Similar vibe to what's happening with AI tooling.'"},
 
-    # Light/playful
-    {"style": "light_humor", "instruction": "Add a light, relatable joke or quip. Example: 'The \"it works on my machine\" energy is strong with this one.' or 'Ah yes, the classic \"we need it yesterday\" timeline.' or 'This is the way.'"},
-    {"style": "commiseration", "instruction": "Commiserate without trying to solve anything. Example: 'Legacy code is a special kind of adventure.' or 'The joys of enterprise software.' or 'Gotta love scope creep.'"},
+    # === LIGHT / HUMOR ===
+    {"style": "light_humor", "category": "light", "instruction": "Add a light, relatable joke or quip. Example: 'The \"it works on my machine\" energy is strong with this one.' or 'Ah yes, the classic \"we need it yesterday\" timeline.'"},
+    {"style": "commiseration", "category": "light", "instruction": "Commiserate without trying to solve anything. Example: 'Legacy code is a special kind of adventure.' or 'The joys of enterprise software.' or 'Gotta love scope creep.'"},
+    {"style": "sarcastic_agreement", "category": "light", "instruction": "Light sarcasm or irony. Example: 'Oh, you mean the \"quick five minute fix\" that took two weeks? Love those.' or 'The \"simple\" API integration. Classic.'"},
+    {"style": "emoji_reaction", "category": "light", "instruction": "Brief comment with well-placed emoji. Example: 'The accuracy 😂' or 'This hit hard 💯' or 'Called out 🎯'"},
 
-    # Thoughtful but not preachy
-    {"style": "musing", "instruction": "Share a related thought you've been mulling over, not advice. Example: 'Been thinking about this lately too. The line between automation and over-engineering is blurry.' or 'Wonder how this changes with AI tooling becoming more common.'"},
-    {"style": "different_angle", "instruction": "Offer a different perspective casually, not as a correction. Example: 'Interesting - I've had the opposite experience with microservices, but might be context-dependent.' or 'We went a different direction but I can see why this works.'"},
+    # === THOUGHTFUL ===
+    {"style": "musing", "category": "thoughtful", "instruction": "Share a related thought you've been mulling over, not advice. Example: 'Been thinking about this lately too. The line between automation and over-engineering is blurry.' or 'Wonder how this changes with AI tooling becoming more common.'"},
+    {"style": "different_angle", "category": "thoughtful", "instruction": "Offer a different perspective casually, not as a correction. Example: 'Interesting - I've had the opposite experience with microservices, but might be context-dependent.' or 'We went a different direction but I can see why this works.'"},
+    {"style": "wondering", "category": "thoughtful", "instruction": "Express a related wondering or thought. Example: 'Makes me wonder what this looks like at larger scale.' or 'Wonder if this applies to smaller teams too.'"},
+    {"style": "reflection", "category": "thoughtful", "instruction": "Brief reflection without being preachy. Example: 'This kind of thing is why I got into automation in the first place.' or 'These are the conversations I wish we had more often.'"},
 
-    # Simple engagement
-    {"style": "bookmark", "instruction": "Just indicate you're saving/noting this. Example: 'Bookmarking this for later.' or 'Good stuff, saving this.' or 'Needed to hear this today.'"},
-    {"style": "appreciation", "instruction": "Simple appreciation without being over the top. Example: 'Solid breakdown.' or 'Clear and practical, thanks for sharing.' or 'This is useful context.'"},
+    # === SIMPLE ENGAGEMENT ===
+    {"style": "bookmark", "category": "simple", "instruction": "Just indicate you're saving/noting this. Example: 'Bookmarking this for later.' or 'Good stuff, saving this.' or 'Needed to hear this today.'"},
+    {"style": "appreciation", "category": "simple", "instruction": "Simple appreciation without being over the top. Example: 'Solid breakdown.' or 'Clear and practical, thanks for sharing.' or 'This is useful context.'"},
+    {"style": "sharing", "category": "simple", "instruction": "Mention you're sharing it. Example: 'Sharing this with my team.' or 'Forwarding to some folks who need to see this.'"},
+    {"style": "tagging", "category": "simple", "instruction": "Mention it reminded you of someone (but don't actually tag). Example: 'This is so relevant to what my coworker was dealing with.' or 'My PM needs to see this.'"},
+
+    # === SUPPORTIVE (for personal/vulnerable posts) ===
+    {"style": "encouragement", "category": "supportive", "instruction": "Offer brief, genuine encouragement. Example: 'Rooting for you on this.' or 'You've got this.' or 'Keep going, this stuff matters.'"},
+    {"style": "validation", "category": "supportive", "instruction": "Validate their experience briefly. Example: 'That takes guts to share.' or 'Respect for putting this out there.' or 'More people should talk about this.'"},
+    {"style": "acknowledgment", "category": "supportive", "instruction": "Simply acknowledge what they shared. Example: 'This resonates.' or 'Appreciate you sharing this.' or 'Real talk.'"},
 ]
+
+# Category weights for smart style selection based on post content
+STYLE_CATEGORY_WEIGHTS = {
+    "question": {"curiosity": 0.1, "agreement": 0.3, "anecdote": 0.3, "observation": 0.2, "light": 0.1},  # Don't ask questions back if they're asking
+    "story": {"anecdote": 0.35, "agreement": 0.25, "light": 0.2, "observation": 0.15, "simple": 0.05},
+    "lesson": {"agreement": 0.3, "observation": 0.25, "thoughtful": 0.2, "anecdote": 0.15, "simple": 0.1},
+    "frustration": {"commiseration": 0.4, "anecdote": 0.3, "light": 0.2, "agreement": 0.1},  # Commiserate with venting
+    "announcement": {"simple": 0.35, "agreement": 0.3, "supportive": 0.2, "curiosity": 0.15},
+    "technical": {"observation": 0.3, "curiosity": 0.25, "thoughtful": 0.2, "anecdote": 0.15, "agreement": 0.1},
+    "vulnerable": {"supportive": 0.5, "agreement": 0.25, "anecdote": 0.15, "simple": 0.1},  # Be supportive for personal posts
+    "default": {"agreement": 0.25, "anecdote": 0.2, "observation": 0.15, "light": 0.15, "curiosity": 0.1, "thoughtful": 0.1, "simple": 0.05},
+}
+
+
+def detect_post_type(post_text: str) -> str:
+    """Detect the type of LinkedIn post for smarter style selection."""
+    text_lower = post_text.lower()
+
+    # Check for vulnerable/personal content
+    vulnerable_signals = ["struggling", "burnout", "laid off", "fired", "mental health", "anxiety", "depression", "imposter syndrome", "hard to admit", "vulnerability", "honest moment", "confession"]
+    if any(signal in text_lower for signal in vulnerable_signals):
+        return "vulnerable"
+
+    # Check for frustration/venting
+    frustration_signals = ["frustrated", "annoying", "hate when", "drives me crazy", "so tired of", "sick of", "rant", "pet peeve", "why do people", "stop doing this"]
+    if any(signal in text_lower for signal in frustration_signals):
+        return "frustration"
+
+    # Check for questions
+    question_signals = ["what do you think", "thoughts?", "what's your", "how do you", "anyone else", "have you ever", "curious what", "what would you", "?"]
+    if any(signal in text_lower for signal in question_signals) and text_lower.count("?") >= 1:
+        return "question"
+
+    # Check for announcements
+    announcement_signals = ["excited to announce", "thrilled to share", "happy to announce", "proud to", "just launched", "introducing", "we're hiring", "new role", "started a new"]
+    if any(signal in text_lower for signal in announcement_signals):
+        return "announcement"
+
+    # Check for lessons/advice
+    lesson_signals = ["lesson learned", "here's what i learned", "pro tip", "hot take", "unpopular opinion", "advice:", "tip:", "things i wish", "what nobody tells you"]
+    if any(signal in text_lower for signal in lesson_signals):
+        return "lesson"
+
+    # Check for stories
+    story_signals = ["last week", "yesterday", "recently", "once had", "true story", "let me tell you", "here's what happened", "a few months ago", "back when"]
+    if any(signal in text_lower for signal in story_signals):
+        return "story"
+
+    # Check for technical content
+    technical_signals = ["api", "database", "code", "architecture", "deployment", "infrastructure", "algorithm", "optimization", "performance", "debugging", "integration"]
+    if sum(1 for signal in technical_signals if signal in text_lower) >= 2:
+        return "technical"
+
+    return "default"
+
+
+def select_comment_style(post_text: str) -> dict:
+    """Select an appropriate comment style based on post content."""
+    post_type = detect_post_type(post_text)
+    weights = STYLE_CATEGORY_WEIGHTS.get(post_type, STYLE_CATEGORY_WEIGHTS["default"])
+
+    # Build weighted list of styles
+    weighted_styles = []
+    for style in LINKEDIN_COMMENT_STYLES:
+        category = style.get("category", "agreement")
+        weight = weights.get(category, 0.1)
+        weighted_styles.append((style, weight))
+
+    # Normalize weights
+    total_weight = sum(w for _, w in weighted_styles)
+    normalized = [(s, w / total_weight) for s, w in weighted_styles]
+
+    # Random selection based on weights
+    r = random.random()
+    cumulative = 0
+    for style, weight in normalized:
+        cumulative += weight
+        if r <= cumulative:
+            return style
+
+    # Fallback to last style
+    return normalized[-1][0]
 
 # LinkedIn comment prompt - more casual and varied
 LINKEDIN_COMMENT_PROMPT = """You're Jesse, a developer who does automation and API integrations. You're commenting on a LinkedIn post - just being part of the conversation, not trying to be a guru or mentor.
@@ -449,9 +550,11 @@ THEIR REPLY TO YOU:
             print("No OpenRouter API keys configured")
             return None
 
-        # Select a random comment style
-        comment_style = random.choice(LINKEDIN_COMMENT_STYLES)
-        opening_instruction = f"⚠️ COMMENT STYLE: {comment_style['style'].upper()}\n{comment_style['instruction']}"
+        # Smart style selection based on post content
+        comment_style = select_comment_style(post_text)
+        post_type = detect_post_type(post_text)
+
+        opening_instruction = f"⚠️ COMMENT STYLE: {comment_style['style'].upper()} (post type: {post_type})\n{comment_style['instruction']}"
 
         # Build the prompt
         system_prompt = LINKEDIN_COMMENT_PROMPT.format(opening_instruction=opening_instruction)

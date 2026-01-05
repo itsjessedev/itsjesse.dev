@@ -453,6 +453,49 @@ async def post_comment(
         }
 
 
+@router.post("/like")
+async def like_post(
+    request: LinkedInLikeRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Like a LinkedIn post (without commenting)."""
+    import re
+
+    access_token = await get_linkedin_token(db)
+    auth = await db.get(LinkedInAuth, 1)
+
+    if not auth or not auth.person_id:
+        raise HTTPException(status_code=400, detail="Missing LinkedIn person ID")
+
+    # Extract URN from URL (same logic as comments)
+    url = request.post_url
+    post_urn = None
+
+    urn_match = re.search(r'urn:li:(activity|share|ugcPost):(\d+)', url)
+    if urn_match:
+        urn_type = urn_match.group(1)
+        urn_id = urn_match.group(2)
+        post_urn = f"urn:li:{urn_type}:{urn_id}"
+    else:
+        activity_match = re.search(r'-activity-(\d+)', url)
+        if activity_match:
+            post_urn = f"urn:li:activity:{activity_match.group(1)}"
+
+    if not post_urn:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not extract post ID from LinkedIn URL"
+        )
+
+    async with httpx.AsyncClient() as client:
+        liked = await _like_post(client, access_token, auth.person_id, post_urn)
+
+    if not liked:
+        raise HTTPException(status_code=500, detail="Failed to like post")
+
+    return {"status": "liked", "post_urn": post_urn}
+
+
 # ============== Engagement Endpoints ==============
 
 @router.get("/engagement", response_model=list[LinkedInEngagementPost])

@@ -1384,6 +1384,20 @@ export async function postLinkedInComment(postUrl, commentText) {
   return res.json();
 }
 
+// Like a LinkedIn post without commenting (for quick engagement)
+export async function likeLinkedInPost(postUrl) {
+  const res = await fetch(`${API_BASE}/api/linkedin/like`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ post_url: postUrl }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to like post' }));
+    throw new Error(error.detail || 'Failed to like post');
+  }
+  return res.json();
+}
+
 // Fetch LinkedIn engagement posts via Apify (limit 20 per fetch)
 export async function fetchLinkedInEngagementViaApify(searchTerms = null, limit = 20) {
   const res = await fetch(`${API_BASE}/api/linkedin/engagement/fetch`, {

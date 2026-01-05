@@ -4,8 +4,8 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
   fetchAndScoreProspects, getStoredProspects, getProspectStats, updateProspect as updateProspectAPI, deleteProspect as deleteProspectAPI, clearAllProspects, getAvailablePlatforms, getTotalSourceCount,
   // LinkedIn Post Templates
   LINKEDIN_POST_TEMPLATES, generateLinkedInPost, getLinkedInPostIdeas, getLinkedInPostCategories,
-  // LinkedIn Comments
-  postLinkedInComment,
+  // LinkedIn Comments & Likes
+  postLinkedInComment, likeLinkedInPost,
   // LinkedIn Engagement via Apify
   fetchLinkedInEngagementViaApify,
   // Dismissals (cross-device persistence)
@@ -1212,6 +1212,7 @@ function App() {
   const [linkedInEngagementResponses, setLinkedInEngagementResponses] = useState({}); // postId -> response text
   const [generatingLinkedInEngagement, setGeneratingLinkedInEngagement] = useState({}); // postId -> boolean
   const [postingLinkedInComment, setPostingLinkedInComment] = useState({}); // postId -> boolean
+  const [likingLinkedInPost, setLikingLinkedInPost] = useState({}); // postId -> boolean
   const [dismissedLinkedInEngagement, setDismissedLinkedInEngagement] = useState([]);
 
   // LinkedIn Post Schedule
@@ -2027,6 +2028,26 @@ function App() {
       console.error('Failed to persist dismissal:', err);
       // Rollback on error
       setDismissedLinkedInEngagement(prev => prev.filter(id => id !== postId));
+    }
+  };
+
+  // Like a LinkedIn post and dismiss it (quick engagement without commenting)
+  const handleLikeAndDismissLinkedInEngagement = async (post) => {
+    const postId = post.source_id;
+    setLikingLinkedInPost(prev => ({ ...prev, [postId]: true }));
+
+    try {
+      await likeLinkedInPost(post.url);
+      // Success - dismiss the post
+      setDismissedLinkedInEngagement(prev => [...prev, postId]);
+      setLinkedInEngagement(prev => prev.filter(p => p.source_id !== postId));
+      await dismissItem('linkedin_engagement', 'linkedin', postId, post.url);
+      await updateLinkedInEngagementStatus(postId, 'dismissed');
+    } catch (err) {
+      console.error('Failed to like post:', err);
+      alert('Failed to like post: ' + err.message);
+    } finally {
+      setLikingLinkedInPost(prev => ({ ...prev, [postId]: false }));
     }
   };
 
@@ -3749,6 +3770,21 @@ function App() {
                         >
                           {generatingLinkedInEngagement[post.source_id] ? 'Generating...' : 'Generate Response'}
                         </button>
+                        {LINKEDIN_OAUTH_ENABLED && (
+                          <button
+                            data-btn="like"
+                            style={{
+                              ...styles.btn,
+                              background: 'linear-gradient(135deg, #0A66C2 0%, #004182 100%)',
+                              color: '#fff',
+                              fontWeight: '600',
+                            }}
+                            onClick={() => handleLikeAndDismissLinkedInEngagement(post)}
+                            disabled={likingLinkedInPost[post.source_id]}
+                          >
+                            {likingLinkedInPost[post.source_id] ? '⏳ Liking...' : '👍 Like'}
+                          </button>
+                        )}
                         <button
                           data-btn="dismiss"
                           style={{ ...styles.btn, background: '#374151', color: '#9ca3af' }}
