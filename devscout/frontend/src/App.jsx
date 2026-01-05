@@ -1930,12 +1930,19 @@ function App() {
       // Filter out dismissed posts
       const filteredPosts = posts.filter(post => !dismissedIds.includes(post.source_id));
 
+      // Map 'text' to 'body' for database storage (schema expects body, not text)
+      const postsForDb = filteredPosts.map(post => ({
+        ...post,
+        body: post.text || post.body,
+      }));
+
       // Save to database for cross-device persistence
-      if (filteredPosts.length > 0) {
-        await saveLinkedInEngagement(filteredPosts);
+      if (postsForDb.length > 0) {
+        await saveLinkedInEngagement(postsForDb);
       }
 
-      setLinkedInEngagement(filteredPosts);
+      // Keep text field for display compatibility
+      setLinkedInEngagement(postsForDb);
 
       if (filteredPosts.length === 0 && posts.length > 0) {
         alert('All fetched posts were previously dismissed. Try again later for new posts.');
@@ -1957,7 +1964,7 @@ function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          post_text: post.text,
+          post_text: post.body || post.text,
           author: post.author,
           author_headline: post.author_headline,
         }),
@@ -3700,7 +3707,7 @@ function App() {
                   <div style={styles.postMeta}>
                     {post.author_headline} · {post.comments} comments
                   </div>
-                  <div style={styles.postBody}>{post.text}</div>
+                  <div style={styles.postBody}>{post.body || post.text}</div>
 
                   {/* Generated Response Area */}
                   {linkedInEngagementResponses[post.source_id] && (
