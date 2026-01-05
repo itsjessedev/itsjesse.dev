@@ -73,6 +73,11 @@ class LinkedInCommentRequest(BaseModel):
     comment_text: str
 
 
+class LinkedInLikeRequest(BaseModel):
+    """Request to like a LinkedIn post."""
+    post_url: str  # LinkedIn post URL
+
+
 # ============== OAuth Endpoints ==============
 
 @router.get("/auth/url")
@@ -267,6 +272,67 @@ async def publish_post(
         }
 
 
+async def _like_post(client: httpx.AsyncClient, access_token: str, person_id: str, post_urn: str) -> bool:
+    """Helper to like a LinkedIn post. Returns True if successful, False otherwise."""
+    import re
+
+    encoded_urn = post_urn.replace(":", "%3A")
+    like_data = {
+        "actor": f"urn:li:person:{person_id}",
+        "object": post_urn,
+    }
+
+    try:
+        response = await client.post(
+            f"https://api.linkedin.com/v2/socialActions/{encoded_urn}/likes",
+            json=like_data,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+                "X-Restli-Protocol-Version": "2.0.0",
+            },
+        )
+
+        # If we get a 400 with wrong URN, try with the correct URN
+        if response.status_code == 400:
+            error_text = response.text
+            actual_urn_match = re.search(r'actual threadUrn: (urn:li:\w+:\d+)', error_text)
+            if actual_urn_match:
+                correct_urn = actual_urn_match.group(1)
+                logger.info(f"Like: LinkedIn returned correct URN: {correct_urn}, retrying...")
+                encoded_correct_urn = correct_urn.replace(":", "%3A")
+                like_data["object"] = correct_urn
+
+                retry_response = await client.post(
+                    f"https://api.linkedin.com/v2/socialActions/{encoded_correct_urn}/likes",
+                    json=like_data,
+                    headers={
+                        "Authorization": f"Bearer {access_token}",
+                        "Content-Type": "application/json",
+                        "X-Restli-Protocol-Version": "2.0.0",
+                    },
+                )
+                if retry_response.status_code in [200, 201]:
+                    logger.info(f"Successfully liked post {correct_urn}")
+                    return True
+
+        if response.status_code in [200, 201]:
+            logger.info(f"Successfully liked post {post_urn}")
+            return True
+
+        # 409 Conflict means already liked - that's fine
+        if response.status_code == 409:
+            logger.info(f"Post already liked: {post_urn}")
+            return True
+
+        logger.warning(f"Failed to like post: {response.status_code} - {response.text}")
+        return False
+
+    except Exception as e:
+        logger.error(f"Error liking post: {e}")
+        return False
+
+
 @router.post("/comments")
 async def post_comment(
     request: LinkedInCommentRequest,
@@ -351,10 +417,13 @@ async def post_comment(
                 if retry_response.status_code in [200, 201]:
                     result = retry_response.json()
                     comment_id = result.get("id", "")
+                    # Auto-like the post using the correct URN
+                    liked = await _like_post(client, access_token, auth.person_id, correct_urn)
                     return {
                         "status": "posted",
                         "comment_id": comment_id,
                         "activity_urn": correct_urn,
+                        "liked": liked,
                     }
                 else:
                     logger.error(f"LinkedIn comment retry failed: {retry_response.text}")
@@ -373,10 +442,14 @@ async def post_comment(
         result = response.json()
         comment_id = result.get("id", "")
 
+        # Auto-like the post
+        liked = await _like_post(client, access_token, auth.person_id, activity_urn)
+
         return {
             "status": "posted",
             "comment_id": comment_id,
             "activity_urn": activity_urn,
+            "liked": liked,
         }
 
 
