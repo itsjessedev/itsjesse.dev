@@ -631,18 +631,14 @@ async def fetch_engagement_via_apify(request: EngagementFetchRequest):
 
 @router.post("/generate-response")
 async def generate_linkedin_response(request: GenerateResponseRequest):
-    """Generate an AI response for a LinkedIn post."""
+    """Generate a casual, natural AI comment for a LinkedIn post."""
     generator = ResponseGenerator()
 
-    # Create context for generation
-    context = f"LinkedIn post by {request.author}"
-    if request.author_headline:
-        context += f" ({request.author_headline})"
-
-    response = await generator.generate(
-        title=context,
-        body=request.post_text,
-        subreddit="linkedin",  # Will be handled specially by generator
+    # Use the new LinkedIn-specific comment generator
+    response = await generator.generate_linkedin_comment(
+        post_text=request.post_text,
+        author=request.author,
+        author_headline=request.author_headline,
     )
 
     return {"response": response}

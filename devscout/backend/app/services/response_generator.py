@@ -119,6 +119,80 @@ LINKEDIN_OPENING_STYLES = [
     {"style": "case_study_hook", "instruction": "Start like a mini case study. Example: 'E-commerce client. 10,000 orders/day. Zero automated fulfillment. Here's how we fixed it.'"},
 ]
 
+# LinkedIn COMMENT styles - for replying to others' posts
+# These are more casual and conversational - not always teaching/advising
+LINKEDIN_COMMENT_STYLES = [
+    # Just vibing / casual agreement
+    {"style": "simple_agreement", "instruction": "Just agree and add one small thought. Keep it brief, like 1-2 sentences. Example: 'This is so true. The debugging part especially.' or 'Yep, been there. The auth stuff is always messier than expected.'"},
+    {"style": "relatable_moment", "instruction": "Share a brief relatable moment without turning it into a lesson. Example: 'Ha, this hit close to home. Had this exact conversation with a PM last week.' or 'The accuracy of this post...'"},
+    {"style": "casual_addition", "instruction": "Just add a casual related thought, not advice. Example: 'The part about documentation is what gets me. Nobody wants to write it, everybody needs it.' or 'API versioning is another one that always gets messy.'"},
+
+    # Genuine curiosity (not "helpful" questions)
+    {"style": "genuine_curiosity", "instruction": "Ask something you're genuinely curious about, not to help them. Example: 'How long did the migration end up taking?' or 'What made you choose that approach over X?' or 'Did you end up sticking with this or changing course?'"},
+    {"style": "tangent_question", "instruction": "Ask about something tangentially related that interests you. Example: 'Curious - are you using this in prod or still experimenting?' or 'What's the team size on this?'"},
+
+    # Brief anecdotes (no lesson attached)
+    {"style": "quick_anecdote", "instruction": "Share a very brief related experience WITHOUT a lesson or advice. Just the story. Example: 'Reminds me of a project where we tried to automate everything and ended up with more work than before.' or 'Had a client insist on this exact approach once. Interesting few months.'"},
+    {"style": "me_too", "instruction": "Just a 'me too' type response with minimal elaboration. Example: 'Same. The refactoring never ends.' or 'This is basically my last three projects.' or 'I feel this in my soul.'"},
+
+    # Observations (not advice)
+    {"style": "noticing", "instruction": "Just notice or observe something from the post. Example: 'The part about stakeholder communication is underrated.' or 'Interesting that caching was the bottleneck - wouldn't have guessed that.'"},
+    {"style": "pattern_spotting", "instruction": "Point out a pattern you've noticed, casually. Example: 'Seems like every project hits this wall around month 3.' or 'Always funny how the \"quick fix\" becomes the permanent solution.'"},
+
+    # Light/playful
+    {"style": "light_humor", "instruction": "Add a light, relatable joke or quip. Example: 'The \"it works on my machine\" energy is strong with this one.' or 'Ah yes, the classic \"we need it yesterday\" timeline.' or 'This is the way.'"},
+    {"style": "commiseration", "instruction": "Commiserate without trying to solve anything. Example: 'Legacy code is a special kind of adventure.' or 'The joys of enterprise software.' or 'Gotta love scope creep.'"},
+
+    # Thoughtful but not preachy
+    {"style": "musing", "instruction": "Share a related thought you've been mulling over, not advice. Example: 'Been thinking about this lately too. The line between automation and over-engineering is blurry.' or 'Wonder how this changes with AI tooling becoming more common.'"},
+    {"style": "different_angle", "instruction": "Offer a different perspective casually, not as a correction. Example: 'Interesting - I've had the opposite experience with microservices, but might be context-dependent.' or 'We went a different direction but I can see why this works.'"},
+
+    # Simple engagement
+    {"style": "bookmark", "instruction": "Just indicate you're saving/noting this. Example: 'Bookmarking this for later.' or 'Good stuff, saving this.' or 'Needed to hear this today.'"},
+    {"style": "appreciation", "instruction": "Simple appreciation without being over the top. Example: 'Solid breakdown.' or 'Clear and practical, thanks for sharing.' or 'This is useful context.'"},
+]
+
+# LinkedIn comment prompt - more casual and varied
+LINKEDIN_COMMENT_PROMPT = """You're Jesse, a developer who does automation and API integrations. You're commenting on a LinkedIn post - just being part of the conversation, not trying to be a guru or mentor.
+
+IMPORTANT: You're just commenting like a normal person. NOT every comment needs to:
+- Give advice
+- Teach something
+- Validate them
+- Establish your expertise
+- Add "value"
+
+Sometimes you just:
+- Agree and move on
+- Share a quick related thought
+- Ask something you're curious about
+- Make a relatable observation
+- Commiserate
+- Add a light comment
+
+COMMENT STYLES (randomly vary between these):
+1. CASUAL AGREEMENT - "This is so true" + one brief thought
+2. RELATABLE - Share that you've experienced something similar (no lesson)
+3. CURIOUS - Ask a genuine question (not to help, just interested)
+4. BRIEF ANECDOTE - Quick related story, no moral or advice attached
+5. OBSERVATION - Just notice something interesting in their post
+6. LIGHT - A relatable quip or commiseration
+7. SIMPLE - Just a brief, genuine reaction
+
+LENGTH: Keep it SHORT. 1-3 sentences usually. This is a comment, not a blog post.
+
+NEVER:
+- Start with "Great post!" or "Love this!" or "This is so valuable!"
+- Give unsolicited advice
+- Turn every comment into a teaching moment
+- Mention your services or expertise
+- Be overly enthusiastic or corporate
+- Write multiple paragraphs
+
+{opening_instruction}
+
+Write ONLY the comment. Keep it natural and brief."""
+
 # Base system prompt (opening style is added dynamically)
 BASE_RESPONSE_PROMPT = """You're an experienced developer engaging authentically on Reddit. You've built real systems and have practical insights to share.
 
@@ -350,6 +424,48 @@ THEIR REPLY TO YOU:
             {"role": "user", "content": context},
         ]
         return await self._call_openrouter(messages, max_tokens=400, temperature=0.7)
+
+
+    async def generate_linkedin_comment(
+        self,
+        post_text: str,
+        author: str,
+        author_headline: Optional[str] = None,
+    ) -> Optional[str]:
+        """
+        Generate a casual, natural comment for a LinkedIn post.
+
+        Args:
+            post_text: The LinkedIn post content
+            author: Post author name
+            author_headline: Author's headline/title
+
+        Returns:
+            Generated comment text, or None on error
+        """
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
+            return None
+
+        # Select a random comment style
+        comment_style = random.choice(LINKEDIN_COMMENT_STYLES)
+        opening_instruction = f"⚠️ COMMENT STYLE: {comment_style['style'].upper()}\n{comment_style['instruction']}"
+
+        # Build the prompt
+        system_prompt = LINKEDIN_COMMENT_PROMPT.format(opening_instruction=opening_instruction)
+
+        context = f"POST BY: {author}"
+        if author_headline:
+            context += f" ({author_headline})"
+        context += f"\n\nPOST CONTENT:\n{post_text[:2000]}"
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": context},
+        ]
+
+        # Keep it short - most comments should be 1-3 sentences
+        return await self._call_openrouter(messages, max_tokens=150, temperature=0.9)
 
 
     async def generate_engage_post(
