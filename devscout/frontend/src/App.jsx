@@ -2004,7 +2004,7 @@ function App() {
         delete updated[postId];
         return updated;
       });
-      alert('Comment posted successfully!');
+      // Silently dismiss - no confirmation needed
     } catch (err) {
       console.error('Failed to post LinkedIn comment:', err);
       alert('Failed to post comment: ' + err.message);
