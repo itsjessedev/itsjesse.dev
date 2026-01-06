@@ -8,9 +8,11 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
   postLinkedInComment, likeLinkedInPost,
   // LinkedIn Engagement via Apify
   fetchLinkedInEngagementViaApify,
-  // LinkedIn My Comments Tracking (via Apify)
+  // LinkedIn My Comments Tracking (DevScout-based + Apify fallback)
   fetchLinkedInMyComments, getLinkedInMyComments, getLinkedInMyCommentsUnreadCount,
   markLinkedInCommentRead, markAllLinkedInCommentsRead, clearLinkedInMyComments,
+  generateLinkedInCommentReply, checkLinkedInCommentReplies, addLinkedInCommentByUrl,
+  fetchLinkedInCommentReplies, markLinkedInReplyRead, dismissLinkedInReply,
   // Dismissals (cross-device persistence)
   dismissItem, getDismissedIds, clearDismissals,
   // Persistence API (cross-device)
@@ -1245,6 +1247,10 @@ function App() {
   const [myLinkedInComments, setMyLinkedInComments] = useState([]);
   const [myLinkedInCommentsLoading, setMyLinkedInCommentsLoading] = useState(false);
   const [myLinkedInCommentsUnread, setMyLinkedInCommentsUnread] = useState(0);
+  const [fetchingLinkedInReplies, setFetchingLinkedInReplies] = useState(false);
+  // Reply generation state: { [replyId]: { generating: boolean, generatedReply: string, expanded: boolean } }
+  // Changed from commentId to replyId since we now generate replies for specific replies, not comments
+  const [linkedInCommentReplies, setLinkedInCommentReplies] = useState({});
 
   // Toast notifications (replaces confirmation dialogs)
   const [toast, setToast] = useState(null); // { message: string, type: 'success' | 'error' | 'info' }
@@ -1868,6 +1874,59 @@ function App() {
     }
   };
 
+  // Check for replies using LinkedIn OAuth API (DevScout-based tracking)
+  // NOTE: LinkedIn API has permission limitations - use Fetch Comments (Apify) for reliable reply checking
+  const [checkingLinkedInReplies, setCheckingLinkedInReplies] = useState(false);
+  const handleCheckLinkedInReplies = async () => {
+    setCheckingLinkedInReplies(true);
+    try {
+      const result = await checkLinkedInCommentReplies();
+      if (result.error) {
+        showToast(result.error, 'error');
+      } else if (result.message) {
+        // LinkedIn API permission limitation - suggest using Apify
+        showToast(result.suggestion || result.message, 'info');
+      } else if (result.checked > 0) {
+        showToast(`Checked ${result.checked} comments, ${result.new_replies} new replies`, 'success');
+        // Reload from database
+        const comments = await getLinkedInMyComments();
+        setMyLinkedInComments(comments);
+        const unreadCount = comments.filter(c => c.has_unread_replies).length;
+        setMyLinkedInCommentsUnread(unreadCount);
+      } else {
+        // All permission errors - suggest using Fetch Comments instead
+        showToast('Use "Fetch Comments" button instead (Apify works better)', 'info');
+      }
+    } catch (err) {
+      showToast('Failed to check replies: ' + err.message, 'error');
+    } finally {
+      setCheckingLinkedInReplies(false);
+    }
+  };
+
+  // Add comment by URL (for manual tracking)
+  const [addCommentUrl, setAddCommentUrl] = useState('');
+  const [addingCommentByUrl, setAddingCommentByUrl] = useState(false);
+  const handleAddLinkedInCommentByUrl = async () => {
+    if (!addCommentUrl.trim()) {
+      showToast('Please enter a comment URL', 'info');
+      return;
+    }
+    setAddingCommentByUrl(true);
+    try {
+      const result = await addLinkedInCommentByUrl(addCommentUrl);
+      showToast(result.message, result.status === 'already_tracked' ? 'info' : 'success');
+      setAddCommentUrl('');
+      // Reload from database
+      const comments = await getLinkedInMyComments();
+      setMyLinkedInComments(comments);
+    } catch (err) {
+      showToast('Failed to add comment: ' + err.message, 'error');
+    } finally {
+      setAddingCommentByUrl(false);
+    }
+  };
+
   // Mark a comment as read
   const handleMarkLinkedInCommentRead = async (commentId) => {
     try {
@@ -1891,6 +1950,122 @@ function App() {
       showToast('All marked as read', 'success');
     } catch (err) {
       showToast('Failed to mark all as read', 'error');
+    }
+  };
+
+  // Fetch actual reply content for all tracked comments
+  const handleFetchLinkedInReplies = async () => {
+    setFetchingLinkedInReplies(true);
+    try {
+      const result = await fetchLinkedInCommentReplies();
+      if (result.success) {
+        if (result.new_replies > 0) {
+          showToast(`Found ${result.new_replies} new reply/replies!`, 'success');
+        } else {
+          showToast('No new replies found', 'info');
+        }
+        // Reload comments with the new reply data
+        const comments = await getLinkedInMyComments();
+        setMyLinkedInComments(comments);
+        const unreadResult = await getLinkedInMyCommentsUnreadCount();
+        setMyLinkedInCommentsUnread(unreadResult.unread_count || 0);
+      } else if (result.error) {
+        showToast(result.error, 'error');
+      }
+    } catch (err) {
+      showToast('Failed to fetch replies: ' + err.message, 'error');
+    } finally {
+      setFetchingLinkedInReplies(false);
+    }
+  };
+
+  // Generate a reply to a specific reply on my LinkedIn comment
+  // reply = the LinkedInCommentReply object (the person's reply to my comment)
+  // comment = the parent LinkedInMyComment (my original comment)
+  const handleGenerateLinkedInCommentReply = async (reply, comment) => {
+    setLinkedInCommentReplies(prev => ({
+      ...prev,
+      [reply.id]: { ...prev[reply.id], generating: true, expanded: true },
+    }));
+
+    try {
+      const result = await generateLinkedInCommentReply(
+        comment.comment_text,  // My original comment
+        reply.reply_text,      // Their reply to my comment (THIS IS WHAT WE'RE RESPONDING TO)
+        comment.post_text,     // Original post context
+        comment.post_author    // Original post author
+      );
+      setLinkedInCommentReplies(prev => ({
+        ...prev,
+        [reply.id]: { generating: false, generatedReply: result.reply, expanded: true },
+      }));
+    } catch (err) {
+      showToast('Failed to generate reply: ' + err.message, 'error');
+      setLinkedInCommentReplies(prev => ({
+        ...prev,
+        [reply.id]: { ...prev[reply.id], generating: false },
+      }));
+    }
+  };
+
+  // Update the generated reply text (for editing before posting)
+  const handleUpdateLinkedInReplyText = (replyId, newText) => {
+    setLinkedInCommentReplies(prev => ({
+      ...prev,
+      [replyId]: { ...prev[replyId], generatedReply: newText },
+    }));
+  };
+
+  // Copy generated reply and open LinkedIn comment link
+  const handleCopyAndOpenLinkedInReply = async (reply, comment) => {
+    const replyState = linkedInCommentReplies[reply.id];
+    if (replyState?.generatedReply) {
+      await navigator.clipboard.writeText(replyState.generatedReply);
+      showToast('Copied! Opening LinkedIn...', 'success');
+    }
+    // Open the reply link or comment link to reply on LinkedIn
+    const linkToOpen = reply.reply_link || comment.comment_link;
+    if (linkToOpen) {
+      window.open(linkToOpen, '_blank');
+    }
+    // Mark the reply as read
+    try {
+      await markLinkedInReplyRead(reply.id);
+      // Update local state
+      setMyLinkedInComments(prev => prev.map(c => ({
+        ...c,
+        replies: (c.replies || []).map(r =>
+          r.id === reply.id ? { ...r, is_read: true } : r
+        ),
+      })));
+    } catch (err) {
+      console.error('Failed to mark reply as read:', err);
+    }
+  };
+
+  // Clear generated reply state
+  const handleClearLinkedInReply = (replyId) => {
+    setLinkedInCommentReplies(prev => {
+      const newState = { ...prev };
+      delete newState[replyId];
+      return newState;
+    });
+  };
+
+  // Dismiss a reply (won't show in unread)
+  const handleDismissLinkedInReply = async (replyId) => {
+    try {
+      await dismissLinkedInReply(replyId);
+      // Update local state
+      setMyLinkedInComments(prev => prev.map(c => ({
+        ...c,
+        replies: (c.replies || []).map(r =>
+          r.id === replyId ? { ...r, is_dismissed: true, is_read: true } : r
+        ),
+      })));
+      showToast('Reply dismissed', 'success');
+    } catch (err) {
+      showToast('Failed to dismiss reply', 'error');
     }
   };
 
@@ -2199,7 +2374,7 @@ function App() {
     }
   };
 
-  // Post a comment directly to LinkedIn
+  // Post a comment directly to LinkedIn (with DevScout-based tracking)
   const handlePostLinkedInComment = async (post) => {
     const postId = post.source_id;
     const commentText = linkedInEngagementResponses[postId];
@@ -2211,7 +2386,10 @@ function App() {
 
     setPostingLinkedInComment(prev => ({ ...prev, [postId]: true }));
     try {
-      await postLinkedInComment(post.url, commentText);
+      // Pass post context for DevScout-based reply tracking
+      const postText = post.body || post.text || '';
+      const postAuthor = post.author || '';
+      await postLinkedInComment(post.url, commentText, postText, postAuthor);
       // Success - remove from list
       setLinkedInEngagement(prev => prev.filter(p => p.source_id !== postId));
       setLinkedInEngagementResponses(prev => {
@@ -4337,6 +4515,7 @@ function App() {
       )}
 
       {/* LinkedIn > Comments (My Comments Tracking via Apify) */}
+      {/* Only shows comments with replies - this is a REPLY HUB, not a comment tracker */}
       {mainTab === 'linkedin' && currentSubTab === 'comments' && (
         <div>
           {/* Status Card & Fetch Button */}
@@ -4356,16 +4535,16 @@ function App() {
                 <div style={{ color: '#fff', fontSize: '14px', fontWeight: '500' }}>
                   {myLinkedInCommentsLoading
                     ? 'Fetching your comments via Apify...'
-                    : `${myLinkedInComments.length} tracked comments`}
+                    : `${myLinkedInComments.filter(c => c.reply_count > 0).length} comments with replies`}
                 </div>
                 <div style={{ color: '#888', fontSize: '12px', marginTop: '2px' }}>
                   {myLinkedInCommentsUnread > 0
                     ? `${myLinkedInCommentsUnread} with new replies`
-                    : 'No new replies'}
+                    : 'No new replies to respond to'}
                 </div>
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               {myLinkedInCommentsUnread > 0 && (
                 <button
                   style={{
@@ -4374,27 +4553,96 @@ function App() {
                     border: '1px solid #333',
                     color: '#888',
                     fontSize: '12px',
-                    padding: '6px 12px',
+                    padding: '8px 14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
                   }}
                   onClick={handleMarkAllLinkedInCommentsRead}
                 >
-                  Mark All Read
+                  ✓ Mark All Read
                 </button>
               )}
+              <button
+                style={{
+                  ...styles.btn,
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: '#fff',
+                  fontSize: '12px',
+                  padding: '8px 14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+                onClick={handleFetchLinkedInReplies}
+                disabled={fetchingLinkedInReplies}
+                title="Fetch actual reply content for tracked comments"
+              >
+                {fetchingLinkedInReplies ? '⏳ Fetching...' : '💬 Fetch Replies'}
+              </button>
               <button
                 style={{
                   ...styles.btn,
                   background: '#0A66C2',
                   color: '#fff',
                   fontSize: '12px',
-                  padding: '6px 12px',
+                  padding: '8px 14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
                 }}
                 onClick={handleFetchMyLinkedInComments}
                 disabled={myLinkedInCommentsLoading}
+                title="Fetch all comments via Apify (gets reply counts)"
               >
                 {myLinkedInCommentsLoading ? '⏳ Fetching...' : '🔄 Fetch Comments'}
               </button>
             </div>
+          </div>
+
+          {/* Add Comment by URL */}
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center',
+            marginBottom: '16px',
+            padding: '12px',
+            background: '#111',
+            borderRadius: '8px',
+            border: '1px solid #222',
+          }}>
+            <input
+              type="text"
+              placeholder="Paste LinkedIn comment URL to track..."
+              value={addCommentUrl}
+              onChange={(e) => setAddCommentUrl(e.target.value)}
+              style={{
+                flex: 1,
+                background: '#0a0a0a',
+                border: '1px solid #333',
+                borderRadius: '6px',
+                padding: '10px 14px',
+                color: '#fff',
+                fontSize: '13px',
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAddLinkedInCommentByUrl();
+              }}
+            />
+            <button
+              style={{
+                ...styles.btn,
+                background: '#0A66C2',
+                color: '#fff',
+                fontSize: '12px',
+                padding: '10px 16px',
+                whiteSpace: 'nowrap',
+              }}
+              onClick={handleAddLinkedInCommentByUrl}
+              disabled={addingCommentByUrl || !addCommentUrl.trim()}
+            >
+              {addingCommentByUrl ? '⏳ Adding...' : '+ Add Comment'}
+            </button>
           </div>
 
           <div style={styles.postList}>
@@ -4406,119 +4654,353 @@ function App() {
                 </div>
                 <div style={{ color: '#888' }}>This may take 30-60 seconds</div>
               </div>
-            ) : myLinkedInComments.length === 0 ? (
+            ) : myLinkedInComments.filter(c => c.reply_count > 0).length === 0 ? (
               <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
                 <div style={{ fontSize: '48px', marginBottom: '16px' }}>💬</div>
                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
-                  Track Your LinkedIn Comments
+                  {myLinkedInComments.length === 0 ? 'Track Your LinkedIn Comments' : 'No Replies Yet'}
                 </div>
                 <div style={{ color: '#888', lineHeight: '1.6', maxWidth: '400px', margin: '0 auto', marginBottom: '20px' }}>
-                  Fetch your LinkedIn comments to track when people reply to them. Uses Apify to scrape your comment history.
+                  {myLinkedInComments.length === 0
+                    ? 'Fetch your LinkedIn comments to track when people reply to them. This is your reply hub - only comments with replies will appear here.'
+                    : `You have ${myLinkedInComments.length} tracked comments, but none have replies yet. Keep engaging!`}
                 </div>
-                <button
-                  style={{ ...styles.btn, ...styles.btnLinkedIn }}
-                  onClick={handleFetchMyLinkedInComments}
-                  disabled={myLinkedInCommentsLoading}
-                >
-                  Fetch My Comments
-                </button>
+                {myLinkedInComments.length === 0 && (
+                  <button
+                    style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                    onClick={handleFetchMyLinkedInComments}
+                    disabled={myLinkedInCommentsLoading}
+                  >
+                    Fetch My Comments
+                  </button>
+                )}
               </div>
             ) : (
-              myLinkedInComments.map(comment => (
-                <div key={comment.id} style={{
-                  ...styles.post,
-                  marginBottom: '12px',
-                  border: comment.has_unread_replies ? '1px solid #0A66C250' : '1px solid transparent',
-                  background: comment.has_unread_replies
-                    ? 'linear-gradient(135deg, #0A66C208 0%, #0a0a0a 100%)'
-                    : styles.post.background,
-                }}>
-                  {/* My comment */}
-                  <div style={{ marginBottom: '12px' }}>
-                    <div style={{ color: '#888', fontSize: '11px', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span>Your comment</span>
-                      {comment.has_unread_replies && (
+              /* Show comments that have replies - now with ACTUAL REPLY CONTENT */
+              myLinkedInComments.filter(c => c.reply_count > 0).map(comment => {
+                // Get replies to this comment (actual reply content from database)
+                const replies = (comment.replies || []).filter(r => !r.is_dismissed);
+                const unreadReplies = replies.filter(r => !r.is_read);
+
+                return (
+                  <div key={comment.id} style={{
+                    ...styles.post,
+                    marginBottom: '20px',
+                    border: unreadReplies.length > 0 ? '1px solid #0A66C250' : '1px solid #222',
+                    background: unreadReplies.length > 0
+                      ? 'linear-gradient(135deg, #0A66C210 0%, #0a0a0a 100%)'
+                      : styles.post.background,
+                  }}>
+                    {/* Header with badges */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                      <LinkedInIcon />
+                      <span style={{ color: '#888', fontSize: '12px' }}>Your comment</span>
+                      {unreadReplies.length > 0 && (
                         <span style={{
                           background: '#0A66C2',
-                          padding: '2px 8px',
-                          borderRadius: '10px',
-                          fontSize: '10px',
+                          padding: '3px 10px',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                          fontWeight: '600',
                           color: '#fff',
                         }}>
-                          NEW REPLIES
+                          {unreadReplies.length} NEW {unreadReplies.length === 1 ? 'REPLY' : 'REPLIES'}
+                        </span>
+                      )}
+                      {replies.length > 0 && replies.length !== unreadReplies.length && (
+                        <span style={{
+                          background: '#333',
+                          padding: '3px 10px',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                          color: '#aaa',
+                        }}>
+                          {replies.length} total
+                        </span>
+                      )}
+                      {replies.length === 0 && comment.reply_count > 0 && (
+                        <span style={{
+                          background: '#444',
+                          padding: '3px 10px',
+                          borderRadius: '12px',
+                          fontSize: '11px',
+                          color: '#888',
+                        }}>
+                          {comment.reply_count} {comment.reply_count === 1 ? 'reply' : 'replies'} (click Fetch Replies)
                         </span>
                       )}
                     </div>
-                    <div style={{ color: '#fff', fontSize: '14px', lineHeight: '1.5' }}>
+
+                    {/* My original comment */}
+                    <div style={{
+                      color: '#fff',
+                      fontSize: '14px',
+                      lineHeight: '1.6',
+                      marginBottom: '12px',
+                      whiteSpace: 'pre-wrap',
+                      padding: '12px',
+                      background: '#0A66C210',
+                      borderRadius: '8px',
+                      borderLeft: '3px solid #0A66C2',
+                    }}>
+                      <div style={{ color: '#0A66C2', fontSize: '11px', marginBottom: '6px', fontWeight: '500' }}>
+                        Your comment:
+                      </div>
                       {comment.comment_text || '(No text available)'}
                     </div>
-                  </div>
 
-                  {/* Post context */}
-                  {comment.post_text && (
+                    {/* Post context (collapsible) */}
+                    {comment.post_text && (
+                      <div style={{
+                        background: '#111',
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        marginBottom: '16px',
+                        fontSize: '12px',
+                        color: '#666',
+                      }}>
+                        <span style={{ color: '#888' }}>On post by {comment.post_author || 'Unknown'}:</span>
+                        <span style={{ color: '#777', marginLeft: '8px' }}>
+                          {comment.post_text.length > 150 ? comment.post_text.substring(0, 150) + '...' : comment.post_text}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* === THE ACTUAL REPLIES - This is what we're responding to! === */}
+                    {replies.length > 0 ? (
+                      <div style={{ marginBottom: '16px' }}>
+                        <div style={{ color: '#10b981', fontSize: '12px', fontWeight: '600', marginBottom: '12px' }}>
+                          💬 Replies to respond to:
+                        </div>
+                        {replies.map(reply => {
+                          const replyState = linkedInCommentReplies[reply.id] || {};
+                          return (
+                            <div key={reply.id} style={{
+                              background: reply.is_read ? '#111' : '#10b98110',
+                              border: reply.is_read ? '1px solid #222' : '1px solid #10b98130',
+                              borderRadius: '10px',
+                              padding: '14px',
+                              marginBottom: '12px',
+                            }}>
+                              {/* Reply author */}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                                {reply.author_image ? (
+                                  <img src={reply.author_image} alt="" style={{ width: 32, height: 32, borderRadius: '50%' }} />
+                                ) : (
+                                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>
+                                    👤
+                                  </div>
+                                )}
+                                <div>
+                                  <div style={{ color: '#fff', fontSize: '13px', fontWeight: '500' }}>
+                                    {reply.author_name || 'Unknown'}
+                                  </div>
+                                  {reply.author_headline && (
+                                    <div style={{ color: '#666', fontSize: '11px' }}>
+                                      {reply.author_headline.length > 60 ? reply.author_headline.substring(0, 60) + '...' : reply.author_headline}
+                                    </div>
+                                  )}
+                                </div>
+                                {!reply.is_read && (
+                                  <span style={{
+                                    background: '#10b981',
+                                    color: '#fff',
+                                    padding: '2px 8px',
+                                    borderRadius: '10px',
+                                    fontSize: '10px',
+                                    fontWeight: '600',
+                                    marginLeft: 'auto',
+                                  }}>NEW</span>
+                                )}
+                              </div>
+
+                              {/* THE ACTUAL REPLY TEXT - This is what we need to respond to! */}
+                              <div style={{
+                                color: '#e0e0e0',
+                                fontSize: '14px',
+                                lineHeight: '1.6',
+                                whiteSpace: 'pre-wrap',
+                                marginBottom: '12px',
+                              }}>
+                                {reply.reply_text || '(No text available)'}
+                              </div>
+
+                              {/* Generated response for this specific reply */}
+                              {replyState.expanded && (
+                                <div style={{
+                                  background: '#0a0a0a',
+                                  borderRadius: '8px',
+                                  padding: '12px',
+                                  marginBottom: '12px',
+                                  border: '1px solid #333',
+                                }}>
+                                  <div style={{ color: '#888', fontSize: '11px', marginBottom: '8px' }}>
+                                    Your response (edit before posting):
+                                  </div>
+                                  <textarea
+                                    value={replyState.generatedReply || ''}
+                                    onChange={(e) => handleUpdateLinkedInReplyText(reply.id, e.target.value)}
+                                    placeholder={replyState.generating ? 'Generating...' : 'Your response will appear here...'}
+                                    disabled={replyState.generating}
+                                    style={{
+                                      width: '100%',
+                                      minHeight: '80px',
+                                      padding: '10px',
+                                      background: '#111',
+                                      border: '1px solid #333',
+                                      borderRadius: '6px',
+                                      color: '#fff',
+                                      fontSize: '13px',
+                                      lineHeight: '1.5',
+                                      resize: 'vertical',
+                                      fontFamily: 'inherit',
+                                    }}
+                                  />
+                                  <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
+                                    <button
+                                      style={{
+                                        ...styles.btn,
+                                        background: 'linear-gradient(135deg, #0A66C2 0%, #0077B5 100%)',
+                                        color: '#fff',
+                                        fontSize: '12px',
+                                        padding: '8px 14px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        opacity: replyState.generatedReply ? 1 : 0.5,
+                                      }}
+                                      onClick={() => handleCopyAndOpenLinkedInReply(reply, comment)}
+                                      disabled={!replyState.generatedReply}
+                                    >
+                                      <LinkedInIcon /> Copy & Reply
+                                    </button>
+                                    <button
+                                      style={{ ...styles.btn, background: '#6366f1', color: '#fff', fontSize: '12px', padding: '8px 12px' }}
+                                      onClick={() => handleGenerateLinkedInCommentReply(reply, comment)}
+                                      disabled={replyState.generating}
+                                    >
+                                      🔄 Regenerate
+                                    </button>
+                                    <button
+                                      style={{ ...styles.btn, background: 'transparent', border: '1px solid #333', color: '#888', fontSize: '12px', padding: '8px 12px' }}
+                                      onClick={() => handleClearLinkedInReply(reply.id)}
+                                    >
+                                      ✕ Clear
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Action buttons for this reply */}
+                              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                {!replyState.expanded && (
+                                  <button
+                                    style={{
+                                      ...styles.btn,
+                                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                      color: '#fff',
+                                      fontSize: '12px',
+                                      padding: '7px 12px',
+                                    }}
+                                    onClick={() => handleGenerateLinkedInCommentReply(reply, comment)}
+                                    disabled={replyState.generating}
+                                  >
+                                    {replyState.generating ? '⏳ Generating...' : '✨ Generate Response'}
+                                  </button>
+                                )}
+                                <button
+                                  style={{
+                                    ...styles.btn,
+                                    background: 'transparent',
+                                    border: '1px solid #333',
+                                    color: '#888',
+                                    fontSize: '11px',
+                                    padding: '6px 10px',
+                                  }}
+                                  onClick={() => handleDismissLinkedInReply(reply.id)}
+                                >
+                                  Dismiss
+                                </button>
+                                {reply.reply_link && (
+                                  <a
+                                    href={reply.reply_link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      ...styles.btn,
+                                      background: '#222',
+                                      color: '#0A66C2',
+                                      fontSize: '11px',
+                                      padding: '6px 10px',
+                                      textDecoration: 'none',
+                                    }}
+                                  >
+                                    View on LinkedIn
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      /* No reply content fetched yet */
+                      <div style={{
+                        background: '#111',
+                        border: '1px dashed #333',
+                        borderRadius: '8px',
+                        padding: '16px',
+                        marginBottom: '16px',
+                        textAlign: 'center',
+                      }}>
+                        <div style={{ color: '#888', fontSize: '13px', marginBottom: '8px' }}>
+                          {comment.reply_count} {comment.reply_count === 1 ? 'reply' : 'replies'} detected
+                        </div>
+                        <div style={{ color: '#666', fontSize: '12px' }}>
+                          Click "Fetch Replies" above to see the actual reply content
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Comment footer */}
                     <div style={{
-                      background: '#111',
-                      padding: '10px 12px',
-                      borderRadius: '6px',
-                      marginBottom: '12px',
-                      borderLeft: '3px solid #333',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '10px',
+                      paddingTop: '12px',
+                      borderTop: '1px solid #222',
                     }}>
-                      <div style={{ color: '#666', fontSize: '11px', marginBottom: '4px' }}>
-                        On post by {comment.post_author || 'Unknown'}
+                      <div style={{ color: '#666', fontSize: '11px' }}>
+                        {comment.last_checked_at && `Checked: ${new Date(comment.last_checked_at).toLocaleDateString()}`}
                       </div>
-                      <div style={{ color: '#999', fontSize: '13px', lineHeight: '1.4' }}>
-                        {comment.post_text.slice(0, 150)}{comment.post_text.length > 150 ? '...' : ''}
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        {comment.comment_link && (
+                          <a
+                            href={comment.comment_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              ...styles.btn,
+                              fontSize: '11px',
+                              padding: '6px 12px',
+                              background: '#0A66C2',
+                              color: '#fff',
+                              textDecoration: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                            }}
+                          >
+                            <LinkedInIcon /> View Thread
+                          </a>
+                        )}
                       </div>
-                    </div>
-                  )}
-
-                  {/* Stats & Actions */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                    <div style={{ color: '#666', fontSize: '12px', display: 'flex', gap: '12px' }}>
-                      <span>💬 {comment.reply_count} {comment.reply_count === 1 ? 'reply' : 'replies'}</span>
-                      {comment.last_checked_at && (
-                        <span>Checked: {new Date(comment.last_checked_at).toLocaleDateString()}</span>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      {comment.has_unread_replies && (
-                        <button
-                          style={{
-                            ...styles.btn,
-                            fontSize: '12px',
-                            padding: '6px 12px',
-                            background: 'transparent',
-                            border: '1px solid #333',
-                            color: '#888',
-                            borderRadius: '6px',
-                          }}
-                          onClick={() => handleMarkLinkedInCommentRead(comment.id)}
-                        >
-                          ✓ Mark Read
-                        </button>
-                      )}
-                      {comment.comment_link && (
-                        <a
-                          href={comment.comment_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            ...styles.btn,
-                            fontSize: '12px',
-                            padding: '6px 12px',
-                            background: '#0A66C2',
-                            color: '#fff',
-                            textDecoration: 'none',
-                            borderRadius: '6px',
-                          }}
-                        >
-                          View on LinkedIn
-                        </a>
-                      )}
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

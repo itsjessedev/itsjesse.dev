@@ -1393,14 +1393,17 @@ export async function generateSmartLinkedInPost(postType = 'random') {
   return res.json();
 }
 
-// Post a comment on a LinkedIn post
-export async function postLinkedInComment(postUrl, commentText) {
+// Post a comment on a LinkedIn post (with DevScout-based tracking)
+export async function postLinkedInComment(postUrl, commentText, postText = null, postAuthor = null) {
+  // DevScout-based tracking: pass post context for reply tracking
   const res = await fetch(`${API_BASE}/api/linkedin/comments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       post_url: postUrl,
       comment_text: commentText,
+      post_text: postText,
+      post_author: postAuthor,
     }),
   });
   if (!res.ok) {
@@ -2245,6 +2248,83 @@ export async function markAllLinkedInCommentsRead() {
 export async function clearLinkedInMyComments() {
   const res = await fetch(`${API_BASE}/api/linkedin/comments/clear`, {
     method: 'DELETE',
+  });
+  return res.json();
+}
+
+// Generate a reply to someone who replied to my LinkedIn comment
+// theirReplyText is what they said in response to my comment - THIS IS WHAT WE'RE RESPONDING TO
+export async function generateLinkedInCommentReply(myCommentText, theirReplyText, postText, postAuthor) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/generate-reply`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      my_comment_text: myCommentText,
+      reply_text: theirReplyText,  // The actual reply content we're responding to
+      post_text: postText,
+      post_author: postAuthor,
+    }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to generate reply' }));
+    throw new Error(error.detail || 'Failed to generate reply');
+  }
+  return res.json();
+}
+
+// Fetch actual reply CONTENT for tracked comments using Apify post comments scraper
+export async function fetchLinkedInCommentReplies() {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/fetch-replies`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to fetch replies' }));
+    throw new Error(error.detail || error.error || 'Failed to fetch replies');
+  }
+  return res.json();
+}
+
+// Check for new replies using LinkedIn OAuth API (limited - use fetch-replies instead)
+export async function checkLinkedInCommentReplies() {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/check-replies`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to check replies' }));
+    throw new Error(error.detail || error.error || 'Failed to check replies');
+  }
+  return res.json();
+}
+
+// Manually add a comment to track by URL (for comments made before DevScout tracking)
+export async function addLinkedInCommentByUrl(commentUrl, commentText = null) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/add-by-url`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      comment_url: commentUrl,
+      comment_text: commentText,
+    }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to add comment' }));
+    throw new Error(error.detail || 'Failed to add comment');
+  }
+  return res.json();
+}
+
+// Mark a specific reply as read
+export async function markLinkedInReplyRead(replyId) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/${replyId}/mark-reply-read`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// Dismiss a reply (won't show in unread)
+export async function dismissLinkedInReply(replyId) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/${replyId}/dismiss-reply`, {
+    method: 'POST',
   });
   return res.json();
 }

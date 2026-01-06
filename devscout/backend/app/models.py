@@ -389,3 +389,44 @@ class LinkedInMyComment(Base):
     discovered_at = Column(DateTime, default=datetime.utcnow)
     last_checked_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship to replies
+    replies = relationship("LinkedInCommentReply", back_populates="my_comment", cascade="all, delete-orphan")
+
+
+class LinkedInCommentReply(Base):
+    """Replies TO user's LinkedIn comments - the actual reply content."""
+
+    __tablename__ = "linkedin_comment_replies"
+
+    id = Column(Integer, primary_key=True)
+    my_comment_id = Column(Integer, ForeignKey("linkedin_my_comments.id", ondelete="CASCADE"), nullable=False, index=True)
+    reply_urn = Column(String(200), nullable=False)  # The replier's comment URN
+    reply_text = Column(Text)
+    reply_link = Column(String(500))
+
+    # Author info
+    author_name = Column(String(200))
+    author_headline = Column(String(500))
+    author_url = Column(String(500))
+    author_image = Column(String(500))
+
+    # Engagement
+    likes = Column(Integer, default=0)
+    nested_reply_count = Column(Integer, default=0)  # Replies to this reply
+
+    # Status
+    is_read = Column(Boolean, default=False, index=True)
+    is_dismissed = Column(Boolean, default=False, index=True)
+    has_user_reply = Column(Boolean, default=False)  # Has user responded to this reply?
+
+    # Timestamps
+    reply_created_at = Column(DateTime)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationship to parent comment
+    my_comment = relationship("LinkedInMyComment", back_populates="replies")
+
+    __table_args__ = (
+        Index('ix_linkedin_reply_unique', 'my_comment_id', 'reply_urn', unique=True),
+    )

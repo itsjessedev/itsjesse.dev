@@ -602,6 +602,81 @@ THEIR REPLY TO YOU:
         return await self._call_openrouter(messages, max_tokens=150, temperature=0.9)
 
 
+    async def generate_linkedin_comment_reply(
+        self,
+        my_comment_text: str,
+        their_reply_text: str,
+        post_text: Optional[str] = None,
+        post_author: Optional[str] = None,
+    ) -> Optional[str]:
+        """
+        Generate a reply to someone who replied to my LinkedIn comment.
+
+        Context: I made a comment on someone else's post, and now someone has replied to my comment.
+        I need to respond to THEIR REPLY in a natural, conversational way.
+
+        Args:
+            my_comment_text: The comment I originally made
+            their_reply_text: What they said in response to my comment (THIS IS WHAT WE'RE RESPONDING TO)
+            post_text: The original post content (for context)
+            post_author: Author of the original post
+
+        Returns:
+            Generated reply text, or None on error
+        """
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
+            return None
+
+        reply_prompt = """You're a developer replying to someone on LinkedIn. They replied to a comment you made, and now you're responding to THEIR REPLY.
+
+YOUR PERSONA:
+- You're Jesse, a developer who builds automation tools, API integrations, and workflows
+- You're helpful, friendly, and genuinely engage with people
+- You sound like a real person, not corporate or robotic
+- ALWAYS use 'I' never 'we' - you're an individual, not a company
+
+CRITICAL: You're responding to THEIR REPLY, not the original post. Focus on what they said to you.
+
+GUIDELINES:
+- Keep it short and conversational (1-3 sentences)
+- Engage authentically with what THEY SAID in their reply
+- Be warm but not over-the-top
+- You can ask a follow-up question if relevant
+- Don't be preachy or lecture
+- Match their energy level
+
+BANNED PHRASES (never use these):
+- "Great point!"
+- "Absolutely!"
+- "Couldn't agree more!"
+- "This is so true!"
+- "Love this!"
+- Any emoji spam
+
+OUTPUT: Just the reply text, nothing else."""
+
+        context = f"""CONVERSATION THREAD:
+
+1. ORIGINAL POST (by {post_author or 'someone'}):
+{post_text[:300] if post_text else '[Background post]'}
+
+2. MY COMMENT (what I wrote on the post):
+{my_comment_text}
+
+3. THEIR REPLY TO ME (what they said in response to my comment):
+{their_reply_text}
+
+I need to respond to THEIR REPLY (#3). Generate a natural, casual response that continues this conversation."""
+
+        messages = [
+            {"role": "system", "content": reply_prompt},
+            {"role": "user", "content": context},
+        ]
+
+        return await self._call_openrouter(messages, max_tokens=150, temperature=0.9)
+
+
     async def generate_engage_post(
         self,
         subreddit: str,

@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import get_settings
 from ..database import get_db
-from ..models import LinkedInAuth
+from ..models import LinkedInAuth, LinkedInMyComment
 from ..services.response_generator import ResponseGenerator
 # NOTE: linkedin_scraper.py exists but is not used - VPS IP is blocked by all search engines
 # LinkedIn scraping only works with Apify or from client-side browser requests
@@ -71,6 +71,9 @@ class LinkedInCommentRequest(BaseModel):
     """Request to post a comment on a LinkedIn post."""
     post_url: str  # LinkedIn post URL
     comment_text: str
+    # Optional post context for tracking (DevScout-based comment tracking)
+    post_text: Optional[str] = None
+    post_author: Optional[str] = None
 
 
 class LinkedInLikeRequest(BaseModel):
@@ -333,12 +336,55 @@ async def _like_post(client: httpx.AsyncClient, access_token: str, person_id: st
         return False
 
 
+async def _save_tracked_comment(
+    db: AsyncSession,
+    comment_urn: str,
+    comment_text: str,
+    post_url: str,
+    post_text: Optional[str],
+    post_author: Optional[str],
+    activity_urn: str,
+) -> None:
+    """Save a posted comment to the database for reply tracking (DevScout-based tracking)."""
+    from datetime import datetime
+
+    # Generate comment link from URN
+    # Format: https://www.linkedin.com/feed/update/{activity_urn}/?commentUrn={comment_urn}
+    comment_link = f"https://www.linkedin.com/feed/update/{activity_urn}/?commentUrn={comment_urn.replace(':', '%3A')}"
+
+    # Check if comment already exists
+    existing = await db.scalar(
+        select(LinkedInMyComment).where(LinkedInMyComment.comment_urn == comment_urn)
+    )
+
+    if existing:
+        logger.info(f"Comment already tracked: {comment_urn}")
+        return
+
+    # Create new tracked comment
+    tracked_comment = LinkedInMyComment(
+        comment_urn=comment_urn,
+        comment_text=comment_text,
+        comment_link=comment_link,
+        post_url=post_url,
+        post_text=post_text[:500] if post_text else None,
+        post_author=post_author,
+        reply_count=0,
+        last_known_reply_count=0,
+        has_unread_replies=False,
+        comment_created_at=datetime.utcnow(),
+    )
+    db.add(tracked_comment)
+    await db.commit()
+    logger.info(f"Saved tracked comment: {comment_urn}")
+
+
 @router.post("/comments")
 async def post_comment(
     request: LinkedInCommentRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Post a comment on a LinkedIn post."""
+    """Post a comment on a LinkedIn post and save it for reply tracking."""
     import re
 
     access_token = await get_linkedin_token(db)
@@ -417,6 +463,18 @@ async def post_comment(
                 if retry_response.status_code in [200, 201]:
                     result = retry_response.json()
                     comment_id = result.get("id", "")
+
+                    # Save to database for DevScout tracking
+                    await _save_tracked_comment(
+                        db=db,
+                        comment_urn=comment_id,
+                        comment_text=request.comment_text,
+                        post_url=request.post_url,
+                        post_text=request.post_text,
+                        post_author=request.post_author,
+                        activity_urn=correct_urn,
+                    )
+
                     # Auto-like the post using the correct URN
                     liked = await _like_post(client, access_token, auth.person_id, correct_urn)
                     return {
@@ -441,6 +499,17 @@ async def post_comment(
 
         result = response.json()
         comment_id = result.get("id", "")
+
+        # Save to database for DevScout tracking
+        await _save_tracked_comment(
+            db=db,
+            comment_urn=comment_id,
+            comment_text=request.comment_text,
+            post_url=request.post_url,
+            post_text=request.post_text,
+            post_author=request.post_author,
+            activity_urn=activity_urn,
+        )
 
         # Auto-like the post
         liked = await _like_post(client, access_token, auth.person_id, activity_urn)
