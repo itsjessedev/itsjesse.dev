@@ -8,6 +8,9 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
   postLinkedInComment, likeLinkedInPost,
   // LinkedIn Engagement via Apify
   fetchLinkedInEngagementViaApify,
+  // LinkedIn My Comments Tracking (via Apify)
+  fetchLinkedInMyComments, getLinkedInMyComments, getLinkedInMyCommentsUnreadCount,
+  markLinkedInCommentRead, markAllLinkedInCommentsRead, clearLinkedInMyComments,
   // Dismissals (cross-device persistence)
   dismissItem, getDismissedIds, clearDismissals,
   // Persistence API (cross-device)
@@ -1227,16 +1230,24 @@ function App() {
   const [linkedInShowTemplates, setLinkedInShowTemplates] = useState(false); // Toggle for old template browser
   const [redditScheduledPosts, setRedditScheduledPosts] = useState([]);
 
-  // LinkedIn Comments (my posts with their comments)
+  // LinkedIn Comments (my posts with their comments) - OLD SYSTEM
   const [linkedInMyPosts, setLinkedInMyPosts] = useState([]);
   const [linkedInMyPostsLoading, setLinkedInMyPostsLoading] = useState(false);
   const [linkedInExpandedPosts, setLinkedInExpandedPosts] = useState({}); // postId -> { loading, comments, error }
-  const [linkedInComments, setLinkedInComments] = useState([]);
   const [linkedInDismissedComments, setLinkedInDismissedComments] = useState(() => {
     const loaded = loadPersistedData('linkedin_dismissed_comments');
     return Array.isArray(loaded) ? loaded : [];
   });
   const [linkedInCommentsLoading, setLinkedInCommentsLoading] = useState(false);
+
+  // LinkedIn My Comments Tracking (via Apify) - NEW SYSTEM
+  // Tracks comments I've made on OTHER people's posts and their replies
+  const [myLinkedInComments, setMyLinkedInComments] = useState([]);
+  const [myLinkedInCommentsLoading, setMyLinkedInCommentsLoading] = useState(false);
+  const [myLinkedInCommentsUnread, setMyLinkedInCommentsUnread] = useState(0);
+
+  // Toast notifications (replaces confirmation dialogs)
+  const [toast, setToast] = useState(null); // { message: string, type: 'success' | 'error' | 'info' }
 
   // ==============================================================================
   // OPPORTUNITIES TAB STATE
@@ -1798,19 +1809,92 @@ function App() {
   }, []);
 
   // ==============================================================================
-  // LINKEDIN COMMENTS HANDLERS
+  // TOAST NOTIFICATIONS (replaces confirmation dialogs)
   // ==============================================================================
-  const getLinkedInUnreadComments = useCallback(() => {
-    let total = 0;
-    Object.values(linkedInExpandedPosts).forEach(postData => {
-      if (postData.comments && Array.isArray(postData.comments)) {
-        total += postData.comments.filter(c => !linkedInDismissedComments.includes(c.id)).length;
-      }
-    });
-    return total;
-  }, [linkedInExpandedPosts, linkedInDismissedComments]);
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type });
+  }, []);
 
-  // Auto-fetch my posts when LinkedIn auth becomes available
+  // Auto-dismiss toast after 3 seconds
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  // ==============================================================================
+  // LINKEDIN COMMENTS HANDLERS (NEW - via Apify)
+  // ==============================================================================
+  // Count unread replies to my comments (via Apify tracking)
+  const getLinkedInUnreadComments = useCallback(() => {
+    return myLinkedInCommentsUnread;
+  }, [myLinkedInCommentsUnread]);
+
+  // Load my LinkedIn comments from database on mount
+  useEffect(() => {
+    const loadMyComments = async () => {
+      try {
+        const comments = await getLinkedInMyComments();
+        setMyLinkedInComments(comments);
+        const unreadCount = comments.filter(c => c.has_unread_replies).length;
+        setMyLinkedInCommentsUnread(unreadCount);
+      } catch (err) {
+        console.error('Failed to load my LinkedIn comments:', err);
+      }
+    };
+    loadMyComments();
+  }, []);
+
+  // Fetch my comments via Apify
+  const handleFetchMyLinkedInComments = async () => {
+    setMyLinkedInCommentsLoading(true);
+    try {
+      const result = await fetchLinkedInMyComments('jesseeldridge', 3);
+      if (result.error) {
+        showToast(result.error, 'error');
+      } else {
+        showToast(`Found ${result.total_fetched} comments, ${result.new_replies} new replies`, 'success');
+        // Reload from database
+        const comments = await getLinkedInMyComments();
+        setMyLinkedInComments(comments);
+        const unreadCount = comments.filter(c => c.has_unread_replies).length;
+        setMyLinkedInCommentsUnread(unreadCount);
+      }
+    } catch (err) {
+      showToast('Failed to fetch comments: ' + err.message, 'error');
+    } finally {
+      setMyLinkedInCommentsLoading(false);
+    }
+  };
+
+  // Mark a comment as read
+  const handleMarkLinkedInCommentRead = async (commentId) => {
+    try {
+      await markLinkedInCommentRead(commentId);
+      setMyLinkedInComments(prev => prev.map(c =>
+        c.id === commentId ? { ...c, has_unread_replies: false } : c
+      ));
+      setMyLinkedInCommentsUnread(prev => Math.max(0, prev - 1));
+      showToast('Marked as read', 'success');
+    } catch (err) {
+      showToast('Failed to mark as read', 'error');
+    }
+  };
+
+  // Mark all comments as read
+  const handleMarkAllLinkedInCommentsRead = async () => {
+    try {
+      await markAllLinkedInCommentsRead();
+      setMyLinkedInComments(prev => prev.map(c => ({ ...c, has_unread_replies: false })));
+      setMyLinkedInCommentsUnread(0);
+      showToast('All marked as read', 'success');
+    } catch (err) {
+      showToast('Failed to mark all as read', 'error');
+    }
+  };
+
+  // OLD SYSTEM: Auto-fetch my DevScout-scheduled posts when LinkedIn auth becomes available
   useEffect(() => {
     if (!linkedInAuth?.is_authenticated || linkedInMyPosts.length > 0) return;
 
@@ -2599,6 +2683,32 @@ function App() {
         >
           <LinkedInIcon />
           {linkedInUnreadComments} unread LinkedIn {linkedInUnreadComments === 1 ? 'comment' : 'comments'}
+        </div>
+      )}
+
+      {/* Toast Notification (fade in/out) */}
+      {toast && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            background: toast.type === 'error' ? '#dc2626' : toast.type === 'info' ? '#6366f1' : '#10b981',
+            color: '#fff',
+            fontSize: '14px',
+            fontWeight: '500',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            zIndex: 9999,
+            animation: 'fadeInUp 0.3s ease-out',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          {toast.type === 'error' ? '❌' : toast.type === 'info' ? 'ℹ️' : '✓'}
+          {toast.message}
         </div>
       )}
 
@@ -4231,282 +4341,189 @@ function App() {
         </div>
       )}
 
-      {/* LinkedIn > Comments */}
+      {/* LinkedIn > Comments (My Comments Tracking via Apify) */}
       {mainTab === 'linkedin' && currentSubTab === 'comments' && (
         <div>
-          {/* LinkedIn Auth Status Card */}
-          {LINKEDIN_OAUTH_ENABLED && (
-            <div style={styles.linkedInAuthCard}>
-              <div style={styles.linkedInAuthHeader}>
-                <div style={styles.linkedInAuthStatus}>
-                  <div style={{
-                    ...styles.authDot,
-                    background: linkedInAuth?.is_authenticated ? '#22c55e' : '#ef4444'
-                  }} />
-                  <span style={{ fontWeight: '500' }}>
-                    {linkedInAuthLoading ? 'Checking...' :
-                      linkedInAuth?.is_authenticated
-                        ? `Connected as ${linkedInAuth.person_name}`
-                        : 'Not connected'}
-                  </span>
+          {/* Status Card & Fetch Button */}
+          <div style={{
+            marginBottom: '16px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '12px 16px',
+            background: 'linear-gradient(135deg, #0A66C210 0%, #0A66C205 100%)',
+            borderRadius: '8px',
+            border: '1px solid #0A66C230',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <LinkedInIcon />
+              <div>
+                <div style={{ color: '#fff', fontSize: '14px', fontWeight: '500' }}>
+                  {myLinkedInCommentsLoading
+                    ? 'Fetching your comments via Apify...'
+                    : `${myLinkedInComments.length} tracked comments`}
                 </div>
-                <button
-                  data-btn="linkedin"
-                  style={{ ...styles.btn, ...styles.btnLinkedIn }}
-                  onClick={handleLinkedInConnect}
-                >
-                  {linkedInAuth?.is_authenticated ? 'Reconnect' : 'Connect LinkedIn'}
-                </button>
+                <div style={{ color: '#888', fontSize: '12px', marginTop: '2px' }}>
+                  {myLinkedInCommentsUnread > 0
+                    ? `${myLinkedInCommentsUnread} with new replies`
+                    : 'No new replies'}
+                </div>
               </div>
             </div>
-          )}
-
-          {/* Loading/Refresh Status */}
-          {linkedInAuth?.is_authenticated && (
-            <div style={{
-              marginBottom: '16px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '12px 16px',
-              background: 'linear-gradient(135deg, #0A66C210 0%, #0A66C205 100%)',
-              borderRadius: '8px',
-              border: '1px solid #0A66C230',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <LinkedInIcon />
-                <div>
-                  <div style={{ color: '#fff', fontSize: '14px', fontWeight: '500' }}>
-                    {linkedInMyPostsLoading || linkedInCommentsLoading
-                      ? 'Loading your posts and comments...'
-                      : `${linkedInMyPosts.length} published posts`}
-                  </div>
-                  <div style={{ color: '#888', fontSize: '12px', marginTop: '2px' }}>
-                    {linkedInUnreadComments > 0
-                      ? `${linkedInUnreadComments} new ${linkedInUnreadComments === 1 ? 'comment' : 'comments'} to review`
-                      : 'All comments reviewed'}
-                  </div>
-                </div>
-              </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {myLinkedInCommentsUnread > 0 && (
+                <button
+                  style={{
+                    ...styles.btn,
+                    background: 'transparent',
+                    border: '1px solid #333',
+                    color: '#888',
+                    fontSize: '12px',
+                    padding: '6px 12px',
+                  }}
+                  onClick={handleMarkAllLinkedInCommentsRead}
+                >
+                  Mark All Read
+                </button>
+              )}
               <button
-                data-btn="secondary"
                 style={{
                   ...styles.btn,
-                  background: '#1a1a1a',
-                  border: '1px solid #333',
-                  color: '#0A66C2',
+                  background: '#0A66C2',
+                  color: '#fff',
                   fontSize: '12px',
                   padding: '6px 12px',
                 }}
-                onClick={async () => {
-                  setLinkedInMyPostsLoading(true);
-                  setLinkedInExpandedPosts({});
-                  try {
-                    const API_BASE = import.meta.env.PROD
-                      ? 'https://devscout.junipr.io'
-                      : 'http://localhost:8004';
-                    const res = await fetch(`${API_BASE}/api/linkedin/my-posts`);
-                    if (res.ok) {
-                      const posts = await res.json();
-                      setLinkedInMyPosts(posts);
-                      // Auto-fetch all comments
-                      if (posts.length > 0) {
-                        setLinkedInCommentsLoading(true);
-                        for (const post of posts) {
-                          try {
-                            const commentsRes = await fetch(`${API_BASE}/api/linkedin/my-posts/${post.id}/comments`);
-                            const commentsData = await commentsRes.json();
-                            setLinkedInExpandedPosts(prev => ({
-                              ...prev,
-                              [post.id]: { loading: false, comments: commentsData.comments || [], error: commentsData.error }
-                            }));
-                          } catch (err) {
-                            console.error(`Failed to fetch comments for post ${post.id}:`, err);
-                          }
-                        }
-                        setLinkedInCommentsLoading(false);
-                      }
-                    } else {
-                      const err = await res.json();
-                      alert(err.detail || 'Failed to fetch posts');
-                    }
-                  } catch (err) {
-                    console.error('Error fetching my posts:', err);
-                    alert('Failed to fetch posts: ' + err.message);
-                  } finally {
-                    setLinkedInMyPostsLoading(false);
-                  }
-                }}
-                disabled={linkedInMyPostsLoading || linkedInCommentsLoading}
+                onClick={handleFetchMyLinkedInComments}
+                disabled={myLinkedInCommentsLoading}
               >
-                {linkedInMyPostsLoading || linkedInCommentsLoading ? '⏳ Refreshing...' : '🔄 Refresh'}
+                {myLinkedInCommentsLoading ? '⏳ Fetching...' : '🔄 Fetch Comments'}
               </button>
             </div>
-          )}
+          </div>
 
           <div style={styles.postList}>
-            {!linkedInAuth?.is_authenticated ? (
-              <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>💬</div>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
-                  LinkedIn Comment Tracking
-                </div>
-                <div style={{ color: '#888', lineHeight: '1.6', maxWidth: '400px', margin: '0 auto' }}>
-                  Connect your LinkedIn account to track comments on your posts.
-                </div>
-                <button
-                  data-btn="linkedin"
-                  style={{ ...styles.btn, ...styles.btnLinkedIn, marginTop: '20px' }}
-                  onClick={handleLinkedInConnect}
-                >
-                  Connect LinkedIn
-                </button>
-              </div>
-            ) : linkedInMyPostsLoading ? (
+            {myLinkedInCommentsLoading && myLinkedInComments.length === 0 ? (
               <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
                 <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
-                  Loading Posts...
+                  Fetching Your Comments...
                 </div>
-                <div style={{ color: '#888' }}>Fetching your published LinkedIn posts</div>
+                <div style={{ color: '#888' }}>This may take 30-60 seconds</div>
               </div>
-            ) : linkedInMyPosts.length === 0 ? (
+            ) : myLinkedInComments.length === 0 ? (
               <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>💬</div>
                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
-                  No Published Posts Yet
+                  Track Your LinkedIn Comments
                 </div>
-                <div style={{ color: '#888', lineHeight: '1.6', maxWidth: '400px', margin: '0 auto' }}>
-                  Schedule and publish posts in the Post Schedule tab to track comments here.
+                <div style={{ color: '#888', lineHeight: '1.6', maxWidth: '400px', margin: '0 auto', marginBottom: '20px' }}>
+                  Fetch your LinkedIn comments to track when people reply to them. Uses Apify to scrape your comment history.
                 </div>
+                <button
+                  style={{ ...styles.btn, ...styles.btnLinkedIn }}
+                  onClick={handleFetchMyLinkedInComments}
+                  disabled={myLinkedInCommentsLoading}
+                >
+                  Fetch My Comments
+                </button>
               </div>
             ) : (
-              linkedInMyPosts.map(post => {
-                const postComments = linkedInExpandedPosts[post.id]?.comments || [];
-                const unreadCount = postComments.filter(c => !linkedInDismissedComments.includes(c.id)).length;
-                const isExpanded = linkedInExpandedPosts[post.id] && !linkedInExpandedPosts[post.id].loading;
-
-                return (
-                <div key={post.id} style={{
+              myLinkedInComments.map(comment => (
+                <div key={comment.id} style={{
                   ...styles.post,
                   marginBottom: '12px',
-                  border: unreadCount > 0 ? '1px solid #0A66C250' : '1px solid transparent',
+                  border: comment.has_unread_replies ? '1px solid #0A66C250' : '1px solid transparent',
+                  background: comment.has_unread_replies
+                    ? 'linear-gradient(135deg, #0A66C208 0%, #0a0a0a 100%)'
+                    : styles.post.background,
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ color: '#fff', fontSize: '14px', marginBottom: '8px', lineHeight: '1.5' }}>
-                        {post.body?.slice(0, 200)}{post.body?.length > 200 ? '...' : ''}
-                      </div>
-                      <div style={{ color: '#888', fontSize: '12px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-                        <span>Published: {post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Unknown'}</span>
-                        {postComments.length > 0 && (
-                          <span style={{
-                            background: unreadCount > 0 ? '#0A66C2' : '#333',
-                            padding: '2px 8px',
-                            borderRadius: '10px',
-                            fontSize: '11px',
-                            color: '#fff',
-                          }}>
-                            💬 {postComments.length} {postComments.length === 1 ? 'comment' : 'comments'}
-                          </span>
-                        )}
-                      </div>
+                  {/* My comment */}
+                  <div style={{ marginBottom: '12px' }}>
+                    <div style={{ color: '#888', fontSize: '11px', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>Your comment</span>
+                      {comment.has_unread_replies && (
+                        <span style={{
+                          background: '#0A66C2',
+                          padding: '2px 8px',
+                          borderRadius: '10px',
+                          fontSize: '10px',
+                          color: '#fff',
+                        }}>
+                          NEW REPLIES
+                        </span>
+                      )}
                     </div>
-                    <a
-                      href={post.published_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        ...styles.btn,
-                        background: '#0A66C2',
-                        color: '#fff',
-                        fontSize: '12px',
-                        padding: '6px 12px',
-                        textDecoration: 'none',
-                        borderRadius: '6px',
-                      }}
-                    >
-                      View on LinkedIn
-                    </a>
+                    <div style={{ color: '#fff', fontSize: '14px', lineHeight: '1.5' }}>
+                      {comment.comment_text || '(No text available)'}
+                    </div>
                   </div>
 
-                  {/* Comments section - auto-expanded */}
-                  {linkedInExpandedPosts[post.id]?.loading ? (
-                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333', color: '#888', fontSize: '12px' }}>
-                      Loading comments...
-                    </div>
-                  ) : linkedInExpandedPosts[post.id]?.error ? (
-                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333', color: '#f87171', fontSize: '12px' }}>
-                      {linkedInExpandedPosts[post.id].error}
-                    </div>
-                  ) : postComments.length === 0 ? (
-                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #222', color: '#666', fontSize: '12px' }}>
-                      No comments yet
-                    </div>
-                  ) : (
-                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        {postComments.map((comment, idx) => {
-                          const isDismissed = linkedInDismissedComments.includes(comment.id);
-                          if (isDismissed) return null;
-
-                          return (
-                            <div key={comment.id || idx} style={{
-                              background: 'linear-gradient(135deg, #1a1a1a 0%, #151515 100%)',
-                              padding: '12px 16px',
-                              borderRadius: '8px',
-                              border: '1px solid #252525',
-                            }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div style={{ flex: 1 }}>
-                                  <div style={{ color: '#0A66C2', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
-                                    {comment.author_name}
-                                  </div>
-                                  <div style={{ color: '#ddd', fontSize: '14px', lineHeight: '1.5' }}>{comment.text}</div>
-                                </div>
-                              </div>
-                              <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                <button
-                                  style={{
-                                    ...styles.btn,
-                                    fontSize: '12px',
-                                    padding: '6px 12px',
-                                    background: 'transparent',
-                                    border: '1px solid #0A66C2',
-                                    color: '#0A66C2',
-                                    borderRadius: '6px',
-                                  }}
-                                  onClick={() => {
-                                    alert('Like comment feature coming soon');
-                                  }}
-                                >
-                                  👍 Like
-                                </button>
-                                <button
-                                  style={{
-                                    ...styles.btn,
-                                    fontSize: '12px',
-                                    padding: '6px 12px',
-                                    background: '#0A66C2',
-                                    color: '#fff',
-                                    borderRadius: '6px',
-                                  }}
-                                  onClick={() => {
-                                    alert('Reply feature coming soon');
-                                  }}
-                                >
-                                  💬 Reply
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
+                  {/* Post context */}
+                  {comment.post_text && (
+                    <div style={{
+                      background: '#111',
+                      padding: '10px 12px',
+                      borderRadius: '6px',
+                      marginBottom: '12px',
+                      borderLeft: '3px solid #333',
+                    }}>
+                      <div style={{ color: '#666', fontSize: '11px', marginBottom: '4px' }}>
+                        On post by {comment.post_author || 'Unknown'}
+                      </div>
+                      <div style={{ color: '#999', fontSize: '13px', lineHeight: '1.4' }}>
+                        {comment.post_text.slice(0, 150)}{comment.post_text.length > 150 ? '...' : ''}
                       </div>
                     </div>
                   )}
+
+                  {/* Stats & Actions */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <div style={{ color: '#666', fontSize: '12px', display: 'flex', gap: '12px' }}>
+                      <span>💬 {comment.reply_count} {comment.reply_count === 1 ? 'reply' : 'replies'}</span>
+                      {comment.last_checked_at && (
+                        <span>Checked: {new Date(comment.last_checked_at).toLocaleDateString()}</span>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {comment.has_unread_replies && (
+                        <button
+                          style={{
+                            ...styles.btn,
+                            fontSize: '12px',
+                            padding: '6px 12px',
+                            background: 'transparent',
+                            border: '1px solid #333',
+                            color: '#888',
+                            borderRadius: '6px',
+                          }}
+                          onClick={() => handleMarkLinkedInCommentRead(comment.id)}
+                        >
+                          ✓ Mark Read
+                        </button>
+                      )}
+                      {comment.comment_link && (
+                        <a
+                          href={comment.comment_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            ...styles.btn,
+                            fontSize: '12px',
+                            padding: '6px 12px',
+                            background: '#0A66C2',
+                            color: '#fff',
+                            textDecoration: 'none',
+                            borderRadius: '6px',
+                          }}
+                        >
+                          View on LinkedIn
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              );
-            })
+              ))
             )}
           </div>
         </div>

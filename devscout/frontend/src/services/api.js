@@ -2185,3 +2185,66 @@ export async function getPersistenceStats() {
   return res.json();
 }
 
+// ==============================================================================
+// LINKEDIN MY COMMENTS TRACKING (via Apify)
+// Tracks comments you've made on other people's posts and their reply counts
+// ==============================================================================
+
+// Fetch user's LinkedIn comments via Apify and update database
+export async function fetchLinkedInMyComments(username = 'jesseeldridge', maxPages = 3) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/fetch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, max_pages: maxPages }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to fetch comments' }));
+    throw new Error(error.detail || error.error || 'Failed to fetch comments');
+  }
+  return res.json();
+}
+
+// Get all tracked comments from database
+export async function getLinkedInMyComments(unreadOnly = false) {
+  const url = unreadOnly
+    ? `${API_BASE}/api/linkedin/comments/?unread_only=true`
+    : `${API_BASE}/api/linkedin/comments/`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error('Failed to load comments');
+  }
+  return res.json();
+}
+
+// Get count of comments with unread replies
+export async function getLinkedInMyCommentsUnreadCount() {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/unread-count`);
+  if (!res.ok) {
+    return { unread_count: 0 };
+  }
+  return res.json();
+}
+
+// Mark a comment as read
+export async function markLinkedInCommentRead(commentId) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/${commentId}/mark-read`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// Mark all comments as read
+export async function markAllLinkedInCommentsRead() {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/mark-all-read`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// Clear all tracked comments (for testing/reset)
+export async function clearLinkedInMyComments() {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/clear`, {
+    method: 'DELETE',
+  });
+  return res.json();
+}
