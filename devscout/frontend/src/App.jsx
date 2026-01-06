@@ -1437,15 +1437,15 @@ function App() {
               const statusData = await statusResponse.json();
               setLinkedInAuth(statusData);
             }
-            alert(`LinkedIn connected successfully as ${data.person_name}!`);
+            showToast(`LinkedIn connected as ${data.person_name}`, 'success');
           } else {
             const errorData = await response.json();
             console.error('[LinkedIn OAuth] Callback failed:', errorData);
-            alert('Failed to connect LinkedIn: ' + (errorData.detail || 'Unknown error'));
+            showToast('Failed to connect LinkedIn: ' + (errorData.detail || 'Unknown error'), 'error');
           }
         } catch (err) {
           console.error('[LinkedIn OAuth] Error handling callback:', err);
-          alert('Failed to connect LinkedIn: ' + err.message);
+          showToast('Failed to connect LinkedIn: ' + err.message, 'error');
         }
 
         // Clean up URL (remove OAuth params)
@@ -1637,7 +1637,7 @@ function App() {
       localStorage.removeItem('devscout_posts_progress');
       loadData();
     } catch (err) {
-      alert('Failed to fetch: ' + err.message);
+      showToast('Failed to fetch: ' + err.message, 'error');
     } finally {
       setFetching(false);
       setFetchProgress(null);
@@ -1654,7 +1654,7 @@ function App() {
         )
       );
     } catch (err) {
-      alert('Failed to generate: ' + err.message);
+      showToast('Failed to generate: ' + err.message, 'error');
     } finally {
       setGenerating((prev) => ({ ...prev, [postId]: false }));
     }
@@ -1668,7 +1668,7 @@ function App() {
         setCopied((prev) => ({ ...prev, [postId]: false }));
       }, 2000);
     } catch {
-      alert('Failed to copy');
+      showToast('Failed to copy', 'error');
     }
   };
 
@@ -1677,7 +1677,7 @@ function App() {
       await updatePost(postId, { status: 'responded' });
       loadData();
     } catch (err) {
-      alert('Failed to update: ' + err.message);
+      showToast('Failed to update: ' + err.message, 'error');
     }
   };
 
@@ -1686,18 +1686,18 @@ function App() {
       await updatePost(postId, { status: 'skipped' });
       loadData();
     } catch (err) {
-      alert('Failed to skip: ' + err.message);
+      showToast('Failed to skip: ' + err.message, 'error');
     }
   };
 
   const handleClearPosts = async () => {
-    if (!confirm('Clear all posts? This cannot be undone.')) return;
+    // Just do it - no confirmation needed
     try {
-      // TODO: Add backend endpoint for clearing posts
       setPosts([]);
       localStorage.removeItem('devscout_checked_posts');
+      showToast('Posts cleared', 'success');
     } catch (err) {
-      alert('Failed to clear: ' + err.message);
+      showToast('Failed to clear: ' + err.message, 'error');
     }
   };
 
@@ -1706,7 +1706,7 @@ function App() {
     setAddingCustomPost(true);
     try {
       // TODO: Implement custom URL adding
-      alert('Custom URL adding coming soon!');
+      showToast('Custom URL adding coming soon!', 'info');
     } finally {
       setAddingCustomPost(false);
       setCustomUrlInput('');
@@ -1722,7 +1722,7 @@ function App() {
       const result = await generateEngagePost(subreddit, title, category);
       setGeneratedEngagePosts((prev) => ({ ...prev, [ideaKey]: result.post }));
     } catch (err) {
-      alert('Failed to generate: ' + err.message);
+      showToast('Failed to generate: ' + err.message, 'error');
     } finally {
       setGeneratingEngage((prev) => ({ ...prev, [ideaKey]: false }));
     }
@@ -2072,7 +2072,7 @@ function App() {
       });
       setGeneratedReplies(prev => ({ ...prev, [replyKey]: result.response }));
     } catch (err) {
-      alert('Failed to generate: ' + err.message);
+      showToast('Failed to generate: ' + err.message, 'error');
     } finally {
       setGeneratingReply(prev => ({ ...prev, [replyKey]: false }));
     }
@@ -2089,7 +2089,7 @@ function App() {
         window.location.href = data.url;
       }
     } catch (err) {
-      alert('Failed to start LinkedIn auth: ' + err.message);
+      showToast('Failed to start LinkedIn auth: ' + err.message, 'error');
     }
   };
 
@@ -2102,19 +2102,18 @@ function App() {
         const data = await response.json();
         setLinkedInLeads(data);
         if (data.length === 0) {
-          alert('No freelance job leads found. Try again later.');
+          showToast('No freelance job leads found', 'info');
         }
       } else if (response.status === 503) {
         // VPS blocked by search engines - guide user to Prospects
-        alert('LinkedIn Job Leads are temporarily unavailable (VPS IP blocked by search engines). ' +
-              'Use the Opportunities → All Sources tab instead - it fetches LinkedIn from your browser.');
+        showToast('LinkedIn Job Leads unavailable. Use Opportunities tab instead.', 'error');
       } else {
         const error = await response.json();
-        alert('Failed to fetch job leads: ' + (error.detail || 'Unknown error'));
+        showToast('Failed to fetch: ' + (error.detail || 'Unknown error'), 'error');
       }
     } catch (err) {
       console.error('Failed to fetch LinkedIn leads:', err);
-      alert('Failed to fetch job leads: ' + err.message);
+      showToast('Failed to fetch job leads: ' + err.message, 'error');
     } finally {
       setLinkedInLeadsFetching(false);
     }
@@ -2127,7 +2126,7 @@ function App() {
       const result = await fetchLinkedInEngagementViaApify(null, 20);
 
       if (result.error) {
-        alert('Apify error: ' + result.error);
+        showToast('Apify error: ' + result.error, 'error');
         if (result.posts?.length === 0) {
           setLinkedInEngagementFetching(false);
           return;
@@ -2136,7 +2135,7 @@ function App() {
 
       const posts = result.posts || [];
       if (posts.length === 0) {
-        alert('No engagement posts found. Try again later.');
+        showToast('No engagement posts found', 'info');
         setLinkedInEngagementFetching(false);
         return;
       }
@@ -2162,11 +2161,11 @@ function App() {
       setLinkedInEngagement(postsForDb);
 
       if (filteredPosts.length === 0 && posts.length > 0) {
-        alert('All fetched posts were previously dismissed. Try again later for new posts.');
+        showToast('All posts were previously dismissed', 'info');
       }
     } catch (err) {
       console.error('Failed to fetch LinkedIn engagement posts:', err);
-      alert('Failed to fetch engagement posts: ' + err.message);
+      showToast('Failed to fetch: ' + err.message, 'error');
     } finally {
       setLinkedInEngagementFetching(false);
     }
@@ -2190,11 +2189,11 @@ function App() {
         const data = await response.json();
         setLinkedInEngagementResponses(prev => ({ ...prev, [postId]: data.response }));
       } else {
-        alert('Failed to generate response');
+        showToast('Failed to generate response', 'error');
       }
     } catch (err) {
       console.error('Failed to generate LinkedIn response:', err);
-      alert('Failed to generate response: ' + err.message);
+      showToast('Failed to generate: ' + err.message, 'error');
     } finally {
       setGeneratingLinkedInEngagement(prev => ({ ...prev, [postId]: false }));
     }
@@ -2206,7 +2205,7 @@ function App() {
     const commentText = linkedInEngagementResponses[postId];
 
     if (!commentText || !commentText.trim()) {
-      alert('No response to post. Generate a response first.');
+      showToast('Generate a response first', 'info');
       return;
     }
 
@@ -2223,7 +2222,7 @@ function App() {
       // Silently dismiss - no confirmation needed
     } catch (err) {
       console.error('Failed to post LinkedIn comment:', err);
-      alert('Failed to post comment: ' + err.message);
+      showToast('Failed to post comment: ' + err.message, 'error');
     } finally {
       setPostingLinkedInComment(prev => ({ ...prev, [postId]: false }));
     }
@@ -2261,7 +2260,7 @@ function App() {
       await updateLinkedInEngagementStatus(postId, 'dismissed');
     } catch (err) {
       console.error('Failed to like post:', err);
-      alert('Failed to like post: ' + err.message);
+      showToast('Failed to like: ' + err.message, 'error');
     } finally {
       setLikingLinkedInPost(prev => ({ ...prev, [postId]: false }));
     }
@@ -2269,15 +2268,13 @@ function App() {
 
   // Clear all dismissed LinkedIn engagement posts
   const handleClearDismissedLinkedInEngagement = async () => {
-    const count = dismissedLinkedInEngagement.length;
-    if (!confirm(`Clear ${count} dismissed posts? They will reappear on next fetch.`)) return;
-
     try {
       await clearDismissals('linkedin_engagement');
       setDismissedLinkedInEngagement([]);
+      showToast('Dismissals cleared', 'success');
     } catch (err) {
       console.error('Failed to clear dismissals:', err);
-      alert('Failed to clear dismissals: ' + err.message);
+      showToast('Failed to clear: ' + err.message, 'error');
     }
   };
 
@@ -2301,7 +2298,7 @@ function App() {
   // Schedule a LinkedIn post
   const handleScheduleLinkedInPost = async () => {
     if (!linkedInPostContent.trim()) {
-      alert('Please enter post content');
+      showToast('Please enter post content', 'info');
       return;
     }
     setLinkedInScheduling(true);
@@ -2318,13 +2315,13 @@ function App() {
         const post = await response.json();
         setLinkedInScheduledPosts(prev => [...prev, post].sort((a, b) => new Date(a.scheduled_for) - new Date(b.scheduled_for)));
         setLinkedInPostContent('');
-        alert(`Post scheduled for ${new Date(post.scheduled_for + 'Z').toLocaleString()}`);
+        showToast(`Scheduled for ${new Date(post.scheduled_for + 'Z').toLocaleString()}`, 'success');
       } else {
         const error = await response.json();
-        alert('Failed to schedule: ' + error.detail);
+        showToast('Failed to schedule: ' + error.detail, 'error');
       }
     } catch (err) {
-      alert('Failed to schedule post: ' + err.message);
+      showToast('Failed to schedule: ' + err.message, 'error');
     } finally {
       setLinkedInScheduling(false);
     }
@@ -2341,7 +2338,7 @@ function App() {
       setLinkedInPostContent(response);
       setLinkedInPostIdea(ideaTemplate);
     } catch (err) {
-      alert('Failed to generate post: ' + err.message);
+      showToast('Failed to generate: ' + err.message, 'error');
     } finally {
       setLinkedInPostGenerating(false);
     }
@@ -2357,7 +2354,7 @@ function App() {
       setLinkedInPostContent(result.content);
       setLinkedInPostIdea(result.idea);
     } catch (err) {
-      alert('Failed to generate post: ' + err.message);
+      showToast('Failed to generate: ' + err.message, 'error');
     } finally {
       setLinkedInPostGenerating(false);
     }
@@ -2366,11 +2363,11 @@ function App() {
   // Publish a LinkedIn post immediately
   const handlePublishLinkedInPost = async () => {
     if (!linkedInPostContent.trim()) {
-      alert('Please enter post content');
+      showToast('Please enter post content', 'info');
       return;
     }
     if (!linkedInAuth?.is_authenticated) {
-      alert('Please connect your LinkedIn account first');
+      showToast('Connect LinkedIn first', 'info');
       return;
     }
     setLinkedInPublishing(true);
@@ -2389,13 +2386,13 @@ function App() {
         if (result.url) {
           window.open(result.url, '_blank');
         }
-        alert('Post published successfully!');
+        showToast('Post published!', 'success');
       } else {
         const error = await response.json();
-        alert('Failed to publish: ' + error.detail);
+        showToast('Failed to publish: ' + error.detail, 'error');
       }
     } catch (err) {
-      alert('Failed to publish post: ' + err.message);
+      showToast('Failed to publish: ' + err.message, 'error');
     } finally {
       setLinkedInPublishing(false);
     }
@@ -2403,7 +2400,6 @@ function App() {
 
   // Cancel a scheduled post
   const handleCancelScheduledPost = async (postId, platform) => {
-    if (!confirm('Cancel this scheduled post?')) return;
     try {
       const response = await fetch(`/api/schedule/${postId}`, { method: 'DELETE' });
       if (response.ok) {
@@ -2412,11 +2408,12 @@ function App() {
         } else if (platform === 'reddit') {
           setRedditScheduledPosts(prev => prev.filter(p => p.id !== postId));
         }
+        showToast('Post cancelled', 'success');
       } else {
-        alert('Failed to cancel post');
+        showToast('Failed to cancel post', 'error');
       }
     } catch (err) {
-      alert('Failed to cancel: ' + err.message);
+      showToast('Failed to cancel: ' + err.message, 'error');
     }
   };
 
@@ -2459,7 +2456,7 @@ function App() {
 
       setNews(filteredNews);
     } catch (err) {
-      alert('Failed to fetch news: ' + err.message);
+      showToast('Failed to fetch news: ' + err.message, 'error');
     } finally {
       setNewsFetching(false);
       setNewsProgress(null);
@@ -2473,7 +2470,7 @@ function App() {
       const result = await generateNewsResponse(item.title, item.body, item.subreddit);
       setNewsResponses(prev => ({ ...prev, [itemId]: result.response }));
     } catch (err) {
-      alert('Failed to generate: ' + err.message);
+      showToast('Failed to generate: ' + err.message, 'error');
     } finally {
       setGeneratingNews(prev => ({ ...prev, [itemId]: false }));
     }
@@ -2495,11 +2492,11 @@ function App() {
   };
 
   const handleClearNews = async () => {
-    if (!confirm('Clear all news items?')) return;
     setNews([]);
     setNewsResponses({});
     try {
       await clearNewsPosts();
+      showToast('News cleared', 'success');
     } catch (err) {
       console.error('Failed to clear news from database:', err);
     }
@@ -2536,7 +2533,7 @@ function App() {
 
       setGithubIssues(filteredIssues);
     } catch (err) {
-      alert('Failed to fetch GitHub issues: ' + err.message);
+      showToast('Failed to fetch GitHub: ' + err.message, 'error');
     } finally {
       setGithubFetching(false);
       setGithubProgress(null);
@@ -2544,10 +2541,10 @@ function App() {
   };
 
   const handleClearGitHub = async () => {
-    if (!confirm('Clear all GitHub issues?')) return;
     setGithubIssues([]);
     try {
       await clearGitHubIssues();
+      showToast('GitHub issues cleared', 'success');
     } catch (err) {
       console.error('Failed to clear GitHub issues from database:', err);
     }
@@ -2585,10 +2582,10 @@ function App() {
       setAiProspects(prospects);
       savePersistedData('ai_prospects', prospects);
       if (prospects.length === 0) {
-        alert('No opportunities found matching your criteria.');
+        showToast('No opportunities found', 'info');
       }
     } catch (err) {
-      alert('Failed to fetch prospects: ' + err.message);
+      showToast('Failed to fetch: ' + err.message, 'error');
     } finally {
       setAiScoring(false);
       setAiScoringProgress(null);
@@ -2601,7 +2598,7 @@ function App() {
       setAiProspects(prev => prev.filter(p => p.id !== prospectId));
       savePersistedData('ai_prospects', aiProspects.filter(p => p.id !== prospectId));
     } catch (err) {
-      alert('Failed to dismiss: ' + err.message);
+      showToast('Failed to dismiss: ' + err.message, 'error');
     }
   };
 
@@ -2878,11 +2875,11 @@ function App() {
                       const jobs = await getRedditJobs('new');
                       setRedditJobs(jobs);
                     } else {
-                      alert('No hiring posts found. Try again later.');
+                      showToast('No hiring posts found', 'info');
                     }
                   } catch (err) {
                     console.error('Reddit jobs fetch error:', err);
-                    alert('Failed to fetch Reddit jobs: ' + err.message);
+                    showToast('Failed to fetch: ' + err.message, 'error');
                   } finally {
                     setRedditJobsFetching(false);
                   }
@@ -2896,11 +2893,10 @@ function App() {
                   data-btn="secondary"
                   style={{ ...styles.btn, ...styles.btnSecondary }}
                   onClick={async () => {
-                    if (confirm('Clear all dismissed/responded jobs?')) {
-                      await clearRedditJobs('dismissed');
-                      const jobs = await getRedditJobs('new');
-                      setRedditJobs(jobs);
-                    }
+                    await clearRedditJobs('dismissed');
+                    const jobs = await getRedditJobs('new');
+                    setRedditJobs(jobs);
+                    showToast('Cleared', 'success');
                   }}
                 >
                   Clear Dismissed
@@ -3622,10 +3618,10 @@ function App() {
                     });
                     if (!res.ok) {
                       if (res.status === 402 || res.status === 403) {
-                        alert('Apify monthly quota exceeded. Quota resets at the start of next month. Use Opportunities tab for LinkedIn leads (free client-side search).');
+                        showToast('Apify quota exceeded. Try Opportunities tab.', 'error');
                       } else if (res.status === 503) {
                         const data = await res.json();
-                        alert(data.detail || 'Service unavailable');
+                        showToast(data.detail || 'Service unavailable', 'error');
                       } else {
                         throw new Error(`HTTP ${res.status}`);
                       }
@@ -3634,7 +3630,7 @@ function App() {
                     const data = await res.json();
                     // Check for any error in response (quota, rate limit, etc.)
                     if (data.error) {
-                      alert(data.error);
+                      showToast(data.error, 'error');
                       return;
                     }
                     if (data.posts && data.posts.length > 0) {
@@ -3657,18 +3653,18 @@ function App() {
                         console.log('[DevScout] Save result:', saveResult);
                       } catch (saveErr) {
                         console.error('[DevScout] Save error:', saveErr);
-                        alert('Found ' + jobsToSave.length + ' jobs but failed to save: ' + saveErr.message);
+                        showToast('Found jobs but failed to save: ' + saveErr.message, 'error');
                         return;
                       }
                       // Reload from DB
                       const jobs = await getLinkedInJobs('new');
                       setLinkedInLeads(jobs);
                     } else {
-                      alert('No job posts found. Try again later.');
+                      showToast('No job posts found', 'info');
                     }
                   } catch (err) {
                     console.error('LinkedIn jobs fetch error:', err);
-                    alert('Failed to fetch LinkedIn jobs: ' + (err.message || 'Unknown error'));
+                    showToast('Failed to fetch: ' + (err.message || 'Unknown error'), 'error');
                   } finally {
                     setLinkedInLeadsFetching(false);
                   }
@@ -3687,11 +3683,10 @@ function App() {
                   data-btn="secondary"
                   style={{ ...styles.btn, ...styles.btnSecondary }}
                   onClick={async () => {
-                    if (confirm('Clear all dismissed/responded jobs?')) {
-                      await clearLinkedInJobs('dismissed');
-                      const jobs = await getLinkedInJobs('new');
-                      setLinkedInLeads(jobs);
-                    }
+                    await clearLinkedInJobs('dismissed');
+                    const jobs = await getLinkedInJobs('new');
+                    setLinkedInLeads(jobs);
+                    showToast('Cleared', 'success');
                   }}
                 >
                   Clear Dismissed
@@ -4550,12 +4545,11 @@ function App() {
             {aiProspects.length > 0 && (
               <button
                 style={{ ...styles.btn, ...styles.btnSecondary }}
-                onClick={() => {
-                  if (confirm('Clear all prospects?')) {
-                    clearAllProspects();
-                    setAiProspects([]);
-                    savePersistedData('ai_prospects', []);
-                  }
+                onClick={async () => {
+                  await clearAllProspects();
+                  setAiProspects([]);
+                  savePersistedData('ai_prospects', []);
+                  showToast('Prospects cleared', 'success');
                 }}
               >
                 Clear All
