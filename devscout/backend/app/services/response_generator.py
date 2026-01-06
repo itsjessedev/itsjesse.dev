@@ -823,7 +823,15 @@ SOFT SELL APPROACH (pick one):
 - Tool/approach you use: "For [service type], I've been using [tool/technique]. Cuts the time from [X] to [Y]."
 
 CRITICAL: Must mention a SPECIFIC service you offer. Not generic "automation" - say "Salesforce integration" or "Slack bot" or "competitor price scraper".
-Keep it humble - share the work, show expertise, but don't hard sell.""",
+
+REQUIRED CTA (subtle, pick one):
+- "DM me if you're dealing with something similar"
+- "Happy to chat if this sounds familiar"
+- "If you're stuck on [problem], feel free to reach out"
+- "Link in bio if you need help with [service type]"
+- "Always happy to talk shop about [topic] - DMs open"
+
+The CTA is REQUIRED. Without it, the post is just a story with no business value. Keep it casual and inviting, not salesy.""",
                 "length": "medium",
             },
             "engagement": {
