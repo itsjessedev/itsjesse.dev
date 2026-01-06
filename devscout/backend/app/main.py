@@ -15,6 +15,7 @@ from .routers import (
     comments_router,
     linkedin_router,
     persistence_router,
+    linkedin_comments_router,
 )
 
 
@@ -89,3 +90,4 @@ app.include_router(scheduling_router)
 app.include_router(comments_router)
 app.include_router(linkedin_router)
 app.include_router(persistence_router)
+app.include_router(linkedin_comments_router)

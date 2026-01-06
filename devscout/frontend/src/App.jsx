@@ -3,7 +3,7 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
   // AI-Powered Prospects System
   fetchAndScoreProspects, getStoredProspects, getProspectStats, updateProspect as updateProspectAPI, deleteProspect as deleteProspectAPI, clearAllProspects, getAvailablePlatforms, getTotalSourceCount,
   // LinkedIn Post Templates
-  LINKEDIN_POST_TEMPLATES, generateLinkedInPost, getLinkedInPostIdeas, getLinkedInPostCategories,
+  LINKEDIN_POST_TEMPLATES, generateLinkedInPost, generateSmartLinkedInPost, getLinkedInPostIdeas, getLinkedInPostCategories,
   // LinkedIn Comments & Likes
   postLinkedInComment, likeLinkedInPost,
   // LinkedIn Engagement via Apify
@@ -1203,11 +1203,12 @@ function App() {
   const [linkedInAuthLoading, setLinkedInAuthLoading] = useState(true);
 
   // LinkedIn Job Leads (from Prospects) - persisted
-  const [linkedInLeads, setLinkedInLeads] = useState(() => loadPersistedData('linkedin_leads'));
+  // LinkedIn Jobs - loaded from DATABASE on mount (cross-device)
+  const [linkedInLeads, setLinkedInLeads] = useState([]);
   const [linkedInLeadsFetching, setLinkedInLeadsFetching] = useState(false);
 
-  // LinkedIn Engagement - persisted
-  const [linkedInEngagement, setLinkedInEngagement] = useState(() => loadPersistedData('linkedin_engagement'));
+  // LinkedIn Engagement - loaded from DATABASE on mount (cross-device)
+  const [linkedInEngagement, setLinkedInEngagement] = useState([]);
   const [linkedInEngagementFetching, setLinkedInEngagementFetching] = useState(false);
   const [linkedInEngagementResponses, setLinkedInEngagementResponses] = useState({}); // postId -> response text
   const [generatingLinkedInEngagement, setGeneratingLinkedInEngagement] = useState({}); // postId -> boolean
@@ -1218,23 +1219,31 @@ function App() {
   // LinkedIn Post Schedule
   const [linkedInScheduledPosts, setLinkedInScheduledPosts] = useState([]);
   const [linkedInPostContent, setLinkedInPostContent] = useState('');
+  const [linkedInPostIdea, setLinkedInPostIdea] = useState(''); // Current post idea/topic
   const [linkedInScheduling, setLinkedInScheduling] = useState(false);
   const [linkedInPublishing, setLinkedInPublishing] = useState(false);
   const [linkedInPostCategory, setLinkedInPostCategory] = useState('lessons_learned');
   const [linkedInPostGenerating, setLinkedInPostGenerating] = useState(false);
+  const [linkedInShowTemplates, setLinkedInShowTemplates] = useState(false); // Toggle for old template browser
   const [redditScheduledPosts, setRedditScheduledPosts] = useState([]);
 
-  // LinkedIn Comments
+  // LinkedIn Comments (my posts with their comments)
+  const [linkedInMyPosts, setLinkedInMyPosts] = useState([]);
+  const [linkedInMyPostsLoading, setLinkedInMyPostsLoading] = useState(false);
+  const [linkedInExpandedPosts, setLinkedInExpandedPosts] = useState({}); // postId -> { loading, comments, error }
   const [linkedInComments, setLinkedInComments] = useState([]);
+  const [linkedInDismissedComments, setLinkedInDismissedComments] = useState(() => {
+    const loaded = loadPersistedData('linkedin_dismissed_comments');
+    return Array.isArray(loaded) ? loaded : [];
+  });
+  const [linkedInCommentsLoading, setLinkedInCommentsLoading] = useState(false);
 
   // ==============================================================================
   // OPPORTUNITIES TAB STATE
   // ==============================================================================
   // AI-Powered Prospects (non-LinkedIn)
-  const [aiProspects, setAiProspects] = useState(() => {
-    const loaded = loadPersistedData('ai_prospects');
-    return Array.isArray(loaded) ? loaded : [];
-  });
+  // AI Prospects - loaded from DATABASE on mount (cross-device)
+  const [aiProspects, setAiProspects] = useState([]);
   const [aiProspectsStats, setAiProspectsStats] = useState(null);
   const [aiScoring, setAiScoring] = useState(false);
   const [aiScoringProgress, setAiScoringProgress] = useState(null);
@@ -1242,10 +1251,8 @@ function App() {
   const [prospectNotes, setProspectNotes] = useState({});
 
   // News (HN, Lobsters, Dev.to, Hashnode)
-  const [news, setNews] = useState(() => {
-    const loaded = loadPersistedData('news');
-    return Array.isArray(loaded) ? loaded : [];
-  });
+  // News - loaded from DATABASE on mount (cross-device)
+  const [news, setNews] = useState([]);
   const [newsFetching, setNewsFetching] = useState(false);
   const [newsProgress, setNewsProgress] = useState(null);
   const [newsResponses, setNewsResponses] = useState({});
@@ -1253,10 +1260,8 @@ function App() {
   const [dismissedNews, setDismissedNews] = useState([]);
 
   // GitHub Issues - persisted
-  const [githubIssues, setGithubIssues] = useState(() => {
-    const loaded = loadPersistedData('github_issues');
-    return Array.isArray(loaded) ? loaded : [];
-  });
+  // GitHub Issues - loaded from DATABASE on mount (cross-device)
+  const [githubIssues, setGithubIssues] = useState([]);
   const [githubFetching, setGithubFetching] = useState(false);
   const [githubProgress, setGithubProgress] = useState(null);
   const [dismissedGitHub, setDismissedGitHub] = useState([]);
@@ -1312,67 +1317,87 @@ function App() {
     loadProspectsFromDB();
   }, []);
 
-  // Load all persisted data from database on mount
+  // Load all persisted data from database on mount (CROSS-DEVICE SYNC)
+  // This is the source of truth - database, not localStorage
   useEffect(() => {
     const loadPersistedDataFromDB = async () => {
+      console.log('[DevScout] Loading all data from database (cross-device sync)...');
+
+      // LinkedIn Jobs
       try {
-        // LinkedIn Jobs
         const linkedInJobsData = await getLinkedInJobs('new');
-        if (linkedInJobsData && linkedInJobsData.length > 0) {
-          setLinkedInLeads(linkedInJobsData);
-          console.log(`[DevScout] Loaded ${linkedInJobsData.length} LinkedIn jobs from database`);
-        }
-        // Reddit Jobs
-        const redditJobsData = await getRedditJobs('new');
-        if (redditJobsData && redditJobsData.length > 0) {
-          setRedditJobs(redditJobsData);
-          console.log(`[DevScout] Loaded ${redditJobsData.length} Reddit jobs from database`);
-        }
-        // LinkedIn Engagement
-        const linkedInEngData = await getLinkedInEngagement('new');
-        if (linkedInEngData && linkedInEngData.length > 0) {
-          setLinkedInEngagement(linkedInEngData);
-          console.log(`[DevScout] Loaded ${linkedInEngData.length} LinkedIn engagement posts from database`);
-        }
-        // News posts
-        const newsData = await getNewsPosts('new');
-        if (newsData && newsData.length > 0) {
-          // Transform back to frontend format
-          const newsForUI = newsData.map(item => ({
-            reddit_id: item.source_id,
-            subreddit: item.source,
-            url: item.url,
-            title: item.title,
-            body: item.body,
-            author: item.author,
-            score: item.score,
-            num_comments: item.comments,
-            created_utc: item.posted_at ? new Date(item.posted_at).getTime() / 1000 : null,
-          }));
-          setNews(newsForUI);
-          console.log(`[DevScout] Loaded ${newsData.length} news posts from database`);
-        }
-        // GitHub issues
-        const githubData = await fetchPersistedGitHubIssues('new');
-        if (githubData && githubData.length > 0) {
-          // Transform back to frontend format
-          const issuesForUI = githubData.map(issue => ({
-            id: issue.source_id,
-            repo: issue.repo,
-            url: issue.url,
-            title: issue.title,
-            body: issue.body,
-            labels: issue.labels ? issue.labels.split(',') : [],
-            language: issue.language,
-            stars: issue.stars,
-            created_at: issue.created_at,
-          }));
-          setGithubIssues(issuesForUI);
-          console.log(`[DevScout] Loaded ${githubData.length} GitHub issues from database`);
-        }
+        const jobs = Array.isArray(linkedInJobsData) ? linkedInJobsData : [];
+        setLinkedInLeads(jobs);
+        console.log(`[DevScout] Loaded ${jobs.length} LinkedIn jobs from database`);
       } catch (err) {
-        console.error('Failed to load persisted data from DB:', err);
+        console.error('[DevScout] Failed to load LinkedIn jobs:', err);
       }
+
+      // Reddit Jobs
+      try {
+        const redditJobsData = await getRedditJobs('new');
+        const jobs = Array.isArray(redditJobsData) ? redditJobsData : [];
+        setRedditJobs(jobs);
+        console.log(`[DevScout] Loaded ${jobs.length} Reddit jobs from database`);
+      } catch (err) {
+        console.error('[DevScout] Failed to load Reddit jobs:', err);
+      }
+
+      // LinkedIn Engagement
+      try {
+        const linkedInEngData = await getLinkedInEngagement('new');
+        const posts = Array.isArray(linkedInEngData) ? linkedInEngData : [];
+        setLinkedInEngagement(posts);
+        console.log(`[DevScout] Loaded ${posts.length} LinkedIn engagement posts from database`);
+      } catch (err) {
+        console.error('[DevScout] Failed to load LinkedIn engagement:', err);
+      }
+
+      // News posts
+      try {
+        const newsData = await getNewsPosts(null, 'new');
+        const newsArray = Array.isArray(newsData) ? newsData : [];
+        // Transform back to frontend format
+        const newsForUI = newsArray.map(item => ({
+          reddit_id: item.source_id,
+          subreddit: item.source,
+          url: item.url,
+          title: item.title,
+          body: item.body,
+          author: item.author,
+          score: item.score,
+          num_comments: item.comments,
+          created_utc: item.posted_at ? new Date(item.posted_at).getTime() / 1000 : null,
+        }));
+        setNews(newsForUI);
+        console.log(`[DevScout] Loaded ${newsForUI.length} news posts from database`);
+      } catch (err) {
+        console.error('[DevScout] Failed to load news posts:', err);
+      }
+
+      // GitHub issues
+      try {
+        const githubData = await fetchPersistedGitHubIssues('new');
+        const issuesArray = Array.isArray(githubData) ? githubData : [];
+        // Transform back to frontend format
+        const issuesForUI = issuesArray.map(issue => ({
+          id: issue.source_id,
+          repo: issue.repo,
+          url: issue.url,
+          title: issue.title,
+          body: issue.body,
+          labels: issue.labels ? issue.labels.split(',') : [],
+          language: issue.language,
+          stars: issue.stars,
+          created_at: issue.created_at,
+        }));
+        setGithubIssues(issuesForUI);
+        console.log(`[DevScout] Loaded ${issuesForUI.length} GitHub issues from database`);
+      } catch (err) {
+        console.error('[DevScout] Failed to load GitHub issues:', err);
+      }
+
+      console.log('[DevScout] Cross-device data sync complete');
     };
     loadPersistedDataFromDB();
   }, []);
@@ -1739,6 +1764,20 @@ function App() {
     }
   }, [respondedPosts]);
 
+  // Auto-cleanup: Remove stale entries from postRepliesData when respondedPosts changes
+  useEffect(() => {
+    const activePostIds = new Set(respondedPosts.map(p => p.id));
+    const staleIds = Object.keys(postRepliesData).filter(id => !activePostIds.has(id));
+
+    if (staleIds.length > 0) {
+      console.log(`Cleaning up ${staleIds.length} stale reply entries`);
+      const cleaned = { ...postRepliesData };
+      staleIds.forEach(id => delete cleaned[id]);
+      setPostRepliesData(cleaned);
+      savePersistedData('replies_data', cleaned);
+    }
+  }, [respondedPosts]); // Only run when respondedPosts changes
+
   useEffect(() => {
     if (Object.keys(postRepliesData).length > 0) {
       savePersistedData('replies_data', postRepliesData);
@@ -1757,6 +1796,68 @@ function App() {
     };
     loadDismissedReplies();
   }, []);
+
+  // ==============================================================================
+  // LINKEDIN COMMENTS HANDLERS
+  // ==============================================================================
+  const getLinkedInUnreadComments = useCallback(() => {
+    let total = 0;
+    Object.values(linkedInExpandedPosts).forEach(postData => {
+      if (postData.comments && Array.isArray(postData.comments)) {
+        total += postData.comments.filter(c => !linkedInDismissedComments.includes(c.id)).length;
+      }
+    });
+    return total;
+  }, [linkedInExpandedPosts, linkedInDismissedComments]);
+
+  // Auto-fetch my posts when LinkedIn auth becomes available
+  useEffect(() => {
+    if (!linkedInAuth?.is_authenticated || linkedInMyPosts.length > 0) return;
+
+    const fetchMyPosts = async () => {
+      setLinkedInMyPostsLoading(true);
+      try {
+        const API_BASE = import.meta.env.PROD
+          ? 'https://devscout.junipr.io'
+          : 'http://localhost:8004';
+        const res = await fetch(`${API_BASE}/api/linkedin/my-posts`);
+        if (res.ok) {
+          const posts = await res.json();
+          setLinkedInMyPosts(posts);
+          console.log(`[DevScout] Loaded ${posts.length} LinkedIn posts`);
+
+          // Auto-fetch comments for all posts
+          if (posts.length > 0) {
+            setLinkedInCommentsLoading(true);
+            for (const post of posts) {
+              try {
+                const commentsRes = await fetch(`${API_BASE}/api/linkedin/my-posts/${post.id}/comments`);
+                const commentsData = await commentsRes.json();
+                setLinkedInExpandedPosts(prev => ({
+                  ...prev,
+                  [post.id]: { loading: false, comments: commentsData.comments || [], error: commentsData.error }
+                }));
+              } catch (err) {
+                console.error(`Failed to fetch comments for post ${post.id}:`, err);
+              }
+            }
+            setLinkedInCommentsLoading(false);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to auto-fetch LinkedIn posts:', err);
+      } finally {
+        setLinkedInMyPostsLoading(false);
+      }
+    };
+
+    fetchMyPosts();
+  }, [linkedInAuth?.is_authenticated]);
+
+  // Persist LinkedIn dismissed comments
+  useEffect(() => {
+    savePersistedData('linkedin_dismissed_comments', linkedInDismissedComments);
+  }, [linkedInDismissedComments]);
 
   // Persist LinkedIn leads
   useEffect(() => {
@@ -1849,11 +1950,42 @@ function App() {
     }
   };
 
-  const handleGenerateReply = async (reply, parentComment) => {
+  const handleGenerateReply = async (reply, parentComment, post) => {
     const replyKey = reply.id;
     setGeneratingReply(prev => ({ ...prev, [replyKey]: true }));
     try {
-      const result = await generateReplyResponse(parentComment.body, reply.body, reply.author);
+      // Build thread context: original post -> my comment -> their reply
+      const threadContext = [];
+
+      // Add original post as context (if available)
+      if (post) {
+        threadContext.push({
+          author: post.author || 'OP',
+          text: (post.title || '') + (post.body ? '\n\n' + post.body : ''),
+          is_me: false,
+        });
+      }
+
+      // Add my comment
+      threadContext.push({
+        author: 'jessedev_',
+        text: parentComment.body,
+        is_me: true,
+      });
+
+      // Add their reply
+      threadContext.push({
+        author: reply.author,
+        text: reply.body,
+        is_me: false,
+      });
+
+      const result = await generateReplyResponse({
+        subreddit: post?.subreddit || 'unknown',
+        myComment: parentComment.body,
+        theirReply: reply.body,
+        threadContext,
+      });
       setGeneratedReplies(prev => ({ ...prev, [replyKey]: result.response }));
     } catch (err) {
       alert('Failed to generate: ' + err.message);
@@ -2102,7 +2234,7 @@ function App() {
         const post = await response.json();
         setLinkedInScheduledPosts(prev => [...prev, post].sort((a, b) => new Date(a.scheduled_for) - new Date(b.scheduled_for)));
         setLinkedInPostContent('');
-        alert(`Post scheduled for ${new Date(post.scheduled_for).toLocaleString()}`);
+        alert(`Post scheduled for ${new Date(post.scheduled_for + 'Z').toLocaleString()}`);
       } else {
         const error = await response.json();
         alert('Failed to schedule: ' + error.detail);
@@ -2114,7 +2246,7 @@ function App() {
     }
   };
 
-  // Generate a LinkedIn post using AI
+  // Generate a LinkedIn post using AI (old method - from template)
   const handleGenerateLinkedInPost = async (ideaTemplate) => {
     setLinkedInPostGenerating(true);
     try {
@@ -2123,6 +2255,23 @@ function App() {
         category: linkedInPostCategory,
       });
       setLinkedInPostContent(response);
+      setLinkedInPostIdea(ideaTemplate);
+    } catch (err) {
+      alert('Failed to generate post: ' + err.message);
+    } finally {
+      setLinkedInPostGenerating(false);
+    }
+  };
+
+  // Generate a smart LinkedIn post (AI creates idea + content)
+  const handleGenerateSmartLinkedInPost = async (postType = 'random') => {
+    setLinkedInPostGenerating(true);
+    setLinkedInPostContent('');
+    setLinkedInPostIdea('');
+    try {
+      const result = await generateSmartLinkedInPost(postType);
+      setLinkedInPostContent(result.content);
+      setLinkedInPostIdea(result.idea);
     } catch (err) {
       alert('Failed to generate post: ' + err.message);
     } finally {
@@ -2376,6 +2525,7 @@ function App() {
   // GLOBAL NOTIFICATION
   // ==============================================================================
   const totalUnread = getTotalUnreadReplies();
+  const linkedInUnreadComments = getLinkedInUnreadComments();
 
   useEffect(() => {
     if (totalUnread > lastUnreadCount.current) {
@@ -2409,6 +2559,11 @@ function App() {
     setNotificationVisible(false);
   };
 
+  const handleLinkedInNotificationClick = () => {
+    setMainTab('linkedin');
+    setSubTabs(prev => ({ ...prev, linkedin: 'comments' }));
+  };
+
   // ==============================================================================
   // RENDER
   // ==============================================================================
@@ -2427,6 +2582,23 @@ function App() {
         >
           <RedditIcon />
           {totalUnread} unread Reddit {totalUnread === 1 ? 'reply' : 'replies'}
+        </div>
+      )}
+
+      {/* Global Notification Banner - LinkedIn */}
+      {linkedInUnreadComments > 0 && (mainTab !== 'linkedin' || currentSubTab !== 'comments') && (
+        <div
+          style={{
+            ...styles.globalNotification,
+            background: '#0A66C2',
+            boxShadow: '0 4px 20px rgba(10, 102, 194, 0.5)',
+            top: totalUnread > 0 && notificationVisible ? '50px' : '10px', // Stack below Reddit notification if both active
+          }}
+          className="devscout-global-notification"
+          onClick={handleLinkedInNotificationClick}
+        >
+          <LinkedInIcon />
+          {linkedInUnreadComments} unread LinkedIn {linkedInUnreadComments === 1 ? 'comment' : 'comments'}
         </div>
       )}
 
@@ -2502,6 +2674,16 @@ function App() {
                 fontSize: '11px',
                 fontWeight: '600',
               }}>{totalUnread}</span>
+            )}
+            {tabId === 'linkedin' && linkedInUnreadComments > 0 && (
+              <span style={{
+                background: mainTab === tabId ? 'rgba(255,255,255,0.25)' : '#0A66C2',
+                color: '#fff',
+                padding: '2px 8px',
+                borderRadius: '10px',
+                fontSize: '11px',
+                fontWeight: '600',
+              }}>{linkedInUnreadComments}</span>
             )}
           </button>
         );})}
@@ -3246,7 +3428,7 @@ function App() {
                                             <button
                                               data-btn="regenerate"
                                               style={{ ...styles.btn, ...styles.btnRegenerate, fontSize: '12px', padding: '6px 12px' }}
-                                              onClick={() => handleGenerateReply(reply, comment)}
+                                              onClick={() => handleGenerateReply(reply, comment, post)}
                                               disabled={generatingReply[replyKey]}
                                             >
                                               {generatingReply[replyKey] ? 'Regenerating...' : 'Regenerate'}
@@ -3255,7 +3437,7 @@ function App() {
                                         ) : (
                                           <button
                                             style={styles.generateReplyBtn}
-                                            onClick={() => handleGenerateReply(reply, comment)}
+                                            onClick={() => handleGenerateReply(reply, comment, post)}
                                             disabled={generatingReply[replyKey]}
                                           >
                                             {generatingReply[replyKey] ? 'Generating...' : 'Generate Response'}
@@ -3329,8 +3511,8 @@ function App() {
                       body: JSON.stringify({ limit: 30 }),
                     });
                     if (!res.ok) {
-                      if (res.status === 402) {
-                        alert('Apify API quota exceeded. Please wait or add more API keys.');
+                      if (res.status === 402 || res.status === 403) {
+                        alert('Apify monthly quota exceeded. Quota resets at the start of next month. Use Opportunities tab for LinkedIn leads (free client-side search).');
                       } else if (res.status === 503) {
                         const data = await res.json();
                         alert(data.detail || 'Service unavailable');
@@ -3340,21 +3522,34 @@ function App() {
                       return;
                     }
                     const data = await res.json();
+                    // Check for any error in response (quota, rate limit, etc.)
+                    if (data.error) {
+                      alert(data.error);
+                      return;
+                    }
                     if (data.posts && data.posts.length > 0) {
-                      // Save to database
+                      // Save to database - backend already transforms to correct format
                       const jobsToSave = data.posts.map(p => ({
-                        source_id: p.activity_id || p.id,
-                        url: p.post_url || p.url,
-                        title: p.text?.slice(0, 200) || '',
-                        body: p.text || '',
-                        author: p.author?.name || '',
-                        author_url: p.author?.profile_url || '',
-                        author_headline: p.author?.headline || '',
-                        posted_at: p.posted_at?.timestamp ? new Date(p.posted_at.timestamp * 1000).toISOString() : null,
-                        reactions: p.stats?.total_reactions || 0,
-                        comments: p.stats?.comments || 0,
+                        source_id: p.source_id,
+                        url: p.url || '',
+                        title: p.title || '',
+                        body: p.body || '',
+                        author: p.author || '',
+                        author_url: p.author_url || '',
+                        author_headline: p.author_headline || '',
+                        posted_at: p.posted_at || null,
+                        reactions: p.reactions || 0,
+                        comments: p.comments || 0,
                       }));
-                      await saveLinkedInJobs(jobsToSave);
+                      console.log('[DevScout] Saving', jobsToSave.length, 'LinkedIn jobs to DB');
+                      try {
+                        const saveResult = await saveLinkedInJobs(jobsToSave);
+                        console.log('[DevScout] Save result:', saveResult);
+                      } catch (saveErr) {
+                        console.error('[DevScout] Save error:', saveErr);
+                        alert('Found ' + jobsToSave.length + ' jobs but failed to save: ' + saveErr.message);
+                        return;
+                      }
                       // Reload from DB
                       const jobs = await getLinkedInJobs('new');
                       setLinkedInLeads(jobs);
@@ -3363,14 +3558,19 @@ function App() {
                     }
                   } catch (err) {
                     console.error('LinkedIn jobs fetch error:', err);
-                    alert('Failed to fetch LinkedIn jobs: ' + err.message);
+                    alert('Failed to fetch LinkedIn jobs: ' + (err.message || 'Unknown error'));
                   } finally {
                     setLinkedInLeadsFetching(false);
                   }
                 }}
                 disabled={linkedInLeadsFetching}
               >
-                {linkedInLeadsFetching ? 'Fetching...' : '🔍 Fetch Jobs (30)'}
+                {linkedInLeadsFetching ? (
+                  <>
+                    <span className="spinner" style={{ marginRight: '6px' }}>⏳</span>
+                    Searching LinkedIn (this takes ~30s)...
+                  </>
+                ) : '🔍 Fetch Jobs (30)'}
               </button>
               {linkedInLeads.length > 0 && (
                 <button
@@ -3411,7 +3611,7 @@ function App() {
                   </div>
                   <div style={styles.postTitle}>
                     <a href={job.url} target="_blank" rel="noopener" style={styles.postLink}>
-                      {job.title || job.body?.slice(0, 100) + '...'}
+                      {job.author || 'LinkedIn Post'}
                     </a>
                   </div>
                   <div style={styles.postMeta}>
@@ -3423,8 +3623,18 @@ function App() {
                     {job.author_headline && <span> · {job.author_headline}</span>}
                   </div>
                   {job.body && (
-                    <div style={styles.postBody}>
-                      {job.body.slice(0, 500)}{job.body.length > 500 ? '...' : ''}
+                    <div style={{
+                      ...styles.postBody,
+                      whiteSpace: 'pre-wrap',
+                      maxHeight: '400px',
+                      overflowY: 'auto',
+                      padding: '12px',
+                      background: '#1a1a1a',
+                      borderRadius: '8px',
+                      border: '1px solid #333',
+                      marginTop: '8px'
+                    }}>
+                      {job.body}
                     </div>
                   )}
                   <div style={styles.actions}>
@@ -3496,100 +3706,253 @@ function App() {
             </div>
           )}
 
-          {/* Post Ideas - Category Tabs */}
-          <div style={{ marginBottom: '16px' }}>
+          {/* Quick Generate Buttons */}
+          <div style={{ marginBottom: '20px' }}>
             <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#fff' }}>
-              Post Ideas
+              Generate Post
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
-              {getLinkedInPostCategories().map((cat) => (
-                <button
-                  key={cat}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '16px',
-                    border: 'none',
-                    background: linkedInPostCategory === cat ? '#0A66C2' : '#222',
-                    color: linkedInPostCategory === cat ? '#fff' : '#888',
-                    fontSize: '12px',
-                    cursor: 'pointer',
-                    textTransform: 'capitalize',
-                  }}
-                  onClick={() => setLinkedInPostCategory(cat)}
-                >
-                  {cat.replace(/_/g, ' ')}
-                </button>
-              ))}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
+              <button
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: linkedInPostGenerating ? '#333' : 'linear-gradient(135deg, #0A66C2 0%, #004182 100%)',
+                  color: '#fff',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: linkedInPostGenerating ? 'wait' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+                onClick={() => handleGenerateSmartLinkedInPost('random')}
+                disabled={linkedInPostGenerating}
+              >
+                🎲 {linkedInPostGenerating ? 'Generating...' : 'Random Post'}
+              </button>
+              <button
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #333',
+                  background: linkedInPostGenerating ? '#222' : '#1a1a1a',
+                  color: '#e0e0e0',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  cursor: linkedInPostGenerating ? 'wait' : 'pointer',
+                }}
+                onClick={() => handleGenerateSmartLinkedInPost('thought_leadership')}
+                disabled={linkedInPostGenerating}
+              >
+                💡 Insight
+              </button>
+              <button
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #333',
+                  background: linkedInPostGenerating ? '#222' : '#1a1a1a',
+                  color: '#e0e0e0',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  cursor: linkedInPostGenerating ? 'wait' : 'pointer',
+                }}
+                onClick={() => handleGenerateSmartLinkedInPost('soft_sell')}
+                disabled={linkedInPostGenerating}
+              >
+                🎯 Soft Sell
+              </button>
+              <button
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #333',
+                  background: linkedInPostGenerating ? '#222' : '#1a1a1a',
+                  color: '#e0e0e0',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  cursor: linkedInPostGenerating ? 'wait' : 'pointer',
+                }}
+                onClick={() => handleGenerateSmartLinkedInPost('engagement')}
+                disabled={linkedInPostGenerating}
+              >
+                ❓ Question
+              </button>
+              <button
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #333',
+                  background: linkedInPostGenerating ? '#222' : '#1a1a1a',
+                  color: '#e0e0e0',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  cursor: linkedInPostGenerating ? 'wait' : 'pointer',
+                }}
+                onClick={() => handleGenerateSmartLinkedInPost('story')}
+                disabled={linkedInPostGenerating}
+              >
+                📖 Story
+              </button>
+              <button
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #333',
+                  background: linkedInPostGenerating ? '#222' : '#1a1a1a',
+                  color: '#e0e0e0',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  cursor: linkedInPostGenerating ? 'wait' : 'pointer',
+                }}
+                onClick={() => handleGenerateSmartLinkedInPost('quick_tip')}
+                disabled={linkedInPostGenerating}
+              >
+                ⚡ Quick Tip
+              </button>
             </div>
+          </div>
 
-            {/* Post Idea Cards */}
-            <div style={{ display: 'grid', gap: '12px', marginBottom: '20px' }}>
-              {(LINKEDIN_POST_TEMPLATES[linkedInPostCategory] || []).map((idea, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    background: '#1a1a1a',
-                    border: '1px solid #333',
-                    borderRadius: '8px',
-                    padding: '12px 16px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '12px',
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: '#e0e0e0', fontSize: '14px', marginBottom: '4px' }}>
-                      {idea.title}
-                    </div>
-                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      {idea.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          style={{
-                            fontSize: '10px',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            background: '#0A66C220',
-                            color: '#0A66C2',
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <button
-                    style={{
-                      padding: '8px 16px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      background: linkedInPostGenerating ? '#333' : '#0A66C2',
-                      color: '#fff',
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      cursor: linkedInPostGenerating ? 'wait' : 'pointer',
-                      whiteSpace: 'nowrap',
-                    }}
-                    onClick={() => handleGenerateLinkedInPost(idea.title)}
-                    disabled={linkedInPostGenerating}
-                  >
-                    {linkedInPostGenerating ? 'Generating...' : 'Generate'}
-                  </button>
+          {/* Browse Templates (Collapsible) */}
+          <div style={{ marginBottom: '16px' }}>
+            <button
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#888',
+                fontSize: '13px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 0',
+              }}
+              onClick={() => setLinkedInShowTemplates(!linkedInShowTemplates)}
+            >
+              {linkedInShowTemplates ? '▼' : '▶'} Browse Templates ({Object.values(LINKEDIN_POST_TEMPLATES).flat().length} ideas)
+            </button>
+
+            {linkedInShowTemplates && (
+              <>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px', marginTop: '12px' }}>
+                  {getLinkedInPostCategories().map((cat) => (
+                    <button
+                      key={cat}
+                      style={{
+                        padding: '6px 12px',
+                        borderRadius: '16px',
+                        border: 'none',
+                        background: linkedInPostCategory === cat ? '#0A66C2' : '#222',
+                        color: linkedInPostCategory === cat ? '#fff' : '#888',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        textTransform: 'capitalize',
+                      }}
+                      onClick={() => setLinkedInPostCategory(cat)}
+                    >
+                      {cat.replace(/_/g, ' ')}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </div>
+
+                {/* Post Idea Cards */}
+                <div style={{ display: 'grid', gap: '12px', marginBottom: '20px', maxHeight: '400px', overflowY: 'auto' }}>
+                  {(LINKEDIN_POST_TEMPLATES[linkedInPostCategory] || []).map((idea, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        background: '#1a1a1a',
+                        border: '1px solid #333',
+                        borderRadius: '8px',
+                        padding: '12px 16px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '12px',
+                      }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <div style={{ color: '#e0e0e0', fontSize: '14px', marginBottom: '4px' }}>
+                          {idea.title}
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                          {idea.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              style={{
+                                fontSize: '10px',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                background: '#0A66C220',
+                                color: '#0A66C2',
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <button
+                        style={{
+                          padding: '8px 16px',
+                          borderRadius: '6px',
+                          border: 'none',
+                          background: linkedInPostGenerating ? '#333' : '#0A66C2',
+                          color: '#fff',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                          cursor: linkedInPostGenerating ? 'wait' : 'pointer',
+                          whiteSpace: 'nowrap',
+                        }}
+                        onClick={() => handleGenerateLinkedInPost(idea.title)}
+                        disabled={linkedInPostGenerating}
+                      >
+                        {linkedInPostGenerating ? 'Generating...' : 'Generate'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Compose Post */}
           <div style={{ ...styles.post, marginBottom: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#fff' }}>
-              {linkedInPostContent ? 'Edit & Schedule Post' : 'Compose New Post'}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <div>
+                <div style={{ fontSize: '14px', fontWeight: '600', color: '#fff' }}>
+                  {linkedInPostContent ? 'Edit & Schedule Post' : 'Compose New Post'}
+                </div>
+                {linkedInPostIdea && (
+                  <div style={{ fontSize: '12px', color: '#0A66C2', marginTop: '4px' }}>
+                    💡 {linkedInPostIdea}
+                  </div>
+                )}
+              </div>
+              {linkedInPostContent && (
+                <button
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#666',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                  }}
+                  onClick={() => {
+                    setLinkedInPostContent('');
+                    setLinkedInPostIdea('');
+                  }}
+                >
+                  ✕ Clear
+                </button>
+              )}
             </div>
             <textarea
               value={linkedInPostContent}
               onChange={(e) => setLinkedInPostContent(e.target.value)}
-              placeholder="Click 'Generate' on a post idea above, or write your own post here..."
+              placeholder="Click a button above to generate a post, or write your own..."
               style={{
                 width: '100%',
                 minHeight: '200px',
@@ -3657,7 +4020,7 @@ function App() {
                 <div key={post.id} style={styles.post} className="devscout-post">
                   <div style={styles.postHeader}>
                     <span style={{ ...styles.subreddit, color: '#0A66C2', background: '#0A66C220' }}>
-                      {new Date(post.scheduled_for).toLocaleDateString()} at {new Date(post.scheduled_for).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(post.scheduled_for + 'Z').toLocaleDateString()} at {new Date(post.scheduled_for + 'Z').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     <span style={{
                       ...styles.score,
@@ -3871,7 +4234,7 @@ function App() {
       {/* LinkedIn > Comments */}
       {mainTab === 'linkedin' && currentSubTab === 'comments' && (
         <div>
-          {/* LinkedIn Auth Status Card - hidden until OAuth enabled */}
+          {/* LinkedIn Auth Status Card */}
           {LINKEDIN_OAUTH_ENABLED && (
             <div style={styles.linkedInAuthCard}>
               <div style={styles.linkedInAuthHeader}>
@@ -3898,31 +4261,253 @@ function App() {
             </div>
           )}
 
-          <div style={styles.postList}>
-            <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>💬</div>
-              <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
-                LinkedIn Comment Tracking
-              </div>
-              <div style={{ color: '#888', lineHeight: '1.6', maxWidth: '400px', margin: '0 auto' }}>
-                {LINKEDIN_OAUTH_ENABLED
-                  ? 'Track your LinkedIn comments and replies here. This feature requires LinkedIn API integration which is available after connecting your account.'
-                  : 'Comment tracking coming soon. This feature requires LinkedIn API integration.'}
-              </div>
-              {LINKEDIN_OAUTH_ENABLED && linkedInAuth?.is_authenticated ? (
-                <div style={{ marginTop: '20px', color: '#22c55e', fontSize: '14px' }}>
-                  ✓ LinkedIn connected. Comment tracking will be available in a future update.
+          {/* Loading/Refresh Status */}
+          {linkedInAuth?.is_authenticated && (
+            <div style={{
+              marginBottom: '16px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '12px 16px',
+              background: 'linear-gradient(135deg, #0A66C210 0%, #0A66C205 100%)',
+              borderRadius: '8px',
+              border: '1px solid #0A66C230',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <LinkedInIcon />
+                <div>
+                  <div style={{ color: '#fff', fontSize: '14px', fontWeight: '500' }}>
+                    {linkedInMyPostsLoading || linkedInCommentsLoading
+                      ? 'Loading your posts and comments...'
+                      : `${linkedInMyPosts.length} published posts`}
+                  </div>
+                  <div style={{ color: '#888', fontSize: '12px', marginTop: '2px' }}>
+                    {linkedInUnreadComments > 0
+                      ? `${linkedInUnreadComments} new ${linkedInUnreadComments === 1 ? 'comment' : 'comments'} to review`
+                      : 'All comments reviewed'}
+                  </div>
                 </div>
-              ) : LINKEDIN_OAUTH_ENABLED ? (
+              </div>
+              <button
+                data-btn="secondary"
+                style={{
+                  ...styles.btn,
+                  background: '#1a1a1a',
+                  border: '1px solid #333',
+                  color: '#0A66C2',
+                  fontSize: '12px',
+                  padding: '6px 12px',
+                }}
+                onClick={async () => {
+                  setLinkedInMyPostsLoading(true);
+                  setLinkedInExpandedPosts({});
+                  try {
+                    const API_BASE = import.meta.env.PROD
+                      ? 'https://devscout.junipr.io'
+                      : 'http://localhost:8004';
+                    const res = await fetch(`${API_BASE}/api/linkedin/my-posts`);
+                    if (res.ok) {
+                      const posts = await res.json();
+                      setLinkedInMyPosts(posts);
+                      // Auto-fetch all comments
+                      if (posts.length > 0) {
+                        setLinkedInCommentsLoading(true);
+                        for (const post of posts) {
+                          try {
+                            const commentsRes = await fetch(`${API_BASE}/api/linkedin/my-posts/${post.id}/comments`);
+                            const commentsData = await commentsRes.json();
+                            setLinkedInExpandedPosts(prev => ({
+                              ...prev,
+                              [post.id]: { loading: false, comments: commentsData.comments || [], error: commentsData.error }
+                            }));
+                          } catch (err) {
+                            console.error(`Failed to fetch comments for post ${post.id}:`, err);
+                          }
+                        }
+                        setLinkedInCommentsLoading(false);
+                      }
+                    } else {
+                      const err = await res.json();
+                      alert(err.detail || 'Failed to fetch posts');
+                    }
+                  } catch (err) {
+                    console.error('Error fetching my posts:', err);
+                    alert('Failed to fetch posts: ' + err.message);
+                  } finally {
+                    setLinkedInMyPostsLoading(false);
+                  }
+                }}
+                disabled={linkedInMyPostsLoading || linkedInCommentsLoading}
+              >
+                {linkedInMyPostsLoading || linkedInCommentsLoading ? '⏳ Refreshing...' : '🔄 Refresh'}
+              </button>
+            </div>
+          )}
+
+          <div style={styles.postList}>
+            {!linkedInAuth?.is_authenticated ? (
+              <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>💬</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
+                  LinkedIn Comment Tracking
+                </div>
+                <div style={{ color: '#888', lineHeight: '1.6', maxWidth: '400px', margin: '0 auto' }}>
+                  Connect your LinkedIn account to track comments on your posts.
+                </div>
                 <button
                   data-btn="linkedin"
                   style={{ ...styles.btn, ...styles.btnLinkedIn, marginTop: '20px' }}
                   onClick={handleLinkedInConnect}
                 >
-                  Connect LinkedIn to Enable
+                  Connect LinkedIn
                 </button>
-              ) : null}
-            </div>
+              </div>
+            ) : linkedInMyPostsLoading ? (
+              <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏳</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
+                  Loading Posts...
+                </div>
+                <div style={{ color: '#888' }}>Fetching your published LinkedIn posts</div>
+              </div>
+            ) : linkedInMyPosts.length === 0 ? (
+              <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
+                  No Published Posts Yet
+                </div>
+                <div style={{ color: '#888', lineHeight: '1.6', maxWidth: '400px', margin: '0 auto' }}>
+                  Schedule and publish posts in the Post Schedule tab to track comments here.
+                </div>
+              </div>
+            ) : (
+              linkedInMyPosts.map(post => {
+                const postComments = linkedInExpandedPosts[post.id]?.comments || [];
+                const unreadCount = postComments.filter(c => !linkedInDismissedComments.includes(c.id)).length;
+                const isExpanded = linkedInExpandedPosts[post.id] && !linkedInExpandedPosts[post.id].loading;
+
+                return (
+                <div key={post.id} style={{
+                  ...styles.post,
+                  marginBottom: '12px',
+                  border: unreadCount > 0 ? '1px solid #0A66C250' : '1px solid transparent',
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: '#fff', fontSize: '14px', marginBottom: '8px', lineHeight: '1.5' }}>
+                        {post.body?.slice(0, 200)}{post.body?.length > 200 ? '...' : ''}
+                      </div>
+                      <div style={{ color: '#888', fontSize: '12px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <span>Published: {post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Unknown'}</span>
+                        {postComments.length > 0 && (
+                          <span style={{
+                            background: unreadCount > 0 ? '#0A66C2' : '#333',
+                            padding: '2px 8px',
+                            borderRadius: '10px',
+                            fontSize: '11px',
+                            color: '#fff',
+                          }}>
+                            💬 {postComments.length} {postComments.length === 1 ? 'comment' : 'comments'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <a
+                      href={post.published_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        ...styles.btn,
+                        background: '#0A66C2',
+                        color: '#fff',
+                        fontSize: '12px',
+                        padding: '6px 12px',
+                        textDecoration: 'none',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      View on LinkedIn
+                    </a>
+                  </div>
+
+                  {/* Comments section - auto-expanded */}
+                  {linkedInExpandedPosts[post.id]?.loading ? (
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333', color: '#888', fontSize: '12px' }}>
+                      Loading comments...
+                    </div>
+                  ) : linkedInExpandedPosts[post.id]?.error ? (
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333', color: '#f87171', fontSize: '12px' }}>
+                      {linkedInExpandedPosts[post.id].error}
+                    </div>
+                  ) : postComments.length === 0 ? (
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #222', color: '#666', fontSize: '12px' }}>
+                      No comments yet
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {postComments.map((comment, idx) => {
+                          const isDismissed = linkedInDismissedComments.includes(comment.id);
+                          if (isDismissed) return null;
+
+                          return (
+                            <div key={comment.id || idx} style={{
+                              background: 'linear-gradient(135deg, #1a1a1a 0%, #151515 100%)',
+                              padding: '12px 16px',
+                              borderRadius: '8px',
+                              border: '1px solid #252525',
+                            }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ color: '#0A66C2', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
+                                    {comment.author_name}
+                                  </div>
+                                  <div style={{ color: '#ddd', fontSize: '14px', lineHeight: '1.5' }}>{comment.text}</div>
+                                </div>
+                              </div>
+                              <div style={{ marginTop: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                <button
+                                  style={{
+                                    ...styles.btn,
+                                    fontSize: '12px',
+                                    padding: '6px 12px',
+                                    background: 'transparent',
+                                    border: '1px solid #0A66C2',
+                                    color: '#0A66C2',
+                                    borderRadius: '6px',
+                                  }}
+                                  onClick={() => {
+                                    alert('Like comment feature coming soon');
+                                  }}
+                                >
+                                  👍 Like
+                                </button>
+                                <button
+                                  style={{
+                                    ...styles.btn,
+                                    fontSize: '12px',
+                                    padding: '6px 12px',
+                                    background: '#0A66C2',
+                                    color: '#fff',
+                                    borderRadius: '6px',
+                                  }}
+                                  onClick={() => {
+                                    alert('Reply feature coming soon');
+                                  }}
+                                >
+                                  💬 Reply
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })
+            )}
           </div>
         </div>
       )}

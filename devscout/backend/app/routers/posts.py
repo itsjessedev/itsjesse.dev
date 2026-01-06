@@ -160,11 +160,19 @@ async def generate_response(
     return {"response": response}
 
 
+class ThreadMessage(BaseModel):
+    """A single message in a thread."""
+    author: str
+    text: str
+    is_me: bool = False
+
+
 class GenerateReplyRequest(BaseModel):
     """Request to generate a reply response."""
     subreddit: str
     my_comment: str
     their_reply: str
+    thread_context: Optional[list[ThreadMessage]] = None  # Full thread history
 
 
 @router.post("/generate-reply")
@@ -172,10 +180,16 @@ async def generate_reply_response(request: GenerateReplyRequest):
     """Generate an AI response to a reply to user's comment."""
     generator = get_generator()
 
+    # Convert thread_context to dicts if provided
+    thread_dicts = None
+    if request.thread_context:
+        thread_dicts = [{"author": m.author, "text": m.text, "is_me": m.is_me} for m in request.thread_context]
+
     response = await generator.generate_reply(
         subreddit=request.subreddit,
         my_comment=request.my_comment,
         their_reply=request.their_reply,
+        thread_context=thread_dicts,
     )
 
     if not response:

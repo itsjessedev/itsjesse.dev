@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     apify_api_key_4: str = ""
     apify_api_key_5: str = ""
     apify_api_key_6: str = ""
+    apify_api_key_7: str = ""
 
     # LinkedIn OAuth
     linkedin_client_id: str = ""

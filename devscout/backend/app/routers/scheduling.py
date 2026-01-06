@@ -68,21 +68,26 @@ class CalendarEvent(BaseModel):
 # 7 days/week, 2 slots per day
 BEST_TIMES = {
     "linkedin": [
-        # Monday
+        # Monday - 3 slots for flexibility
         {"day": 0, "hour": 12},  # 7 AM EST
         {"day": 0, "hour": 17},  # 12 PM EST
+        {"day": 0, "hour": 22},  # 5 PM EST
         # Tuesday
         {"day": 1, "hour": 12},
         {"day": 1, "hour": 17},
+        {"day": 1, "hour": 22},
         # Wednesday
         {"day": 2, "hour": 12},
         {"day": 2, "hour": 17},
+        {"day": 2, "hour": 22},
         # Thursday
         {"day": 3, "hour": 12},
         {"day": 3, "hour": 17},
+        {"day": 3, "hour": 22},
         # Friday
         {"day": 4, "hour": 12},
         {"day": 4, "hour": 17},
+        {"day": 4, "hour": 22},
         # Saturday
         {"day": 5, "hour": 14},  # 9 AM EST (slightly later on weekends)
         {"day": 5, "hour": 18},  # 1 PM EST
@@ -120,42 +125,34 @@ MAX_POSTS_PER_DAY = 2  # Optimal LinkedIn/Reddit frequency
 
 
 def get_next_available_slot(platform: str, db_scheduled: list[datetime]) -> datetime:
-    """Find the next available best-practice time slot (max 2 posts/day)."""
+    """Find the next available optimal time slot.
+
+    Only schedules at pre-defined optimal times. If a slot is taken, moves to the next slot.
+    """
     now = datetime.utcnow()
     best_times = BEST_TIMES.get(platform, BEST_TIMES["reddit"])
-
-    # Count posts per day from existing schedule
-    def posts_on_date(date: datetime) -> int:
-        return sum(1 for s in db_scheduled if s.date() == date.date())
 
     # Look ahead up to 2 weeks
     for days_ahead in range(14):
         check_date = now + timedelta(days=days_ahead)
 
-        # Skip if already at max posts for this day
-        if posts_on_date(check_date) >= MAX_POSTS_PER_DAY:
-            continue
-
         for slot in best_times:
             if check_date.weekday() == slot["day"]:
                 slot_time = check_date.replace(hour=slot["hour"], minute=0, second=0, microsecond=0)
 
-                # Must be in the future (at least 30 min buffer)
-                if slot_time <= now + timedelta(minutes=30):
+                # Must be in the future (at least 15 min buffer)
+                if slot_time < now + timedelta(minutes=15):
                     continue
 
-                # Check if exact slot is taken
+                # Skip if slot is already taken
                 if slot_time in db_scheduled:
-                    continue
-
-                # Check daily limit again (in case multiple slots same day)
-                if posts_on_date(slot_time) >= MAX_POSTS_PER_DAY:
                     continue
 
                 return slot_time
 
-    # Fallback: next hour
-    return now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+    # Fallback: tomorrow at noon UTC (7 AM EST)
+    tomorrow = now + timedelta(days=1)
+    return tomorrow.replace(hour=12, minute=0, second=0, microsecond=0)
 
 
 @router.post("/", response_model=ScheduledPostResponse)

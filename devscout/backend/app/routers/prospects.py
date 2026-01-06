@@ -474,14 +474,119 @@ def _prospect_to_response(prospect: Prospect) -> ProspectResponse:
 class LinkedInPostsRequest(BaseModel):
     """Request to fetch LinkedIn posts via Apify."""
     search_terms: List[str] = [
-        "looking for a developer",
-        "need freelance developer",
-        "hiring freelance developer",
-        "looking for freelancer",
-        "need a programmer",
+        # Direct freelance/contract mentions
+        "freelance developer needed",
+        "contractor needed developer",
+        "need freelancer to build",
+        "hire freelance developer",
+        # Startup/founder language
+        "startup needs developer",
+        "MVP developer needed",
+        "co-founder developer",
+        # Project-specific
+        "project based developer",
+        "short term developer contract",
     ]
-    max_posts_per_term: int = 20
+    max_posts_per_term: int = 12
     sort_by: str = "date_posted"  # "relevance" or "date_posted"
+
+
+# Patterns that indicate this is a job posting, not a freelance opportunity
+RECRUITER_PATTERNS = [
+    # Hiring language
+    "we're hiring", "we are hiring", "#hiring", "#wearehiring", "#hiringnow",
+    "join our team", "join us", "come join", "be part of our team",
+    # Job posting language
+    "full-time", "full time", "part-time", "part time", "permanent position",
+    "salary range", "salary:", "benefits package", "health insurance",
+    "apply now", "send your cv", "send your resume", "apply through",
+    "job post", "job listing", "job opportunity", "job alert", "job opening",
+    # Recruiter language
+    "hiring alert", "urgent hiring", "immediate joiner", "immediate requirement",
+    "looking for candidates", "we're looking for a", "we are looking for a",
+    "open position", "open role", "vacancy", "vacancies",
+    # Location-based full-time
+    "onsite", "on-site", "hybrid role", "remote role",
+    # Generic job titles
+    "senior developer to join", "developer to join our",
+]
+
+# Job titles that indicate recruiter/HR (filter these out)
+RECRUITER_TITLES = [
+    "recruiter", "recruiting", "talent acquisition", "talent partner",
+    "hr manager", "hr business partner", "hr specialist", "hr coordinator",
+    "human resources", "staffing", "headhunter", "hiring manager",
+    "people operations", "sourcer", "sourcier",
+]
+
+# Positive signals - posts with these are MORE likely to be freelance opportunities
+FREELANCE_SIGNALS = [
+    "freelance", "freelancer", "contractor", "contract work",
+    "project-based", "project based", "short-term", "short term",
+    "one-time", "side project", "mvp", "startup", "solopreneur",
+    "bootstrap", "indie", "saas", "build my app", "build my website",
+]
+
+
+def is_english_text(text: str) -> bool:
+    """
+    Check if text is primarily English (ASCII + common punctuation).
+    Filters out posts with significant non-Latin characters.
+    """
+    if not text:
+        return True  # Empty is fine
+
+    # Count characters that are NOT basic Latin/ASCII
+    # Allow: a-z, A-Z, 0-9, common punctuation, whitespace
+    import re
+
+    # Match only ASCII letters, digits, common punctuation, and whitespace
+    english_pattern = re.compile(r'[a-zA-Z0-9\s\.,!?\'"@#$%&*()_+\-=\[\]{}|\\:;<>/~`\n\r\t]')
+
+    total_chars = len(text)
+    if total_chars == 0:
+        return True
+
+    english_chars = len(english_pattern.findall(text))
+
+    # If less than 85% of characters are English/ASCII, reject
+    # This allows for occasional emojis or special chars but filters foreign language posts
+    ratio = english_chars / total_chars
+    return ratio >= 0.85
+
+
+def is_freelance_opportunity(post: dict) -> bool:
+    """Check if post looks like a genuine freelance opportunity vs job posting."""
+    body = (post.get("body") or "")
+    title = (post.get("title") or "")
+    author_headline = (post.get("author_headline") or "").lower()
+
+    # Filter out non-English posts
+    full_text = body + " " + title
+    if not is_english_text(full_text):
+        return False
+
+    # Convert to lowercase for pattern matching
+    text = full_text.lower()
+
+    # Filter out recruiter job postings
+    for pattern in RECRUITER_PATTERNS:
+        if pattern in text:
+            return False
+
+    # Filter out posts from recruiters/HR
+    for title_pattern in RECRUITER_TITLES:
+        if title_pattern in author_headline:
+            return False
+
+    # Check for positive freelance signals (at least one required)
+    has_freelance_signal = any(signal in text for signal in FREELANCE_SIGNALS)
+
+    # If no freelance signals, it's probably not relevant
+    if not has_freelance_signal:
+        return False
+
+    return True
 
 
 class LinkedInPost(BaseModel):
@@ -517,7 +622,7 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
 
     settings = get_settings()
 
-    # Collect available API keys (supports up to 6 keys with rotation)
+    # Collect available API keys (supports up to 7 keys with rotation)
     api_keys = [k for k in [
         settings.apify_api_key,
         settings.apify_api_key_2,
@@ -525,6 +630,7 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
         settings.apify_api_key_4,
         settings.apify_api_key_5,
         settings.apify_api_key_6,
+        settings.apify_api_key_7,
     ] if k]
 
     if not api_keys:
@@ -552,6 +658,10 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
         )
 
     try:
+        failed_searches = 0
+        total_searches = len(request.search_terms)
+        last_error_code = None
+
         async with httpx.AsyncClient(timeout=180.0) as client:
             for search_term in request.search_terms:
                 try:
@@ -563,12 +673,13 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
 
                         response = await call_apify(client, search_term, api_key)
 
-                        if response.status_code == 402:
-                            # Quota exhausted, try next key
-                            logger.warning(f"Apify key {key_idx + 1} exhausted (402), trying next...")
+                        if response.status_code in (402, 403):
+                            # Quota exhausted (402) or rate limited (403), try next key
+                            logger.warning(f"Apify key {key_idx + 1} failed ({response.status_code}), trying next...")
                             if attempt == len(api_keys) - 1:
-                                logger.error("All Apify keys exhausted")
-                                return {"posts": all_posts, "error": "All Apify API keys exhausted. Add more keys or wait for quota reset.", "count": len(all_posts)}
+                                logger.error(f"All {len(api_keys)} Apify keys failed with {response.status_code}")
+                                error_msg = "All Apify API keys exhausted (402)" if response.status_code == 402 else "All Apify API keys rate limited (403)"
+                                return {"posts": all_posts, "error": f"{error_msg}. Try the Opportunities tab for free client-side search.", "count": len(all_posts)}
                             continue
                         else:
                             # Success or other error, update current key index
@@ -576,7 +687,10 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
                             break
 
                     if response is None or response.status_code not in (200, 201):
-                        logger.error(f"LinkedIn API error for '{search_term}': {response.status_code if response else 'no response'}")
+                        status_code = response.status_code if response else 0
+                        logger.error(f"LinkedIn API error for '{search_term}': {status_code}")
+                        failed_searches += 1
+                        last_error_code = status_code
                         continue
 
                     data = response.json()
@@ -618,23 +732,40 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
                         else:
                             posted_at_str = str(posted_at_obj)
 
-                        post = LinkedInPost(
-                            source_id=f"li_post_{hash(post_id) % 10**8}",
-                            title=title,
-                            body=text[:2000] if text else None,
-                            url=item.get("post_url") or "",
-                            author=author_name,
-                            author_url=author_url,
-                            author_headline=author_headline,
-                            posted_at=posted_at_str,
-                            reactions=reactions,
-                            comments=comments_count,
-                        )
+                        post_data = {
+                            "source_id": f"li_post_{hash(post_id) % 10**8}",
+                            "title": title,
+                            "body": text[:2000] if text else None,
+                            "url": item.get("post_url") or "",
+                            "author": author_name,
+                            "author_url": author_url,
+                            "author_headline": author_headline,
+                            "posted_at": posted_at_str,
+                            "reactions": reactions,
+                            "comments": comments_count,
+                        }
+
+                        # Filter out recruiter job postings
+                        if not is_freelance_opportunity(post_data):
+                            logger.debug(f"Filtered out job posting from {author_name}")
+                            continue
+
+                        post = LinkedInPost(**post_data)
                         all_posts.append(post.model_dump())
 
                 except Exception as e:
                     logger.error(f"Error searching LinkedIn for '{search_term}': {e}")
+                    failed_searches += 1
                     continue
+
+        # Check if all searches failed
+        if failed_searches == total_searches and len(all_posts) == 0:
+            error_msg = "LinkedIn job search unavailable. "
+            if last_error_code == 403:
+                error_msg += "Apify API returned 403 (rate limited or IP blocked). Try the Opportunities tab for free client-side search."
+            else:
+                error_msg += f"All {total_searches} search terms failed (error code: {last_error_code}). Try the Opportunities tab for free client-side search."
+            return {"posts": [], "error": error_msg, "count": 0}
 
         return {"posts": all_posts, "count": len(all_posts)}
 

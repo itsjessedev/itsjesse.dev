@@ -647,11 +647,21 @@ export async function generateResponse(postId, customContext = null) {
 }
 
 // Generate a response to a reply to user's comment
-export async function generateReplyResponse({ subreddit, myComment, theirReply }) {
+// threadContext is optional: [{author, text, is_me}, ...] for full conversation history
+export async function generateReplyResponse({ subreddit, myComment, theirReply, threadContext }) {
+  const body = {
+    subreddit,
+    my_comment: myComment,
+    their_reply: theirReply,
+  };
+  // Include thread context if provided
+  if (threadContext && threadContext.length > 0) {
+    body.thread_context = threadContext;
+  }
   const res = await fetch(`${API_BASE}/api/posts/generate-reply`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ subreddit, my_comment: myComment, their_reply: theirReply }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error('Failed to generate reply');
   return res.json();
@@ -1351,7 +1361,7 @@ export const LINKEDIN_POST_TEMPLATES = {
   ],
 };
 
-// Generate a LinkedIn post using AI
+// Generate a LinkedIn post using AI (old method - requires idea template)
 export async function generateLinkedInPost({ ideaTemplate, category, length = 'medium' }) {
   const res = await fetch(`${API_BASE}/api/linkedin/generate-post`, {
     method: 'POST',
@@ -1365,6 +1375,22 @@ export async function generateLinkedInPost({ ideaTemplate, category, length = 'm
   if (!res.ok) throw new Error('Failed to generate LinkedIn post');
   const data = await res.json();
   return data.response;
+}
+
+// Generate a smart LinkedIn post (AI creates both idea AND content)
+// Post types: random, thought_leadership, soft_sell, engagement, story, quick_tip
+export async function generateSmartLinkedInPost(postType = 'random') {
+  const res = await fetch(`${API_BASE}/api/linkedin/generate-smart-post`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ post_type: postType }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Failed to generate post' }));
+    throw new Error(error.detail || 'Failed to generate post');
+  }
+  // Returns { idea, content, post_type }
+  return res.json();
 }
 
 // Post a comment on a LinkedIn post
@@ -1937,6 +1963,10 @@ export async function saveLinkedInJobs(jobs) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(jobs),
   });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.detail || `HTTP ${res.status}`);
+  }
   return res.json();
 }
 

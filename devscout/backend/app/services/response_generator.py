@@ -474,14 +474,16 @@ class ResponseGenerator:
         subreddit: str,
         my_comment: str,
         their_reply: str,
+        thread_context: Optional[list] = None,
     ) -> Optional[str]:
         """
         Generate a response to a reply to the user's comment.
 
         Args:
             subreddit: Subreddit name
-            my_comment: The user's original comment
-            their_reply: The reply they received
+            my_comment: The user's original comment (for backwards compatibility)
+            their_reply: The reply they received (the one we're responding to)
+            thread_context: Optional full thread history [{author, text, is_me}, ...]
 
         Returns:
             Generated response text, or None on error
@@ -490,11 +492,17 @@ class ResponseGenerator:
             print("No OpenRouter API keys configured")
             return None
 
-        reply_prompt = """You're a friendly, experienced developer continuing a conversation on Reddit. Someone replied to your comment and you want to respond naturally.
+        reply_prompt = """You're a friendly, experienced developer continuing a conversation on Reddit. Someone replied in a thread and you want to respond naturally.
+
+CRITICAL: Consider the ENTIRE conversation thread, not just the last message. Your response should:
+- Reference relevant points from earlier in the conversation
+- Maintain consistency with your previous statements
+- Build on the conversation's progression
+- Acknowledge context that has already been established
 
 GUIDELINES:
 - Continue the conversation naturally, as if talking to a peer
-- Reference specific things they said
+- Reference specific things they said, both recent AND earlier in the thread
 - Be helpful if they asked follow-up questions
 - Be appreciative if they agreed or added to your point
 - Be respectful if they disagreed - find common ground
@@ -511,10 +519,31 @@ AVOID:
 - Being defensive if they challenged something
 - Over-explaining or lecturing
 - Being overly enthusiastic or fake
+- Repeating things you already said in the thread
+- Ignoring earlier context that's relevant
 
 Write ONLY the response. No JSON, no explanation. Just the natural reply."""
 
-        context = f"""SUBREDDIT: r/{subreddit}
+        # Build context with full thread if available
+        if thread_context and len(thread_context) > 0:
+            # Format full thread
+            thread_text = ""
+            for i, msg in enumerate(thread_context):
+                author_label = "YOU" if msg.get("is_me") else msg.get("author", "Unknown")
+                thread_text += f"\n[{author_label}]: {msg.get('text', '')[:800]}\n"
+
+            context = f"""SUBREDDIT: r/{subreddit}
+
+FULL CONVERSATION THREAD (oldest to newest):
+{thread_text}
+
+THE SPECIFIC COMMENT YOU'RE REPLYING TO:
+{their_reply[:1500]}
+
+Generate a response that considers the full thread context above, but is specifically aimed at the last comment."""
+        else:
+            # Fallback to original format for backwards compatibility
+            context = f"""SUBREDDIT: r/{subreddit}
 
 YOUR ORIGINAL COMMENT:
 {my_comment[:1000]}
@@ -685,6 +714,7 @@ IMPORTANT: The current year is 2026. If you reference the year, use 2026.
 {opening_style['instruction']}
 
 YOUR VOICE:
+- ALWAYS use "I" never "we" - you're an independent freelancer, not a company
 - Casual but smart. Like texting a friend who's also a developer.
 - You've been doing this for years. You have opinions. Share them.
 - You make mistakes and learn from them. That's interesting.
@@ -735,6 +765,209 @@ Write this post as Jesse would actually write it. Use the required opening style
             {"role": "user", "content": linkedin_prompt},
         ]
         return await self._call_openrouter(messages, max_tokens=config["max_tokens"], temperature=0.9)
+
+
+    async def generate_smart_linkedin_post(
+        self,
+        post_type: str = "random",
+    ) -> Optional[dict]:
+        """
+        Generate a LinkedIn post with AI-created idea AND content in one step.
+
+        Args:
+            post_type: Type of post to generate:
+                - "random" - AI picks the best type
+                - "thought_leadership" - Technical insight, lesson, or hot take
+                - "soft_sell" - Subtle service mention
+                - "engagement" - Question or discussion starter
+                - "story" - Personal anecdote or case study
+                - "quick_tip" - Short, actionable tip
+
+        Returns:
+            Dict with 'idea' and 'content' keys, or None on error
+        """
+        if not self.api_keys:
+            print("No OpenRouter API keys configured")
+            return None
+
+        # Post type configurations
+        post_type_configs = {
+            "random": {
+                "guidance": "Pick the type that would work best right now. Mix it up - could be a lesson, a tip, a story, a hot take, a question, or sharing something you're working on. Surprise me.",
+                "length": "medium",
+            },
+            "thought_leadership": {
+                "guidance": """Share technical expertise. Options:
+                - A lesson you learned the hard way
+                - A hot take / unpopular opinion about development
+                - A technical insight from a recent project
+                - A pattern or anti-pattern you've observed
+                - Something most devs get wrong""",
+                "length": "medium",
+            },
+            "soft_sell": {
+                "guidance": """Subtly showcase your services through a recent win or observation.
+
+YOUR ACTUAL SERVICES (pick ONE to highlight):
+1. API Integration - Connecting systems like Salesforce, Shopify, eBay, QuickBooks. Syncing data between platforms.
+2. Workflow Automation - Replacing manual processes, automating reports, cron jobs, eliminating copy-paste work. "Better than Zapier" solutions.
+3. Web Scraping - Competitor price monitoring, lead generation, data extraction from websites
+4. Bot Development - Slack bots, Discord bots, Telegram bots for support, notifications, community management
+5. Custom Dashboards - Admin panels, analytics dashboards, internal tools
+6. AI Integration - Adding GPT/Claude to existing systems, document classification, smart assistants
+
+SOFT SELL APPROACH (pick one):
+- Just finished a project: "Wrapped up a [service type] project for a [client type]. The before/after was wild - [specific improvement]."
+- Problem you solve often: "Keep seeing businesses struggle with [specific problem]. It's usually a [simple/quick/straightforward] fix with [your service]."
+- What you're working on: "Building a [specific thing] this week that [does what]. Always satisfying when [outcome]."
+- Tool/approach you use: "For [service type], I've been using [tool/technique]. Cuts the time from [X] to [Y]."
+
+CRITICAL: Must mention a SPECIFIC service you offer. Not generic "automation" - say "Salesforce integration" or "Slack bot" or "competitor price scraper".
+Keep it humble - share the work, show expertise, but don't hard sell.""",
+                "length": "medium",
+            },
+            "engagement": {
+                "guidance": """Start a conversation. Ask something interesting:
+                - What's your take on [topic]?
+                - Curious what tools/approaches others use for [thing]
+                - What's been your experience with [thing]?
+                - Hot take followed by 'thoughts?'
+                Keep it SHORT. Questions work best when they're easy to answer.""",
+                "length": "short",
+            },
+            "story": {
+                "guidance": """Tell a story from your work. Options:
+                - A debugging session that taught you something
+                - A client situation that was memorable
+                - How a project went sideways (and what you learned)
+                - A win worth celebrating
+                - Something funny/surprising that happened
+                Make it specific - names, numbers, details make stories real.""",
+                "length": "long",
+            },
+            "quick_tip": {
+                "guidance": """Share one actionable tip. Keep it punchy:
+                - A specific technique that saves time
+                - A tool or trick most people don't know
+                - A one-liner or code pattern
+                - A debugging trick
+                Short and immediately useful.""",
+                "length": "short",
+            },
+        }
+
+        config = post_type_configs.get(post_type, post_type_configs["random"])
+
+        # Length settings
+        length_settings = {
+            "short": {"words": "50-100 words", "max_tokens": 250},
+            "medium": {"words": "150-250 words", "max_tokens": 500},
+            "long": {"words": "300-450 words", "max_tokens": 700},
+        }
+        length = length_settings.get(config["length"], length_settings["medium"])
+
+        # Select random opening style
+        opening_style = random.choice(LINKEDIN_OPENING_STYLES)
+
+        smart_prompt = f"""You're Jesse, a freelance developer who builds automation and API integrations. Create a LinkedIn post from scratch.
+
+IMPORTANT: The current year is 2026.
+
+STEP 1 - COME UP WITH AN IDEA:
+{config['guidance']}
+
+Think of something FRESH - not generic. Draw from real developer experiences. The idea should feel like something that actually happened or a real opinion you hold.
+
+STEP 2 - WRITE THE POST:
+
+⚠️ OPENING STYLE: {opening_style['style'].upper()}
+{opening_style['instruction']}
+
+LENGTH: {length['words']} - STRICT. Stay focused. No tangents or digressions.
+
+YOUR VOICE:
+- ALWAYS use "I" never "we" - you're an independent freelancer, not a company
+- Direct and confident. You know your stuff.
+- Conversational but professional. Not trying to be quirky.
+- Share insights, not complaints or rants.
+- Real opinions backed by experience.
+
+FORMAT RULES:
+- Short paragraphs (1-3 sentences each)
+- Line breaks between paragraphs for readability
+- Get to the point fast. Every sentence should add value.
+
+HASHTAGS:
+- Usually SKIP hashtags entirely (preferred)
+- If using one: weave it naturally INTO a sentence, never at the end
+- Example: "Working with the Salesforce API taught me..." NOT "...learned a lot #salesforce #api"
+- NEVER end with a hashtag block
+
+ENDINGS (vary these):
+- A question (short, easy to answer)
+- Just end (no call to action needed)
+- A one-line takeaway
+- What you're trying next
+
+BANNED:
+- Starting with "So," or "Okay, so" or "So I was"
+- "I'm excited to..." / "Let me share..." / "Just wanted to..."
+- "hoo boy" / "oh boy" / "welp"
+- Drama phrases: "special place in hell", "nightmare", "disaster"
+- Emoji spam 🚀🔥💯
+- "What do you think? Let me know in the comments!"
+- Corporate buzzwords: leverage, synergy, game-changer
+- Hashtags at the end of the post
+
+OUTPUT FORMAT:
+Return your response as JSON with this structure:
+{{"idea": "Brief 5-10 word description of the post topic", "content": "The full LinkedIn post text"}}
+
+ONLY output the JSON. No explanation before or after."""
+
+        messages = [
+            {"role": "user", "content": smart_prompt},
+        ]
+
+        response = await self._call_openrouter(messages, max_tokens=length["max_tokens"], temperature=0.95)
+
+        if not response:
+            return None
+
+        # Parse JSON response
+        try:
+            # Clean up response - sometimes AI adds markdown code blocks
+            cleaned = response.strip()
+            if cleaned.startswith("```json"):
+                cleaned = cleaned[7:]
+            if cleaned.startswith("```"):
+                cleaned = cleaned[3:]
+            if cleaned.endswith("```"):
+                cleaned = cleaned[:-3]
+            cleaned = cleaned.strip()
+
+            # Fix literal newlines inside JSON string values (common AI mistake)
+            # The model sometimes puts actual \n chars inside strings instead of \\n
+            import re
+            def escape_newlines_in_strings(match):
+                # Escape actual newlines within the matched string value
+                return match.group(0).replace('\n', '\\n')
+            # Match JSON string values (content between quotes, handling escaped quotes)
+            cleaned = re.sub(r'"(?:[^"\\]|\\.)*"', escape_newlines_in_strings, cleaned)
+
+            result = json.loads(cleaned)
+            return {
+                "idea": result.get("idea", "Generated post"),
+                "content": result.get("content", response).replace('\\n', '\n'),  # Restore newlines for display
+                "post_type": post_type,
+            }
+        except json.JSONDecodeError:
+            # If JSON parsing fails, return the whole response as content
+            return {
+                "idea": f"{post_type.replace('_', ' ').title()} post",
+                "content": response,
+                "post_type": post_type,
+            }
 
 
 # Singleton

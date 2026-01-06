@@ -362,3 +362,30 @@ class GitHubIssue(Base):
     __table_args__ = (
         Index('ix_github_repo_issue', 'repo_owner', 'repo_name', 'issue_number', unique=True),
     )
+
+
+class LinkedInMyComment(Base):
+    """Track user's LinkedIn comments and their reply counts for notification."""
+
+    __tablename__ = "linkedin_my_comments"
+
+    id = Column(Integer, primary_key=True)
+    comment_urn = Column(String(200), unique=True, index=True, nullable=False)
+    comment_text = Column(Text)
+    comment_link = Column(String(500))
+
+    # Post info (where the comment was made)
+    post_url = Column(String(500))
+    post_text = Column(Text)
+    post_author = Column(String(200))
+
+    # Reply tracking
+    reply_count = Column(Integer, default=0)  # Current known reply count
+    last_known_reply_count = Column(Integer, default=0)  # For detecting new replies
+    has_unread_replies = Column(Boolean, default=False)
+
+    # Timestamps
+    comment_created_at = Column(DateTime)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    last_checked_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

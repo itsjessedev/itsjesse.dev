@@ -496,6 +496,162 @@ async def like_post(
     return {"status": "liked", "post_urn": post_urn}
 
 
+# ============== My Posts & Comments Endpoints ==============
+
+class MyPostResponse(BaseModel):
+    """Response for user's published LinkedIn post."""
+    id: int
+    body: str
+    published_url: Optional[str]
+    published_at: Optional[datetime]
+    comment_count: int = 0
+    reaction_count: int = 0
+
+
+class CommentResponse(BaseModel):
+    """Response for a comment on a post."""
+    id: str
+    author_name: str
+    author_headline: Optional[str] = None
+    author_url: Optional[str] = None
+    text: str
+    created_at: Optional[str] = None
+    is_reply_to_me: bool = False  # True if this is a reply to user's comment
+
+
+@router.get("/my-posts")
+async def get_my_posts(
+    db: AsyncSession = Depends(get_db),
+    limit: int = Query(20, le=50),
+):
+    """Get user's published LinkedIn posts (from scheduled_posts table)."""
+    from ..models import ScheduledPost
+
+    result = await db.execute(
+        select(ScheduledPost).where(
+            ScheduledPost.platform == "linkedin",
+            ScheduledPost.status == "published",
+            ScheduledPost.published_url.isnot(None),
+        ).order_by(ScheduledPost.published_at.desc()).limit(limit)
+    )
+    posts = result.scalars().all()
+
+    return [
+        {
+            "id": p.id,
+            "body": p.body[:200] + "..." if len(p.body) > 200 else p.body,
+            "published_url": p.published_url,
+            "published_at": p.published_at.isoformat() if p.published_at else None,
+        }
+        for p in posts
+    ]
+
+
+@router.get("/my-posts/{post_id}/comments")
+async def get_post_comments(
+    post_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """Fetch comments on a specific published post using LinkedIn API."""
+    import re
+    from ..models import ScheduledPost
+
+    # Get the post from database
+    post = await db.get(ScheduledPost, post_id)
+    if not post or not post.published_url:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    # Get LinkedIn auth
+    access_token = await get_linkedin_token(db)
+
+    # Extract URN from published_url (format: https://www.linkedin.com/feed/update/urn:li:share:xxx)
+    url = post.published_url
+    urn_match = re.search(r'(urn:li:(?:share|ugcPost|activity):\d+)', url)
+    if not urn_match:
+        raise HTTPException(status_code=400, detail="Could not extract post URN from URL")
+
+    post_urn = urn_match.group(1)
+    encoded_urn = post_urn.replace(":", "%3A")
+
+    async with httpx.AsyncClient() as client:
+        # Fetch comments using socialActions API
+        response = await client.get(
+            f"https://api.linkedin.com/v2/socialActions/{encoded_urn}/comments",
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "X-Restli-Protocol-Version": "2.0.0",
+            },
+        )
+
+        if response.status_code == 403:
+            logger.warning(f"No permission to read comments on {post_urn}")
+            return {"comments": [], "error": "LinkedIn API doesn't allow reading comments with current permissions"}
+
+        if response.status_code != 200:
+            logger.error(f"Failed to fetch comments: {response.status_code} - {response.text}")
+            return {"comments": [], "error": f"LinkedIn API error: {response.status_code}"}
+
+        data = response.json()
+        comments = []
+
+        for element in data.get("elements", []):
+            actor = element.get("actor", "")
+            comment_text = element.get("message", {}).get("text", "")
+
+            comments.append({
+                "id": element.get("$URN", ""),
+                "author_urn": actor,
+                "author_name": "LinkedIn User",  # Would need separate API call to get name
+                "text": comment_text,
+                "created_at": element.get("created", {}).get("time"),
+            })
+
+        return {"comments": comments, "post_urn": post_urn}
+
+
+@router.post("/my-posts/{post_id}/reply")
+async def reply_to_comment(
+    post_id: int,
+    comment_urn: str,
+    reply_text: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Reply to a comment on one of user's posts."""
+    access_token = await get_linkedin_token(db)
+    auth = await db.get(LinkedInAuth, 1)
+
+    if not auth or not auth.person_id:
+        raise HTTPException(status_code=400, detail="Missing LinkedIn person ID")
+
+    # The comment URN should be used to post a reply
+    encoded_comment_urn = comment_urn.replace(":", "%3A")
+
+    reply_data = {
+        "actor": f"urn:li:person:{auth.person_id}",
+        "message": {"text": reply_text},
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"https://api.linkedin.com/v2/socialActions/{encoded_comment_urn}/comments",
+            json=reply_data,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+                "X-Restli-Protocol-Version": "2.0.0",
+            },
+        )
+
+        if response.status_code not in [200, 201]:
+            logger.error(f"Failed to reply: {response.status_code} - {response.text}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to reply: {response.text}"
+            )
+
+        return {"status": "replied", "response": response.json()}
+
+
 # ============== Engagement Endpoints ==============
 
 @router.get("/engagement", response_model=list[LinkedInEngagementPost])
@@ -546,7 +702,7 @@ async def fetch_engagement_via_apify(request: EngagementFetchRequest):
     """
     settings = get_settings()
 
-    # Collect available API keys (supports up to 6 keys with rotation)
+    # Collect available API keys (supports up to 7 keys with rotation)
     api_keys = [k for k in [
         settings.apify_api_key,
         settings.apify_api_key_2,
@@ -554,6 +710,7 @@ async def fetch_engagement_via_apify(request: EngagementFetchRequest):
         settings.apify_api_key_4,
         settings.apify_api_key_5,
         settings.apify_api_key_6,
+        settings.apify_api_key_7,
     ] if k]
 
     if not api_keys:
@@ -709,6 +866,35 @@ async def generate_linkedin_post(request: GenerateLinkedInPostRequest):
         raise HTTPException(status_code=500, detail="Failed to generate LinkedIn post")
 
     return {"response": response}
+
+
+class GenerateSmartPostRequest(BaseModel):
+    """Request to generate a smart LinkedIn post (idea + content in one step)."""
+    post_type: str = "random"  # random, thought_leadership, soft_sell, engagement, story, quick_tip
+
+
+@router.post("/generate-smart-post")
+async def generate_smart_linkedin_post(request: GenerateSmartPostRequest):
+    """Generate a LinkedIn post with AI-created idea AND content in one step.
+
+    Post types:
+    - random: AI picks the best type
+    - thought_leadership: Technical insight, lesson, or hot take
+    - soft_sell: Subtle service mention
+    - engagement: Question or discussion starter
+    - story: Personal anecdote or case study
+    - quick_tip: Short, actionable tip
+    """
+    generator = ResponseGenerator()
+
+    result = await generator.generate_smart_linkedin_post(
+        post_type=request.post_type,
+    )
+
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to generate LinkedIn post")
+
+    return result
 
 
 # ============== Job Leads Endpoints ==============
