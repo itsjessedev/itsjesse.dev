@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import re
 from datetime import datetime
 
 import httpx
@@ -9,7 +10,7 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from ..config import get_settings
-from ..models import Base, ScheduledPost, LinkedInAuth
+from ..models import Base, ScheduledPost, LinkedInAuth, LinkedInMyPost
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -48,6 +49,40 @@ class PostPublisher:
         """Get LinkedIn person ID for posting."""
         auth = await db.get(LinkedInAuth, 1)
         return auth.person_id if auth else None
+
+    async def auto_track_linkedin_post(self, db: AsyncSession, post_url: str, post_text: str) -> None:
+        """Auto-track a LinkedIn post for comment monitoring after publishing."""
+        try:
+            # Extract URN from the post URL
+            # Format: https://www.linkedin.com/feed/update/urn:li:ugcPost:xxx or urn:li:share:xxx
+            urn_match = re.search(r'urn:li:(ugcPost|share|activity):(\d+)', post_url)
+            if not urn_match:
+                logger.warning(f"Could not extract URN from post URL: {post_url}")
+                return
+
+            post_urn = f"urn:li:{urn_match.group(1)}:{urn_match.group(2)}"
+
+            # Check if already tracked
+            existing = await db.execute(
+                select(LinkedInMyPost).where(LinkedInMyPost.post_urn == post_urn)
+            )
+            if existing.scalar_one_or_none():
+                logger.info(f"Post already tracked: {post_urn}")
+                return
+
+            # Create new tracked post
+            tracked_post = LinkedInMyPost(
+                post_urn=post_urn,
+                post_url=post_url,
+                post_text=post_text[:2000] if post_text else None,  # Truncate if too long
+                comment_count=0,
+                post_created_at=datetime.utcnow(),
+            )
+            db.add(tracked_post)
+            await db.flush()  # Don't commit yet, let the caller commit
+            logger.info(f"Auto-tracked LinkedIn post: {post_urn}")
+        except Exception as e:
+            logger.error(f"Failed to auto-track LinkedIn post: {e}")
 
     async def publish_linkedin_post(self, post: ScheduledPost, db: AsyncSession) -> tuple[bool, str | None, str | None]:
         """
@@ -123,6 +158,9 @@ class PostPublisher:
                     post.published_at = datetime.utcnow()
                     post.published_url = url
                     logger.info(f"Published LinkedIn post {post.id}: {url}")
+                    # Auto-track this post for comment monitoring
+                    if url:
+                        await self.auto_track_linkedin_post(db, url, post.body)
                 else:
                     post.status = "failed"
                     post.error_message = error

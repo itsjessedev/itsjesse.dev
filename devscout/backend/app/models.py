@@ -430,3 +430,66 @@ class LinkedInCommentReply(Base):
     __table_args__ = (
         Index('ix_linkedin_reply_unique', 'my_comment_id', 'reply_urn', unique=True),
     )
+
+
+class LinkedInMyPost(Base):
+    """Track user's own LinkedIn posts to monitor comments."""
+
+    __tablename__ = "linkedin_my_posts"
+
+    id = Column(Integer, primary_key=True)
+    post_urn = Column(String(200), unique=True, index=True, nullable=False)  # urn:li:activity:123 or urn:li:ugcPost:123
+    post_url = Column(String(500))
+    post_text = Column(Text)
+
+    # Comment tracking
+    comment_count = Column(Integer, default=0)  # Current known comment count
+    last_known_comment_count = Column(Integer, default=0)  # For detecting new comments
+    has_unread_comments = Column(Boolean, default=False)
+
+    # Timestamps
+    post_created_at = Column(DateTime)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+    last_checked_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationship to comments
+    comments = relationship("LinkedInPostComment", back_populates="my_post", cascade="all, delete-orphan")
+
+
+class LinkedInPostComment(Base):
+    """Comments ON user's LinkedIn posts."""
+
+    __tablename__ = "linkedin_post_comments"
+
+    id = Column(Integer, primary_key=True)
+    my_post_id = Column(Integer, ForeignKey("linkedin_my_posts.id", ondelete="CASCADE"), nullable=False, index=True)
+    comment_urn = Column(String(200), nullable=False)  # The commenter's comment URN
+    comment_text = Column(Text)
+    comment_link = Column(String(500))
+
+    # Author info
+    author_name = Column(String(200))
+    author_headline = Column(String(500))
+    author_url = Column(String(500))
+    author_image = Column(String(500))
+
+    # Engagement
+    likes = Column(Integer, default=0)
+    reply_count = Column(Integer, default=0)  # Replies to this comment
+
+    # Status
+    is_read = Column(Boolean, default=False, index=True)
+    is_dismissed = Column(Boolean, default=False, index=True)
+    has_user_reply = Column(Boolean, default=False)  # Has user responded to this comment?
+
+    # Timestamps
+    comment_created_at = Column(DateTime)
+    discovered_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationship to parent post
+    my_post = relationship("LinkedInMyPost", back_populates="comments")
+
+    __table_args__ = (
+        Index('ix_linkedin_post_comment_unique', 'my_post_id', 'comment_urn', unique=True),
+    )

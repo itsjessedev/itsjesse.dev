@@ -14,7 +14,7 @@ from sqlalchemy.orm import selectinload
 
 from ..config import get_settings
 from ..database import get_db
-from ..models import LinkedInMyComment, LinkedInCommentReply
+from ..models import LinkedInMyComment, LinkedInCommentReply, LinkedInMyPost, LinkedInPostComment
 from ..services.response_generator import ResponseGenerator
 
 logger = logging.getLogger("uvicorn.error")
@@ -87,6 +87,50 @@ class AddCommentByUrlRequest(BaseModel):
     comment_text: Optional[str] = None
 
 
+class AddPostByUrlRequest(BaseModel):
+    """Request to manually add a post to track by URL."""
+    post_url: str
+    post_text: Optional[str] = None
+
+
+class PostCommentResponse(BaseModel):
+    """Response schema for a comment on user's post."""
+    id: int
+    comment_urn: str
+    comment_text: Optional[str]
+    comment_link: Optional[str]
+    author_name: Optional[str]
+    author_headline: Optional[str]
+    author_url: Optional[str]
+    author_image: Optional[str]
+    likes: int
+    reply_count: int
+    is_read: bool
+    is_dismissed: bool
+    has_user_reply: bool
+    comment_created_at: Optional[datetime]
+    discovered_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+class TrackedPostResponse(BaseModel):
+    """Response schema for a tracked post."""
+    id: int
+    post_urn: str
+    post_url: Optional[str]
+    post_text: Optional[str]
+    comment_count: int
+    has_unread_comments: bool
+    post_created_at: Optional[datetime]
+    last_checked_at: Optional[datetime]
+    comments: List[PostCommentResponse] = []
+
+    class Config:
+        from_attributes = True
+
+
 # ============================================================================
 # Apify Key Rotation
 # ============================================================================
@@ -147,6 +191,73 @@ async def call_apify_with_rotation(username: str, max_pages: int) -> dict:
                 continue
 
     return {"error": "All Apify keys exhausted or failed", "comments": []}
+
+
+async def fetch_post_content_with_rotation(post_url: str) -> dict:
+    """
+    Fetch the content of a LinkedIn post using Apify.
+    Uses apimaestro/linkedin-posts-search-scraper-no-cookies with the post URL.
+    """
+    api_keys = get_apify_keys()
+    if not api_keys:
+        return {"error": "No Apify API keys configured", "post_text": None}
+
+    # Extract the activity ID for a targeted search
+    urn_match = re.search(r'urn:li:(activity|ugcPost|share):(\d+)', post_url)
+    if not urn_match:
+        return {"error": "Could not extract URN from URL", "post_text": None}
+
+    activity_id = urn_match.group(2)
+    actor_id = "apimaestro~linkedin-posts-search-scraper-no-cookies"
+
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        for i, api_key in enumerate(api_keys):
+            try:
+                logger.info(f"Trying Apify key {i + 1}/{len(api_keys)} for post content: {activity_id}...")
+
+                # Search for the specific post by activity ID
+                response = await client.post(
+                    f"https://api.apify.com/v2/acts/{actor_id}/run-sync-get-dataset-items",
+                    params={"token": api_key, "timeout": 90},
+                    json={
+                        "searchQueries": [activity_id],
+                        "maxResults": 5,
+                        "datePosted": "any-time"
+                    },
+                )
+
+                if response.status_code in (402, 403):
+                    logger.warning(f"Apify key {i + 1} exhausted ({response.status_code})")
+                    continue
+
+                if response.status_code in (200, 201):
+                    data = response.json()
+                    logger.info(f"Got {len(data)} posts from Apify for activity {activity_id}")
+
+                    # Find the matching post
+                    for post in data:
+                        post_activity = post.get("activity_id") or ""
+                        post_text = post.get("text") or ""
+                        if activity_id in str(post_activity) or activity_id in str(post.get("post_url", "")):
+                            logger.info(f"Found matching post with {len(post_text)} chars")
+                            return {"post_text": post_text, "key_used": i + 1}
+
+                    # If no exact match, return first result if it looks right
+                    if data and data[0].get("text"):
+                        return {"post_text": data[0].get("text"), "key_used": i + 1}
+
+                    return {"error": "Post not found in search results", "post_text": None}
+
+                logger.error(f"Apify error: {response.status_code} - {response.text[:200]}")
+
+            except httpx.TimeoutException:
+                logger.warning(f"Timeout with key {i + 1}")
+                continue
+            except Exception as e:
+                logger.error(f"Error with key {i + 1}: {e}")
+                continue
+
+    return {"error": "All Apify keys exhausted or failed", "post_text": None}
 
 
 async def fetch_post_comments_with_rotation(post_url: str) -> dict:
@@ -615,6 +726,113 @@ async def dismiss_reply(reply_id: int, db: AsyncSession = Depends(get_db)):
     return {"success": True}
 
 
+@router.post("/{reply_id}/like-and-dismiss")
+async def like_and_dismiss_reply(reply_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Like a reply on LinkedIn and dismiss it from DevScout.
+    This is a quick action to acknowledge a reply without responding.
+    """
+    import httpx
+
+    reply = await db.get(LinkedInCommentReply, reply_id)
+    if not reply:
+        raise HTTPException(status_code=404, detail="Reply not found")
+
+    # Get LinkedIn auth
+    access_token = await _get_linkedin_token(db)
+    if not access_token:
+        # No LinkedIn auth - just dismiss without liking
+        reply.is_dismissed = True
+        reply.is_read = True
+        await db.commit()
+        return {"success": True, "liked": False, "reason": "Not authenticated with LinkedIn"}
+
+    # Get person ID for the like
+    from ..models import LinkedInAuth
+    auth = await db.get(LinkedInAuth, 1)
+    if not auth or not auth.person_id:
+        reply.is_dismissed = True
+        reply.is_read = True
+        await db.commit()
+        return {"success": True, "liked": False, "reason": "Missing LinkedIn person ID"}
+
+    # Try to like the reply
+    liked = False
+    error_reason = None
+
+    # The reply_urn is stored as "reply:{comment_id}" - we need the actual LinkedIn URN
+    # The reply_link should contain the actual LinkedIn URL with URN info
+    if reply.reply_link:
+        # Extract URN from the reply link
+        import re
+        # LinkedIn comment URNs look like: urn:li:comment:(ugcPost:123,456) or urn:li:comment:(activity:123,456)
+        urn_match = re.search(r'commentUrn=(urn[^&]+)', reply.reply_link)
+        if urn_match:
+            from urllib.parse import unquote
+            comment_urn = unquote(urn_match.group(1))
+        else:
+            # Try to find URN directly in URL
+            urn_match = re.search(r'urn:li:comment:\([^)]+\)', reply.reply_link)
+            if urn_match:
+                comment_urn = urn_match.group(0)
+            else:
+                comment_urn = None
+
+        if comment_urn:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                try:
+                    # To like a comment, we use the socialActions endpoint
+                    # Format: POST /socialActions/{parentUrn}/comments/{commentUrn}/likes
+                    # But LinkedIn's API for liking comments is more complex
+                    # Simpler approach: use the reactions endpoint
+                    encoded_urn = comment_urn.replace(":", "%3A").replace("(", "%28").replace(")", "%29").replace(",", "%2C")
+
+                    like_data = {
+                        "actor": f"urn:li:person:{auth.person_id}",
+                        "object": comment_urn,
+                    }
+
+                    response = await client.post(
+                        f"https://api.linkedin.com/v2/socialActions/{encoded_urn}/likes",
+                        json=like_data,
+                        headers={
+                            "Authorization": f"Bearer {access_token}",
+                            "Content-Type": "application/json",
+                            "X-Restli-Protocol-Version": "2.0.0",
+                        },
+                    )
+
+                    if response.status_code in [200, 201]:
+                        liked = True
+                        logger.info(f"Successfully liked comment {comment_urn}")
+                    elif response.status_code == 409:
+                        # Already liked
+                        liked = True
+                        logger.info(f"Comment already liked: {comment_urn}")
+                    else:
+                        error_reason = f"LinkedIn returned {response.status_code}"
+                        logger.warning(f"Failed to like comment: {response.text[:200]}")
+
+                except Exception as e:
+                    error_reason = str(e)
+                    logger.error(f"Error liking comment: {e}")
+        else:
+            error_reason = "Could not extract comment URN from link"
+    else:
+        error_reason = "No reply link available"
+
+    # Always dismiss the reply regardless of like success
+    reply.is_dismissed = True
+    reply.is_read = True
+    await db.commit()
+
+    return {
+        "success": True,
+        "liked": liked,
+        "reason": error_reason if not liked else None,
+    }
+
+
 # ============================================================================
 # DevScout-Based Reply Checking (uses LinkedIn OAuth API)
 # ============================================================================
@@ -818,3 +1036,453 @@ async def add_comment_by_url(
         "comment_urn": comment_urn,
         "message": "Comment added for tracking. Use /check-replies to check for replies.",
     }
+
+
+# ============================================================================
+# My Posts Tracking - Track user's own posts and their comments
+# ============================================================================
+
+@router.post("/posts/add")
+async def add_post_to_track(
+    request: AddPostByUrlRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Add a LinkedIn post to track for comments.
+
+    Use this to monitor comments on your own posts.
+    Automatically fetches the post content via Apify.
+
+    URL format examples:
+    - https://www.linkedin.com/feed/update/urn:li:activity:7413065454996348928/
+    - https://www.linkedin.com/posts/jesseeldridge_my-post-title-activity-7413065454996348928
+    """
+    url = request.post_url
+
+    # Extract activity/post URN from URL
+    post_urn = extract_activity_urn_from_url(url)
+    if not post_urn:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not extract post URN from URL. Make sure the URL contains urn:li:activity:XXX or similar."
+        )
+
+    # Check if post already exists
+    existing = await db.scalar(
+        select(LinkedInMyPost).where(LinkedInMyPost.post_urn == post_urn)
+    )
+    if existing:
+        return {
+            "status": "already_tracked",
+            "post_id": existing.id,
+            "post_urn": post_urn,
+            "message": "This post is already being tracked",
+        }
+
+    # Try to fetch post content via Apify
+    post_text = request.post_text
+    if not post_text:
+        logger.info(f"Fetching post content for: {url[:60]}...")
+        content_result = await fetch_post_content_with_rotation(url)
+        if content_result.get("post_text"):
+            post_text = content_result["post_text"]
+            logger.info(f"Got post content: {len(post_text)} chars")
+        else:
+            logger.warning(f"Could not fetch post content: {content_result.get('error', 'unknown')}")
+
+    # Create new tracked post
+    new_post = LinkedInMyPost(
+        post_urn=post_urn,
+        post_url=request.post_url,
+        post_text=post_text,
+        comment_count=0,
+        last_known_comment_count=0,
+        has_unread_comments=False,
+        post_created_at=datetime.utcnow(),
+    )
+    db.add(new_post)
+    await db.commit()
+    await db.refresh(new_post)
+
+    return {
+        "status": "added",
+        "post_id": new_post.id,
+        "post_urn": post_urn,
+        "post_text": post_text[:200] if post_text else None,
+        "message": "Post added for tracking.",
+    }
+
+
+@router.post("/posts/backfill-content")
+async def backfill_post_content(
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Fetch content for all tracked posts that don't have post_text.
+    Uses Apify to retrieve the original post content.
+    """
+    # Get posts without content
+    result = await db.execute(
+        select(LinkedInMyPost).where(
+            (LinkedInMyPost.post_text == None) | (LinkedInMyPost.post_text == "")
+        )
+    )
+    posts = list(result.scalars().all())
+
+    if not posts:
+        return {"status": "ok", "message": "All posts already have content", "updated": 0}
+
+    updated = 0
+    errors = []
+
+    for post in posts:
+        try:
+            url = post.post_url or f"https://www.linkedin.com/feed/update/{post.post_urn}/"
+            logger.info(f"Backfilling content for post {post.id}: {url[:50]}...")
+
+            content_result = await fetch_post_content_with_rotation(url)
+
+            if content_result.get("post_text"):
+                post.post_text = content_result["post_text"]
+                updated += 1
+                logger.info(f"Updated post {post.id} with {len(post.post_text)} chars")
+            else:
+                errors.append(f"Post {post.id}: {content_result.get('error', 'no content found')}")
+
+        except Exception as e:
+            errors.append(f"Post {post.id}: {str(e)}")
+            logger.error(f"Error backfilling post {post.id}: {e}")
+
+    await db.commit()
+
+    return {
+        "status": "ok",
+        "message": f"Backfilled {updated}/{len(posts)} posts",
+        "updated": updated,
+        "total": len(posts),
+        "errors": errors if errors else None,
+    }
+
+
+@router.get("/posts", response_model=List[TrackedPostResponse])
+async def get_tracked_posts(
+    unread_only: bool = False,
+    db: AsyncSession = Depends(get_db),
+):
+    """Get all tracked posts with their comments."""
+    query = select(LinkedInMyPost).options(
+        selectinload(LinkedInMyPost.comments)
+    ).order_by(LinkedInMyPost.discovered_at.desc())
+
+    if unread_only:
+        query = query.where(LinkedInMyPost.has_unread_comments == True)
+
+    result = await db.execute(query)
+    posts = result.scalars().all()
+    return posts
+
+
+@router.post("/posts/fetch-comments")
+async def fetch_comments_for_tracked_posts(
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Fetch comments for all tracked posts via Apify.
+
+    Uses apimaestro/linkedin-post-comments-replies-engagements-scraper-no-cookies
+    to get all comments on each tracked post.
+    """
+    # Get all tracked posts
+    result = await db.execute(
+        select(LinkedInMyPost).order_by(LinkedInMyPost.discovered_at.desc())
+    )
+    posts = result.scalars().all()
+
+    if not posts:
+        return {
+            "success": True,
+            "message": "No posts to fetch comments for",
+            "posts_processed": 0,
+            "new_comments": 0,
+        }
+
+    total_new_comments = 0
+    posts_processed = 0
+    errors = []
+
+    for post in posts:
+        logger.info(f"Fetching comments for post: {post.post_url[:60] if post.post_url else post.post_urn}...")
+
+        # Fetch all comments on this post
+        api_result = await fetch_post_comments_with_rotation(post.post_url or f"https://www.linkedin.com/feed/update/{post.post_urn}/")
+
+        if "error" in api_result and not api_result.get("comments"):
+            errors.append(f"Failed to fetch {post.post_urn}: {api_result['error']}")
+            continue
+
+        all_comments = api_result.get("comments", [])
+        posts_processed += 1
+
+        logger.info(f"Got {len(all_comments)} comments from Apify for post {post.post_urn}")
+
+        # Process each top-level comment
+        for comment_data in all_comments:
+            comment_id = comment_data.get("comment_id")
+            if not comment_id:
+                continue
+
+            # Use comment_id as URN
+            comment_urn = f"comment:{comment_id}"
+
+            # Check if we already have this comment
+            existing = await db.scalar(
+                select(LinkedInPostComment).where(
+                    LinkedInPostComment.my_post_id == post.id,
+                    LinkedInPostComment.comment_urn == comment_urn,
+                )
+            )
+
+            if not existing:
+                # Parse comment timestamp
+                comment_timestamp = None
+                posted_at = comment_data.get("posted_at")
+                if posted_at:
+                    try:
+                        if isinstance(posted_at, (int, float)):
+                            comment_timestamp = datetime.fromtimestamp(posted_at / 1000 if posted_at > 10000000000 else posted_at)
+                        elif isinstance(posted_at, str):
+                            from dateutil import parser
+                            comment_timestamp = parser.parse(posted_at)
+                    except:
+                        pass
+
+                # Get author info
+                author = comment_data.get("author", {})
+                if isinstance(author, dict):
+                    author_name = author.get("name") or author.get("fullName")
+                    author_headline = author.get("headline")
+                    author_url = author.get("profile_url") or author.get("profileUrl") or author.get("url")
+                    author_image = author.get("image") or author.get("profileImage") or author.get("profile_image")
+                else:
+                    author_name = str(author) if author else None
+                    author_headline = None
+                    author_url = None
+                    author_image = None
+
+                # Get engagement stats
+                stats = comment_data.get("stats", {})
+                likes = 0
+                reply_count = 0
+                if isinstance(stats, dict):
+                    for key in ["like", "appreciation", "empathy", "interest", "praise", "reactions", "likes"]:
+                        val = stats.get(key, 0)
+                        if isinstance(val, (int, float)):
+                            likes += int(val)
+                    for key in ["replies", "comments"]:
+                        val = stats.get(key, 0)
+                        if isinstance(val, (int, float)):
+                            reply_count += int(val)
+
+                # Count nested replies
+                nested_replies = comment_data.get("replies", [])
+                if nested_replies:
+                    reply_count = max(reply_count, len(nested_replies))
+
+                # Create comment link
+                comment_link = comment_data.get("comment_url") or comment_data.get("url")
+
+                # Create new comment record
+                new_comment = LinkedInPostComment(
+                    my_post_id=post.id,
+                    comment_urn=comment_urn,
+                    comment_text=comment_data.get("text") or comment_data.get("comment_text"),
+                    comment_link=comment_link,
+                    author_name=author_name,
+                    author_headline=author_headline,
+                    author_url=author_url,
+                    author_image=author_image,
+                    likes=likes,
+                    reply_count=reply_count,
+                    comment_created_at=comment_timestamp,
+                )
+                db.add(new_comment)
+                total_new_comments += 1
+                logger.info(f"New comment from {author_name}: {new_comment.comment_text[:50] if new_comment.comment_text else 'no text'}...")
+
+        # Update post's comment count and last checked time
+        old_count = post.comment_count
+        new_count = len(all_comments)
+        post.comment_count = new_count
+        post.last_checked_at = datetime.utcnow()
+
+        if new_count > old_count:
+            post.has_unread_comments = True
+
+    await db.commit()
+
+    return {
+        "success": True,
+        "posts_processed": posts_processed,
+        "new_comments": total_new_comments,
+        "errors": errors if errors else None,
+    }
+
+
+@router.post("/posts/{comment_id}/dismiss")
+async def dismiss_post_comment(comment_id: int, db: AsyncSession = Depends(get_db)):
+    """Dismiss a comment on a tracked post."""
+    comment = await db.get(LinkedInPostComment, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    comment.is_dismissed = True
+    comment.is_read = True
+    await db.commit()
+
+    return {"success": True}
+
+
+@router.post("/posts/{comment_id}/mark-read")
+async def mark_post_comment_read(comment_id: int, db: AsyncSession = Depends(get_db)):
+    """Mark a comment on a tracked post as read."""
+    comment = await db.get(LinkedInPostComment, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    comment.is_read = True
+    await db.commit()
+
+    # Check if all comments on this post are now read
+    parent_post = await db.get(LinkedInMyPost, comment.my_post_id)
+    if parent_post:
+        unread_count = await db.scalar(
+            select(LinkedInPostComment).where(
+                LinkedInPostComment.my_post_id == parent_post.id,
+                LinkedInPostComment.is_read == False,
+                LinkedInPostComment.is_dismissed == False,
+            )
+        )
+        if not unread_count:
+            parent_post.has_unread_comments = False
+            await db.commit()
+
+    return {"success": True}
+
+
+@router.post("/posts/{comment_id}/like-and-dismiss")
+async def like_and_dismiss_post_comment(comment_id: int, db: AsyncSession = Depends(get_db)):
+    """Like a comment on a tracked post and dismiss it."""
+    import httpx
+
+    comment = await db.get(LinkedInPostComment, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+
+    # Get LinkedIn auth
+    access_token = await _get_linkedin_token(db)
+    if not access_token:
+        comment.is_dismissed = True
+        comment.is_read = True
+        await db.commit()
+        return {"success": True, "liked": False, "reason": "Not authenticated with LinkedIn"}
+
+    # Get person ID
+    from ..models import LinkedInAuth
+    auth = await db.get(LinkedInAuth, 1)
+    if not auth or not auth.person_id:
+        comment.is_dismissed = True
+        comment.is_read = True
+        await db.commit()
+        return {"success": True, "liked": False, "reason": "Missing LinkedIn person ID"}
+
+    liked = False
+    error_reason = None
+
+    if comment.comment_link:
+        # Extract URN from comment link
+        urn_match = re.search(r'commentUrn=(urn[^&]+)', comment.comment_link)
+        if urn_match:
+            from urllib.parse import unquote
+            comment_urn_full = unquote(urn_match.group(1))
+        else:
+            urn_match = re.search(r'urn:li:comment:\([^)]+\)', comment.comment_link)
+            comment_urn_full = urn_match.group(0) if urn_match else None
+
+        if comment_urn_full:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                try:
+                    encoded_urn = comment_urn_full.replace(":", "%3A").replace("(", "%28").replace(")", "%29").replace(",", "%2C")
+
+                    like_data = {
+                        "actor": f"urn:li:person:{auth.person_id}",
+                        "object": comment_urn_full,
+                    }
+
+                    response = await client.post(
+                        f"https://api.linkedin.com/v2/socialActions/{encoded_urn}/likes",
+                        json=like_data,
+                        headers={
+                            "Authorization": f"Bearer {access_token}",
+                            "Content-Type": "application/json",
+                            "X-Restli-Protocol-Version": "2.0.0",
+                        },
+                    )
+
+                    if response.status_code in [200, 201]:
+                        liked = True
+                    elif response.status_code == 409:
+                        liked = True  # Already liked
+                    else:
+                        error_reason = f"LinkedIn returned {response.status_code}"
+
+                except Exception as e:
+                    error_reason = str(e)
+        else:
+            error_reason = "Could not extract comment URN"
+    else:
+        error_reason = "No comment link available"
+
+    # Always dismiss
+    comment.is_dismissed = True
+    comment.is_read = True
+    await db.commit()
+
+    return {
+        "success": True,
+        "liked": liked,
+        "reason": error_reason if not liked else None,
+    }
+
+
+@router.delete("/posts/{post_id}")
+async def delete_tracked_post(post_id: int, db: AsyncSession = Depends(get_db)):
+    """Delete a tracked post and all its comments."""
+    post = await db.get(LinkedInMyPost, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    await db.delete(post)
+    await db.commit()
+
+    return {"success": True}
+
+
+@router.post("/posts/generate-reply")
+async def generate_reply_to_post_comment(
+    my_post_text: str,
+    their_comment_text: str,
+):
+    """Generate a reply to a comment on my LinkedIn post."""
+    generator = ResponseGenerator()
+
+    reply = await generator.generate_linkedin_comment_reply(
+        my_comment_text=my_post_text,  # Treat my post as "my comment" for context
+        their_reply_text=their_comment_text,
+        post_text=my_post_text,
+        post_author="Me",
+    )
+
+    if not reply:
+        raise HTTPException(status_code=500, detail="Failed to generate reply")
+
+    return {"reply": reply}

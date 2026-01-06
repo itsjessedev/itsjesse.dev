@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import get_settings
 from ..database import get_db
-from ..models import LinkedInAuth, LinkedInMyComment
+from ..models import LinkedInAuth, LinkedInMyComment, LinkedInMyPost
 from ..services.response_generator import ResponseGenerator
 # NOTE: linkedin_scraper.py exists but is not used - VPS IP is blocked by all search engines
 # LinkedIn scraping only works with Apify or from client-side browser requests
@@ -267,11 +267,32 @@ async def publish_post(
 
         result = response.json()
         post_id = result.get("id", "")
+        post_url = f"https://www.linkedin.com/feed/update/{post_id}" if post_id else None
+
+        # Auto-track this post for comment monitoring
+        if post_id:
+            try:
+                existing = await db.execute(
+                    select(LinkedInMyPost).where(LinkedInMyPost.post_urn == post_id)
+                )
+                if not existing.scalar_one_or_none():
+                    tracked_post = LinkedInMyPost(
+                        post_urn=post_id,
+                        post_url=post_url,
+                        post_text=request.text[:2000] if request.text else None,
+                        comment_count=0,
+                        post_created_at=datetime.utcnow(),
+                    )
+                    db.add(tracked_post)
+                    await db.commit()
+                    logger.info(f"Auto-tracked LinkedIn post: {post_id}")
+            except Exception as e:
+                logger.error(f"Failed to auto-track LinkedIn post: {e}")
 
         return {
             "status": "published",
             "post_id": post_id,
-            "url": f"https://www.linkedin.com/feed/update/{post_id}" if post_id else None,
+            "url": post_url,
         }
 
 

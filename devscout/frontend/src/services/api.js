@@ -2328,3 +2328,87 @@ export async function dismissLinkedInReply(replyId) {
   });
   return res.json();
 }
+
+// Like a reply on LinkedIn and dismiss it from DevScout
+export async function likeAndDismissLinkedInReply(replyId) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/${replyId}/like-and-dismiss`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// ========================================
+// LinkedIn My Posts Tracking
+// ========================================
+
+// Add a post to track for comments
+export async function addLinkedInPostToTrack(postUrl, postText = null) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts/add`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ post_url: postUrl, post_text: postText }),
+  });
+  return res.json();
+}
+
+// Get all tracked posts with their comments
+export async function getTrackedLinkedInPosts(unreadOnly = false) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts?unread_only=${unreadOnly}`);
+  return res.json();
+}
+
+// Fetch comments for all tracked posts via Apify
+export async function fetchLinkedInPostComments() {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts/fetch-comments`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// Dismiss a comment on a tracked post
+export async function dismissLinkedInPostComment(commentId) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts/${commentId}/dismiss`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// Mark a comment on a tracked post as read
+export async function markLinkedInPostCommentRead(commentId) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts/${commentId}/mark-read`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// Like and dismiss a comment on a tracked post
+export async function likeAndDismissLinkedInPostComment(commentId) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts/${commentId}/like-and-dismiss`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// Delete a tracked post
+export async function deleteTrackedLinkedInPost(postId) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts/${postId}`, {
+    method: 'DELETE',
+  });
+  return res.json();
+}
+
+// Generate reply to a comment on my tracked post
+export async function generateLinkedInPostCommentReply(myPostText, theirCommentText) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts/generate-reply?my_post_text=${encodeURIComponent(myPostText)}&their_comment_text=${encodeURIComponent(theirCommentText)}`, {
+    method: 'POST',
+  });
+  return res.json();
+}
+
+// Backfill content for existing tracked posts that don't have post_text
+export async function backfillLinkedInPostContent() {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/posts/backfill-content`, {
+    method: 'POST',
+  });
+  return res.json();
+}
