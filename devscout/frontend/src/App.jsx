@@ -2695,14 +2695,17 @@ function App() {
       const postText = post.body || post.text || '';
       const postAuthor = post.author || '';
       await postLinkedInComment(post.url, commentText, postText, postAuthor);
-      // Success - remove from list
+      // Success - remove from list and persist as responded
       setLinkedInEngagement(prev => prev.filter(p => p.source_id !== postId));
       setLinkedInEngagementResponses(prev => {
         const updated = { ...prev };
         delete updated[postId];
         return updated;
       });
-      // Silently dismiss - no confirmation needed
+      // Persist to backend so it won't show up again on next fetch
+      setDismissedLinkedInEngagement(prev => [...prev, postId]);
+      await dismissItem('linkedin_engagement', 'linkedin', postId, post.url);
+      await updateLinkedInEngagementStatus(postId, 'responded');
     } catch (err) {
       console.error('Failed to post LinkedIn comment:', err);
       showToast('Failed to post comment: ' + err.message, 'error');
