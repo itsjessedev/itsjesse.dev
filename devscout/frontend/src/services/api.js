@@ -2337,6 +2337,20 @@ export async function likeAndDismissLinkedInReply(replyId) {
   return res.json();
 }
 
+// Post a reply directly to LinkedIn (respond to someone who replied to your comment)
+export async function postLinkedInReplyToComment(replyId, replyText) {
+  const res = await fetch(`${API_BASE}/api/linkedin/comments/${replyId}/post-reply`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reply_text: replyText }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(error.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 // ========================================
 // LinkedIn My Posts Tracking
 // ========================================

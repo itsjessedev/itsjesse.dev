@@ -12,7 +12,7 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
   fetchLinkedInMyComments, getLinkedInMyComments, getLinkedInMyCommentsUnreadCount,
   markLinkedInCommentRead, markAllLinkedInCommentsRead, clearLinkedInMyComments,
   generateLinkedInCommentReply, checkLinkedInCommentReplies, addLinkedInCommentByUrl,
-  fetchLinkedInCommentReplies, markLinkedInReplyRead, dismissLinkedInReply, likeAndDismissLinkedInReply,
+  fetchLinkedInCommentReplies, markLinkedInReplyRead, dismissLinkedInReply, likeAndDismissLinkedInReply, postLinkedInReplyToComment,
   // LinkedIn My Posts Tracking (track comments on YOUR posts)
   addLinkedInPostToTrack, getTrackedLinkedInPosts, fetchLinkedInPostComments,
   dismissLinkedInPostComment, markLinkedInPostCommentRead, likeAndDismissLinkedInPostComment,
@@ -2161,6 +2161,35 @@ function App() {
       showToast('Failed to like reply', 'error');
     } finally {
       setLikingReply(prev => ({ ...prev, [replyId]: false }));
+    }
+  };
+
+  // Post a reply directly to LinkedIn (no copy/paste needed)
+  const [postingReply, setPostingReply] = useState({});
+  const handlePostLinkedInReply = async (reply, comment) => {
+    const replyState = linkedInCommentReplies[reply.id];
+    if (!replyState?.generatedReply?.trim()) {
+      showToast('Generate a reply first', 'info');
+      return;
+    }
+    setPostingReply(prev => ({ ...prev, [reply.id]: true }));
+    try {
+      await postLinkedInReplyToComment(reply.id, replyState.generatedReply);
+      // Update local state - mark as dismissed
+      setMyLinkedInComments(prev => prev.map(c => ({
+        ...c,
+        replies: (c.replies || []).map(r =>
+          r.id === reply.id ? { ...r, is_dismissed: true, is_read: true, has_user_reply: true } : r
+        ),
+      })));
+      // Clear the generated reply
+      handleClearLinkedInReply(reply.id);
+      showToast('Posted to LinkedIn!', 'success');
+    } catch (err) {
+      console.error('Failed to post reply:', err);
+      showToast(`Failed: ${err.message}`, 'error');
+    } finally {
+      setPostingReply(prev => ({ ...prev, [reply.id]: false }));
     }
   };
 
@@ -5375,8 +5404,25 @@ function App() {
                                     <button
                                       style={{
                                         ...styles.btn,
-                                        background: 'linear-gradient(135deg, #0A66C2 0%, #0077B5 100%)',
-                                        color: '#fff',
+                                        ...styles.btnSuccess,
+                                        fontSize: '12px',
+                                        padding: '8px 14px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        opacity: replyState.generatedReply && !postingReply[reply.id] ? 1 : 0.5,
+                                      }}
+                                      onClick={() => handlePostLinkedInReply(reply, comment)}
+                                      disabled={!replyState.generatedReply || postingReply[reply.id]}
+                                    >
+                                      <LinkedInIcon /> {postingReply[reply.id] ? 'Posting...' : 'Post Reply'}
+                                    </button>
+                                    <button
+                                      style={{
+                                        ...styles.btn,
+                                        background: 'transparent',
+                                        border: '1px solid #333',
+                                        color: '#888',
                                         fontSize: '12px',
                                         padding: '8px 14px',
                                         display: 'flex',
@@ -5387,7 +5433,7 @@ function App() {
                                       onClick={() => handleCopyAndOpenLinkedInReply(reply, comment)}
                                       disabled={!replyState.generatedReply}
                                     >
-                                      <LinkedInIcon /> Copy & Reply
+                                      📋 Copy & Open
                                     </button>
                                     <button
                                       style={{ ...styles.btn, background: '#6366f1', color: '#fff', fontSize: '12px', padding: '8px 12px' }}

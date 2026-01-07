@@ -685,6 +685,113 @@ async def generate_comment_reply(request: GenerateReplyRequest):
     return {"reply": reply}
 
 
+class PostReplyRequest(BaseModel):
+    """Request to post a reply to a LinkedIn comment."""
+    reply_text: str
+
+
+@router.post("/{reply_id}/post-reply")
+async def post_reply_to_comment(
+    reply_id: int,
+    request: PostReplyRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Post a reply directly to LinkedIn, responding to someone who replied to your comment.
+
+    This posts a nested reply under their comment on LinkedIn, then marks the reply
+    as "has_user_reply" and dismisses it from DevScout.
+    """
+    import re
+    from urllib.parse import unquote
+
+    reply = await db.get(LinkedInCommentReply, reply_id)
+    if not reply:
+        raise HTTPException(status_code=404, detail="Reply not found")
+
+    # Get LinkedIn auth
+    access_token = await _get_linkedin_token(db)
+    if not access_token:
+        raise HTTPException(status_code=401, detail="LinkedIn not authenticated")
+
+    # Get person ID
+    from ..models import LinkedInAuth
+    auth = await db.get(LinkedInAuth, 1)
+    if not auth or not auth.person_id:
+        raise HTTPException(status_code=400, detail="Missing LinkedIn person ID")
+
+    # Extract the comment URN we're replying to from reply_link
+    # Format: https://www.linkedin.com/feed/update/{activity}/?commentUrn=urn%3Ali%3Acomment%3A(ugcPost%3A123%2C456)
+    comment_urn = None
+    if reply.reply_link:
+        urn_match = re.search(r'commentUrn=(urn[^&]+)', reply.reply_link)
+        if urn_match:
+            comment_urn = unquote(urn_match.group(1))
+        else:
+            # Try to find URN directly in URL
+            urn_match = re.search(r'urn:li:comment:\([^)]+\)', reply.reply_link)
+            if urn_match:
+                comment_urn = urn_match.group(0)
+
+    if not comment_urn:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not extract comment URN from reply link. Please use Copy & Reply instead."
+        )
+
+    # URL encode the URN for the API path
+    encoded_urn = (
+        comment_urn
+        .replace(":", "%3A")
+        .replace("(", "%28")
+        .replace(")", "%29")
+        .replace(",", "%2C")
+    )
+
+    # LinkedIn nested comment API
+    comment_data = {
+        "actor": f"urn:li:person:{auth.person_id}",
+        "message": {
+            "text": request.reply_text
+        }
+    }
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        response = await client.post(
+            f"https://api.linkedin.com/v2/socialActions/{encoded_urn}/comments",
+            json=comment_data,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+                "X-Restli-Protocol-Version": "2.0.0",
+            },
+        )
+
+        if response.status_code not in [200, 201]:
+            logger.error(f"LinkedIn reply failed: {response.status_code} - {response.text}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Failed to post reply to LinkedIn: {response.text[:200]}"
+            )
+
+        result = response.json()
+        posted_comment_id = result.get("id", "")
+
+        logger.info(f"Posted reply to LinkedIn comment {comment_urn}: {posted_comment_id}")
+
+    # Mark the reply as responded and dismiss it
+    reply.has_user_reply = True
+    reply.is_dismissed = True
+    reply.is_read = True
+    await db.commit()
+
+    return {
+        "status": "posted",
+        "comment_id": posted_comment_id,
+        "parent_urn": comment_urn,
+    }
+
+
 @router.post("/{reply_id}/mark-reply-read")
 async def mark_reply_read(reply_id: int, db: AsyncSession = Depends(get_db)):
     """Mark a specific reply as read."""
