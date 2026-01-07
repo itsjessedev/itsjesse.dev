@@ -4842,7 +4842,7 @@ function App() {
                 <div style={{ color: '#fff', fontSize: '14px', fontWeight: '500' }}>
                   {fetchingAllLinkedIn
                     ? 'Fetching LinkedIn activity...'
-                    : `${myLinkedInPosts.length} tracked posts · ${myLinkedInComments.filter(c => c.reply_count > 0).length} comments with replies`}
+                    : `${myLinkedInPosts.filter(p => (p.comments || []).filter(c => !c.is_dismissed).length > 0).length} posts with comments · ${myLinkedInComments.filter(c => c.reply_count > 0).length} comments with replies`}
                 </div>
                 <div style={{ color: '#888', fontSize: '12px', marginTop: '2px' }}>
                   {(() => {
@@ -4948,7 +4948,7 @@ function App() {
                 </div>
                 <div style={{ color: '#888' }}>This may take 30-60 seconds</div>
               </div>
-            ) : myLinkedInComments.filter(c => c.reply_count > 0).length === 0 && myLinkedInPosts.length === 0 ? (
+            ) : myLinkedInComments.filter(c => c.reply_count > 0).length === 0 && myLinkedInPosts.filter(p => (p.comments || []).filter(c => !c.is_dismissed).length > 0).length === 0 ? (
               <div style={{ ...styles.post, textAlign: 'center', padding: '40px' }}>
                 <div style={{ fontSize: '48px', marginBottom: '16px' }}>💬</div>
                 <div style={{ fontSize: '18px', fontWeight: '600', color: '#fff', marginBottom: '8px' }}>
@@ -4971,7 +4971,7 @@ function App() {
             ) : (
               <>
               {/* ============ MY POSTS SECTION ============ */}
-              {myLinkedInPosts.length > 0 && (
+              {myLinkedInPosts.filter(p => (p.comments || []).filter(c => !c.is_dismissed).length > 0).length > 0 && (
                 <div style={{ marginBottom: '32px' }}>
                   <div style={{
                     display: 'flex',
@@ -4986,7 +4986,7 @@ function App() {
                       My Posts
                     </h3>
                     <span style={{ color: '#888', fontSize: '12px' }}>
-                      ({myLinkedInPosts.length} tracked)
+                      ({myLinkedInPosts.filter(p => (p.comments || []).filter(c => !c.is_dismissed).length > 0).length} with comments)
                     </span>
                     {myLinkedInPosts.reduce((acc, p) => acc + (p.comments || []).filter(c => !c.is_read && !c.is_dismissed).length, 0) > 0 && (
                       <span style={{
@@ -5002,7 +5002,7 @@ function App() {
                     )}
                   </div>
 
-                  {myLinkedInPosts.map(myPost => {
+                  {myLinkedInPosts.filter(p => (p.comments || []).filter(c => !c.is_dismissed).length > 0).map(myPost => {
                     const comments = (myPost.comments || []).filter(c => !c.is_dismissed);
                     const unreadComments = comments.filter(c => !c.is_read);
 
