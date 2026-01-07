@@ -1998,6 +1998,24 @@ export async function clearLinkedInJobs(status = null) {
   return res.json();
 }
 
+// AI Job Scoring
+const PROSPECTS_BASE = import.meta.env.PROD
+  ? '/api/prospects'
+  : 'http://localhost:8004/api/prospects';
+
+export async function scoreLinkedInJobs(jobs) {
+  const res = await fetch(`${PROSPECTS_BASE}/score-jobs`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ posts: jobs }),
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.detail || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 // LinkedIn Engagement
 export async function saveLinkedInEngagement(posts) {
   const res = await fetch(`${PERSISTENCE_BASE}/linkedin/engagement/batch`, {

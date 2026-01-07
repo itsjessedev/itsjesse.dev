@@ -253,6 +253,177 @@ def select_comment_style(post_text: str) -> dict:
     # Fallback to last style
     return normalized[-1][0]
 
+
+def analyze_author(author: str, headline: Optional[str]) -> dict:
+    """Analyze the author to determine engagement strategy."""
+    headline_lower = (headline or "").lower()
+    author_lower = (author or "").lower()
+
+    result = {
+        "is_potential_client": False,
+        "is_peer": False,
+        "is_influencer": False,
+        "is_technical": False,
+        "seniority": "unknown",  # junior, mid, senior, executive
+        "persona": "general",  # business_owner, startup_founder, corporate_exec, developer, consultant, recruiter, influencer
+        "strategy": "casual",  # casual, value_add, strategic, expert_peer
+        "industry": "unknown",
+    }
+
+    # Detect potential clients (business owners, founders, executives who might need dev services)
+    client_signals = [
+        "founder", "co-founder", "ceo", "cto", "coo", "owner", "president",
+        "director", "vp ", "vice president", "head of", "chief",
+        "entrepreneur", "business owner", "startup", "building",
+        "agency owner", "managing director"
+    ]
+    if any(signal in headline_lower for signal in client_signals):
+        result["is_potential_client"] = True
+        result["strategy"] = "strategic"
+
+    # Detect seniority
+    exec_signals = ["ceo", "cto", "coo", "cfo", "chief", "founder", "co-founder", "president", "owner"]
+    senior_signals = ["senior", "lead", "principal", "staff", "architect", "director", "head of", "vp ", "vice president", "manager"]
+    mid_signals = ["engineer", "developer", "consultant", "specialist", "analyst"]
+
+    if any(signal in headline_lower for signal in exec_signals):
+        result["seniority"] = "executive"
+    elif any(signal in headline_lower for signal in senior_signals):
+        result["seniority"] = "senior"
+    elif any(signal in headline_lower for signal in mid_signals):
+        result["seniority"] = "mid"
+    elif "junior" in headline_lower or "intern" in headline_lower or "entry" in headline_lower:
+        result["seniority"] = "junior"
+
+    # Detect persona
+    if any(s in headline_lower for s in ["founder", "co-founder", "ceo", "started", "building my"]):
+        result["persona"] = "startup_founder"
+        result["is_potential_client"] = True
+    elif any(s in headline_lower for s in ["agency", "consultancy", "consulting firm"]):
+        result["persona"] = "agency_owner"
+        result["is_potential_client"] = True
+    elif any(s in headline_lower for s in ["cto", "vp engineering", "head of engineering", "director of engineering"]):
+        result["persona"] = "tech_leader"
+        result["is_potential_client"] = True
+    elif any(s in headline_lower for s in ["ceo", "coo", "president", "owner"]) and "tech" not in headline_lower:
+        result["persona"] = "business_executive"
+        result["is_potential_client"] = True
+    elif any(s in headline_lower for s in ["developer", "engineer", "programmer", "coder", "software"]):
+        result["persona"] = "developer"
+        result["is_peer"] = True
+        result["is_technical"] = True
+        result["strategy"] = "expert_peer"
+    elif any(s in headline_lower for s in ["consultant", "freelance", "independent"]):
+        result["persona"] = "consultant"
+        result["is_peer"] = True
+        result["strategy"] = "expert_peer"
+    elif any(s in headline_lower for s in ["recruiter", "talent", "hiring", "hr ", "human resources"]):
+        result["persona"] = "recruiter"
+        result["strategy"] = "casual"
+    elif any(s in headline_lower for s in ["coach", "speaker", "author", "influencer", "creator"]):
+        result["persona"] = "influencer"
+        result["is_influencer"] = True
+        result["strategy"] = "value_add"
+
+    # Detect if technical based on headline
+    tech_signals = ["developer", "engineer", "architect", "devops", "backend", "frontend", "fullstack",
+                    "data", "ml", "ai ", "cloud", "infrastructure", "platform", "api", "software"]
+    if any(signal in headline_lower for signal in tech_signals):
+        result["is_technical"] = True
+
+    # Detect industry
+    industries = {
+        "saas": ["saas", "software as a service", "b2b saas", "b2c saas"],
+        "ecommerce": ["ecommerce", "e-commerce", "shopify", "amazon", "retail", "dtc", "d2c"],
+        "fintech": ["fintech", "finance", "banking", "payments", "crypto", "defi"],
+        "healthcare": ["health", "medical", "healthcare", "biotech", "pharma"],
+        "marketing": ["marketing", "growth", "seo", "content", "brand", "advertising"],
+        "real_estate": ["real estate", "property", "realty", "realtor"],
+        "agency": ["agency", "studio", "consultancy"],
+    }
+    for industry, signals in industries.items():
+        if any(signal in headline_lower for signal in signals):
+            result["industry"] = industry
+            break
+
+    return result
+
+
+# Smart model for strategic engagement (Claude Sonnet via OpenRouter)
+SMART_MODEL = "anthropic/claude-sonnet-4"
+
+# Strategic LinkedIn comment prompt - different based on author type
+STRATEGIC_LINKEDIN_COMMENT_PROMPT = """You're Jesse, an experienced developer specializing in automation, API integrations, and workflow optimization. You build systems that save companies time and money.
+
+YOUR EXPERTISE (reference naturally when relevant):
+- API integrations: Salesforce, HubSpot, Shopify, QuickBooks, eBay, custom APIs
+- Workflow automation: Better-than-Zapier solutions, cron jobs, report automation
+- Web scraping: Competitor monitoring, lead generation, data extraction
+- Bot development: Slack, Discord, Telegram integrations
+- Custom dashboards: Admin panels, analytics, internal tools
+- AI integration: GPT/Claude integration, document classification, semantic search
+
+AUTHOR ANALYSIS:
+{author_analysis}
+
+ENGAGEMENT STRATEGY: {strategy}
+
+{strategy_instructions}
+
+GUIDELINES:
+- Sound like a real person, not a LinkedIn bot
+- Be confident but not arrogant - you know your stuff
+- Reference specific technical details when relevant (shows expertise)
+- Match their level - technical with tech people, business outcomes with executives
+- If they're a potential client, plant seeds without being salesy
+- ALWAYS use 'I' never 'we' - you're an independent developer
+- Current year is 2026 - don't reference outdated things
+
+BANNED PHRASES:
+- "Great post!" / "Love this!" / "This is so valuable!"
+- "Absolutely!" / "Couldn't agree more!"
+- "As someone who..." (overused)
+- "I'd be happy to..." (too salesy)
+- Generic cheerleading without substance
+
+LENGTH: {length_guidance}
+
+OUTPUT: Just the comment text, nothing else."""
+
+STRATEGY_INSTRUCTIONS = {
+    "casual": """
+CASUAL ENGAGEMENT:
+- Just be yourself, join the conversation naturally
+- Share a thought, ask a question, or relate to their experience
+- No need to showcase expertise - just be genuine
+- Keep it light and conversational""",
+
+    "value_add": """
+VALUE-ADD ENGAGEMENT:
+- Contribute something genuinely useful to the conversation
+- Share an insight, perspective, or experience that adds depth
+- Ask thoughtful questions that advance the discussion
+- Position yourself as knowledgeable without showing off""",
+
+    "strategic": """
+STRATEGIC ENGAGEMENT (potential client detected):
+- Demonstrate expertise subtly through the quality of your comment
+- Share insights relevant to their industry/role
+- If they mention a problem you solve, acknowledge it thoughtfully (don't pitch)
+- Plant seeds: show you understand their world
+- Goal: they should think "this person gets it" not "this person wants my money"
+- A great comment makes them curious enough to check your profile""",
+
+    "expert_peer": """
+EXPERT PEER ENGAGEMENT:
+- Engage as an equal - fellow practitioner to practitioner
+- Share technical insights, war stories, or different approaches
+- Be specific and concrete - generalities don't impress other experts
+- Okay to respectfully disagree or offer alternative perspectives
+- Reference real experience: "In my integrations I've found..." or "Ran into this with a client..."
+- Keep the technical depth appropriate to their post"""
+}
+
 # LinkedIn comment prompt - more casual and varied
 LINKEDIN_COMMENT_PROMPT = """You're Jesse, a developer who does automation and API integrations. You're commenting on a LinkedIn post - just being part of the conversation, not trying to be a guru or mentor.
 
@@ -345,11 +516,13 @@ class ResponseGenerator:
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
         self.model = "google/gemini-2.0-flash-001"
 
-    async def _call_openrouter(self, messages: list, max_tokens: int, temperature: float = 0.8) -> Optional[str]:
+    async def _call_openrouter(self, messages: list, max_tokens: int, temperature: float = 0.8, model: Optional[str] = None) -> Optional[str]:
         """Call OpenRouter API with automatic fallback between keys."""
         if not self.api_keys:
             print("No OpenRouter API keys configured")
             return None
+
+        use_model = model or self.model
 
         for i, api_key in enumerate(self.api_keys):
             try:
@@ -361,7 +534,7 @@ class ResponseGenerator:
                             "Content-Type": "application/json",
                         },
                         json={
-                            "model": self.model,
+                            "model": use_model,
                             "messages": messages,
                             "temperature": temperature,
                             "max_tokens": max_tokens,
@@ -565,7 +738,12 @@ THEIR REPLY TO YOU:
         author_headline: Optional[str] = None,
     ) -> Optional[str]:
         """
-        Generate a casual, natural comment for a LinkedIn post.
+        Generate an intelligent, strategic comment for a LinkedIn post.
+
+        Uses Claude Sonnet for higher quality reasoning and adapts strategy based on:
+        - Who the author is (potential client, peer, influencer)
+        - The type of post (technical, story, question, etc.)
+        - The author's seniority and industry
 
         Args:
             post_text: The LinkedIn post content
@@ -579,27 +757,61 @@ THEIR REPLY TO YOU:
             print("No OpenRouter API keys configured")
             return None
 
-        # Smart style selection based on post content
-        comment_style = select_comment_style(post_text)
+        # Analyze the author to determine engagement strategy
+        author_info = analyze_author(author, author_headline)
+        strategy = author_info["strategy"]
         post_type = detect_post_type(post_text)
 
-        opening_instruction = f"⚠️ COMMENT STYLE: {comment_style['style'].upper()} (post type: {post_type})\n{comment_style['instruction']}"
+        # Build author analysis summary for the prompt
+        author_analysis_parts = [f"Author: {author}"]
+        if author_headline:
+            author_analysis_parts.append(f"Headline: {author_headline}")
+        author_analysis_parts.append(f"Persona: {author_info['persona']}")
+        author_analysis_parts.append(f"Seniority: {author_info['seniority']}")
+        if author_info["industry"] != "unknown":
+            author_analysis_parts.append(f"Industry: {author_info['industry']}")
+        if author_info["is_potential_client"]:
+            author_analysis_parts.append("⚠️ POTENTIAL CLIENT - engage thoughtfully")
+        if author_info["is_technical"]:
+            author_analysis_parts.append("Technical person - can go deeper on implementation details")
+        author_analysis_parts.append(f"Post type detected: {post_type}")
+
+        author_analysis = "\n".join(author_analysis_parts)
+
+        # Get strategy-specific instructions
+        strategy_instructions = STRATEGY_INSTRUCTIONS.get(strategy, STRATEGY_INSTRUCTIONS["casual"])
+
+        # Determine length based on strategy and post type
+        if strategy == "strategic" or strategy == "value_add":
+            length_guidance = "2-4 sentences. Substantial enough to demonstrate expertise, but not a lecture."
+            max_tokens = 250
+        elif strategy == "expert_peer" and post_type == "technical":
+            length_guidance = "2-5 sentences. Match the technical depth of their post. Concrete specifics > vague generalities."
+            max_tokens = 300
+        else:
+            length_guidance = "1-3 sentences. Keep it natural and conversational."
+            max_tokens = 180
 
         # Build the prompt
-        system_prompt = LINKEDIN_COMMENT_PROMPT.format(opening_instruction=opening_instruction)
+        system_prompt = STRATEGIC_LINKEDIN_COMMENT_PROMPT.format(
+            author_analysis=author_analysis,
+            strategy=strategy.upper(),
+            strategy_instructions=strategy_instructions,
+            length_guidance=length_guidance,
+        )
 
-        context = f"POST BY: {author}"
-        if author_headline:
-            context += f" ({author_headline})"
-        context += f"\n\nPOST CONTENT:\n{post_text[:2000]}"
+        context = f"""POST CONTENT:
+{post_text[:2500]}
+
+Generate a comment that's appropriate for this specific author and post."""
 
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": context},
         ]
 
-        # Keep it short - most comments should be 1-3 sentences
-        return await self._call_openrouter(messages, max_tokens=150, temperature=0.9)
+        # Use Claude Sonnet for smarter responses
+        return await self._call_openrouter(messages, max_tokens=max_tokens, temperature=0.85, model=SMART_MODEL)
 
 
     async def generate_linkedin_comment_reply(

@@ -474,18 +474,22 @@ def _prospect_to_response(prospect: Prospect) -> ProspectResponse:
 class LinkedInPostsRequest(BaseModel):
     """Request to fetch LinkedIn posts via Apify."""
     search_terms: List[str] = [
-        # Direct freelance/contract mentions
-        "freelance developer needed",
-        "contractor needed developer",
-        "need freelancer to build",
-        "hire freelance developer",
-        # Startup/founder language
-        "startup needs developer",
-        "MVP developer needed",
-        "co-founder developer",
-        # Project-specific
-        "project based developer",
-        "short term developer contract",
+        # Clear hiring intent phrases
+        '"looking for a developer"',  # Exact phrase matching
+        '"need a developer to build"',
+        '"hiring a freelance developer"',
+        '"need someone to build my"',
+        # Specific role requests
+        '"looking for a python developer"',
+        '"looking for a react developer"',
+        '"need a fullstack developer"',
+        # Project-based requests
+        '"help me build my app"',
+        '"build my mvp"',
+        '"anyone know a developer"',
+        # Non-technical founder asks
+        '"non-technical founder"',
+        '"recommend a developer"',
     ]
     max_posts_per_term: int = 12
     sort_by: str = "date_posted"  # "relevance" or "date_posted"
@@ -493,8 +497,8 @@ class LinkedInPostsRequest(BaseModel):
 
 # Patterns that indicate this is a job posting, not a freelance opportunity
 RECRUITER_PATTERNS = [
-    # Hiring language
-    "we're hiring", "we are hiring", "#hiring", "#wearehiring", "#hiringnow",
+    # Hiring language (include smart apostrophe variants)
+    "we're hiring", "we're hiring", "we are hiring", "#hiring", "#wearehiring", "#hiringnow",
     "join our team", "join us", "come join", "be part of our team",
     # Job posting language
     "full-time", "full time", "part-time", "part time", "permanent position",
@@ -505,27 +509,144 @@ RECRUITER_PATTERNS = [
     "hiring alert", "urgent hiring", "immediate joiner", "immediate requirement",
     "looking for candidates", "we're looking for a", "we are looking for a",
     "open position", "open role", "vacancy", "vacancies",
-    # Location-based full-time
-    "onsite", "on-site", "hybrid role", "remote role",
     # Generic job titles
     "senior developer to join", "developer to join our",
+    # Company hiring posts (not freelance clients)
+    "freshers", "entry-level", "entry level", "1-2 years experience",
+    "years experience", "experience required", "yrs experience",
 ]
 
-# Job titles that indicate recruiter/HR (filter these out)
+# Construction/trades industry (NOT software development)
+CONSTRUCTION_PATTERNS = [
+    "general contractor", "home improvement", "construction project",
+    "renovation", "remodel", "building contractor", "roofing",
+    "plumbing", "electrical contractor", "hvac", "landscaping",
+    "flooring", "painting contractor", "handyman", "home repair",
+    "kitchen remodel", "bathroom remodel", "basement", "deck",
+    "fence", "drywall", "masonry", "concrete", "framing",
+    "carpentry", "tile work", "cabinet", "window installation",
+    "door installation", "siding", "gutters", "insulation",
+]
+
+# Freelance platform promotions (ads, not hiring)
+PLATFORM_PROMO_PATTERNS = [
+    "sign up on fiverr", "join fiverr", "fiverr sellers", "fiverr gigs",
+    "sign up on upwork", "join upwork", "upwork profile",
+    "freelancer.com", "toptal", "guru.com",
+    "freelancea", "find freelancers on", "hire on fiverr",
+    "post your project on", "platform for freelancers",
+    "connect with freelancers", "freelance marketplace",
+    "gig economy platform", "freelance platform",
+]
+
+# Self-promotion (people advertising themselves, NOT hiring)
+SELF_PROMO_PATTERNS = [
+    "i am available", "i'm available", "available for hire",
+    "open to work", "#opentowork", "looking for opportunities",
+    "seeking new projects", "seeking clients", "accepting new clients",
+    "hire me", "my services", "i offer", "i provide",
+    "i specialize in", "my expertise", "i can help you",
+    "dm me for", "reach out if you need", "contact me for",
+    "book a call", "free consultation", "let me help you",
+    "i build", "i develop", "i create websites", "i create apps",
+    "check out my portfolio", "see my work", "my github",
+    "years of experience", "certified developer",
+    "freelance developer here", "developer looking for",
+    # Project sharing / personal updates (not hiring)
+    "i'm excited to share", "excited to share my",
+    "check it out", "please check out", "sharing my",
+    "i recently started learning", "i just finished",
+    "my final project", "my latest project", "my new project",
+    "built this", "just launched", "just released",
+    "i've been working on", "working on this for",
+    "proud to announce", "happy to share",
+    # Generic thought leadership (not hiring)
+    "your product is", "your business is", "your company is",
+    "here's why", "here's how", "the problem with",
+    "3 tips", "5 ways", "10 things", "key insights",
+    # Storytelling / personal experience (not hiring)
+    "i almost", "it's been wild", "that's the question we faced",
+    "after months of", "finally live", "under review",
+    "day 1/", "day 2/", "week 1", "month 1",
+    "stop waiting for", "don't have to struggle",
+    "founders don't need", "founders need", "startup founders",
+    "most founders", "many founders", "brilliant ideas have",
+    "burn lakhs", "burn dollars", "burn money",
+    "#mustwatch", "#startups", "#founders", "#entrepreneurship",
+    "learn practical tips", "practical tips for",
+    "made the same mistake", "common mistake",
+    # Marketing/sales content (not hiring)
+    "phenomenal", "game-changer", "revolutionary",
+    "stop doing this", "start doing this",
+    "the secret to", "the key to success",
+    "messing around with", "over the last couple",
+    # Selling/case study posts
+    "i sold", "i made $", "i made £", "i earned",
+    "cost me under", "won't be a valid excuse",
+    "update ‼️", "read this before you",
+    "tech is hard", "valid excuse",
+    # Advice/opinion posts (not hiring)
+    "you need a developer", "you don't need a developer",
+    "you need a prototype", "developers don't",
+    "no.\n\nyou need", "that justifies a developer",
+]
+
+# Location signals that indicate on-site/hybrid work (FILTER THESE OUT - we want remote only)
+ONSITE_PATTERNS = [
+    "onsite", "on-site", "on site",
+    "in-office", "in office", "office-based",
+    "hybrid", "hybrid role", "hybrid position",
+    "based in", "located in", "must be in", "must be based",
+    "local candidates", "local only",
+    "relocation", "relocate to",
+    "commute to", "commuting distance",
+    "first few weeks in office", "initial onsite", "onboarding in office",
+    "occasional office", "come to office",
+]
+
+# Job titles that indicate recruiter/HR/job aggregators (filter these out)
 RECRUITER_TITLES = [
     "recruiter", "recruiting", "talent acquisition", "talent partner",
     "hr manager", "hr business partner", "hr specialist", "hr coordinator",
     "human resources", "staffing", "headhunter", "hiring manager",
     "people operations", "sourcer", "sourcier",
+    # Job aggregators / posting services (very specific)
+    "daily opportunities", "join telegram", "join my telegram",
+    "job board", "recruitment agency",
 ]
 
 # Positive signals - posts with these are MORE likely to be freelance opportunities
+# Must indicate someone LOOKING TO HIRE, not just talking about freelancing
 FREELANCE_SIGNALS = [
-    "freelance", "freelancer", "contractor", "contract work",
-    "project-based", "project based", "short-term", "short term",
-    "one-time", "side project", "mvp", "startup", "solopreneur",
-    "bootstrap", "indie", "saas", "build my app", "build my website",
+    # Clear hiring intent (very specific phrases)
+    "looking for a developer", "looking for developer",
+    "need a developer", "need developer", "needs a developer",
+    "looking for someone to build", "need someone to build",
+    "hiring freelancer", "hire a developer", "hire developer",
+    "seeking a developer", "seeking developer",
+    # Project-specific hiring
+    "build my app", "build my website", "build my mvp",
+    "develop my app", "create my app", "help me build",
+    "need help building", "looking for help building",
+    # Budget/payment signals (more specific)
+    "paid project", "paid task", "paying for developer",
+    "budget for developer", "budget for the project",
+    "willing to pay", "rate is", "hourly rate",
+    # Technical role seeking (full phrases)
+    "looking for a python developer", "looking for a react developer",
+    "need a python developer", "need a react developer",
+    "looking for a frontend developer", "looking for a backend developer",
+    "looking for fullstack developer", "need fullstack developer",
+    # Direct ask patterns
+    "anyone know a developer", "recommend a developer",
+    "can anyone build", "who can build", "who can help me build",
 ]
+
+# Competition thresholds - filter out posts that already have too much engagement
+# High comments = many people already interested/competing
+MAX_COMMENTS_THRESHOLD = 15  # Posts with 15+ comments are likely overrun
+# High reactions with many comments suggests viral post with lots of competition
+HIGH_ENGAGEMENT_THRESHOLD = 50  # reactions + comments combined
 
 
 def is_english_text(text: str) -> bool:
@@ -556,7 +677,7 @@ def is_english_text(text: str) -> bool:
 
 
 def is_freelance_opportunity(post: dict) -> bool:
-    """Check if post looks like a genuine freelance opportunity vs job posting."""
+    """Check if post looks like a genuine remote freelance opportunity vs job posting."""
     body = (post.get("body") or "")
     title = (post.get("title") or "")
     author_headline = (post.get("author_headline") or "").lower()
@@ -572,11 +693,37 @@ def is_freelance_opportunity(post: dict) -> bool:
     # Filter out recruiter job postings
     for pattern in RECRUITER_PATTERNS:
         if pattern in text:
+            logger.debug(f"Filtered recruiter post: {pattern}")
             return False
 
     # Filter out posts from recruiters/HR
     for title_pattern in RECRUITER_TITLES:
         if title_pattern in author_headline:
+            logger.debug(f"Filtered recruiter author: {title_pattern}")
+            return False
+
+    # Filter out construction/trades (NOT software development)
+    for pattern in CONSTRUCTION_PATTERNS:
+        if pattern in text:
+            logger.debug(f"Filtered construction post: {pattern}")
+            return False
+
+    # Filter out platform promotions (Fiverr ads, etc.)
+    for pattern in PLATFORM_PROMO_PATTERNS:
+        if pattern in text:
+            logger.debug(f"Filtered platform promo: {pattern}")
+            return False
+
+    # Filter out self-promotion (developers advertising themselves)
+    for pattern in SELF_PROMO_PATTERNS:
+        if pattern in text:
+            logger.debug(f"Filtered self-promo: {pattern}")
+            return False
+
+    # Filter out on-site/hybrid positions (we want REMOTE ONLY)
+    for pattern in ONSITE_PATTERNS:
+        if pattern in text:
+            logger.debug(f"Filtered onsite post: {pattern}")
             return False
 
     # Check for positive freelance signals (at least one required)
@@ -584,6 +731,19 @@ def is_freelance_opportunity(post: dict) -> bool:
 
     # If no freelance signals, it's probably not relevant
     if not has_freelance_signal:
+        logger.debug("Filtered: no freelance signals found")
+        return False
+
+    # Filter out high-competition posts (too many people already interested)
+    comments = post.get("comments", 0) or 0
+    reactions = post.get("reactions", 0) or 0
+
+    if comments >= MAX_COMMENTS_THRESHOLD:
+        logger.debug(f"Filtered high-competition post with {comments} comments")
+        return False
+
+    if (comments + reactions) >= HIGH_ENGAGEMENT_THRESHOLD:
+        logger.debug(f"Filtered high-engagement post with {reactions} reactions + {comments} comments")
         return False
 
     return True
@@ -721,16 +881,25 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
 
                         # Extract posted_at (it's an object with display_text and timestamp)
                         posted_at_obj = item.get("posted_at") or {}
+                        posted_at_str = ""
+                        post_timestamp = None
                         if isinstance(posted_at_obj, dict):
                             # Convert Unix timestamp (ms) to ISO string
                             ts = posted_at_obj.get("timestamp")
                             if ts:
-                                from datetime import datetime
-                                posted_at_str = datetime.fromtimestamp(ts / 1000).isoformat()
+                                post_timestamp = ts / 1000  # Convert to seconds
+                                posted_at_str = datetime.fromtimestamp(post_timestamp).isoformat()
                             else:
                                 posted_at_str = posted_at_obj.get("display_text", "")
                         else:
                             posted_at_str = str(posted_at_obj)
+
+                        # Filter out posts older than 7 days
+                        if post_timestamp:
+                            post_age_days = (datetime.now().timestamp() - post_timestamp) / 86400
+                            if post_age_days > 7:
+                                logger.debug(f"Filtered out old post ({post_age_days:.1f} days old)")
+                                continue
 
                         post_data = {
                             "source_id": f"li_post_{hash(post_id) % 10**8}",
@@ -773,3 +942,184 @@ async def fetch_linkedin_posts(request: LinkedInPostsRequest):
         return {"posts": all_posts, "error": "Some LinkedIn requests timed out", "count": len(all_posts)}
     except Exception as e:
         return {"posts": [], "error": f"Error fetching LinkedIn posts: {str(e)}"}
+
+
+# ==================== AI JOB SCORING ====================
+
+JOB_SCORING_PROMPT = """You are analyzing a freelance/contract opportunity to determine if it's a good fit for Jesse.
+
+JESSE'S EXPERTISE:
+- API integrations: Salesforce, HubSpot, Shopify, QuickBooks, eBay, custom APIs
+- Workflow automation: Better-than-Zapier solutions, cron jobs, report automation
+- Web scraping: Competitor monitoring, lead generation, data extraction
+- Bot development: Slack, Discord, Telegram integrations
+- Custom dashboards: Admin panels, analytics, internal tools
+- AI integration: GPT/Claude integration, document classification, semantic search
+- Languages: Python, JavaScript/TypeScript, React, FastAPI
+
+ANALYZE THIS POST:
+Author: {author}
+Author Headline: {author_headline}
+Posted: {posted_at}
+Content: {body}
+
+RESPOND WITH VALID JSON ONLY (no markdown):
+{{
+  "fit_score": 0-100,
+  "fit_reason": "Brief explanation of why this is/isn't a good fit",
+  "remote_confidence": 0-100,
+  "remote_reason": "Why we think this is remote/not remote",
+  "project_type": "integration|automation|scraping|bot|dashboard|ai|web_dev|mobile|other",
+  "budget_signal": "high|medium|low|unknown",
+  "urgency": "immediate|this_week|exploring|unknown",
+  "tech_stack": ["list", "of", "relevant", "technologies"],
+  "red_flags": ["any", "concerns"],
+  "key_opportunity": "One sentence: what's the core opportunity here?",
+  "skip": false,
+  "skip_reason": "Only if skip=true, explain why"
+}}
+
+SCORING GUIDELINES:
+- fit_score 80+: Perfect match for Jesse's skills, clear project scope
+- fit_score 60-79: Good match, some skills align
+- fit_score 40-59: Partial match, might be worth exploring
+- fit_score <40: Poor fit, different skills needed
+
+- remote_confidence 90+: Explicitly mentions remote/anywhere/WFH
+- remote_confidence 60-89: No location mentioned (assume remote possible)
+- remote_confidence <60: Mentions specific location, hybrid, or onsite
+
+RED FLAGS to watch for:
+- Unrealistic expectations ("build me an AI chatbot for $50")
+- Vague scope ("I need an app")
+- Looking for co-founders (not paying clients)
+- MLM/crypto scams
+- "Exposure" instead of payment
+
+BE HELPFUL: Focus on finding genuine opportunities where Jesse can add value."""
+
+
+class JobScoreRequest(BaseModel):
+    """Request to score a batch of job posts."""
+    posts: List[dict]  # List of post objects with body, author, author_headline, etc.
+
+
+class JobScore(BaseModel):
+    """AI-generated score for a job post."""
+    source_id: str
+    fit_score: int
+    fit_reason: str
+    remote_confidence: int
+    remote_reason: str
+    project_type: str
+    budget_signal: str
+    urgency: str
+    tech_stack: List[str] = []
+    red_flags: List[str] = []
+    key_opportunity: str
+    skip: bool = False
+    skip_reason: Optional[str] = None
+
+
+@router.post("/score-jobs")
+async def score_job_posts(request: JobScoreRequest):
+    """
+    Score a batch of job posts using AI analysis.
+
+    Returns scores for each post including:
+    - fit_score: How well it matches Jesse's skills (0-100)
+    - remote_confidence: How likely this is remote work (0-100)
+    - project_type: What kind of work this is
+    - red_flags: Any concerns
+    """
+    import httpx
+    from ..config import get_settings
+
+    settings = get_settings()
+
+    api_keys = [k for k in [settings.openrouter_api_key, settings.openrouter_api_key_2] if k]
+    if not api_keys:
+        return {"scores": [], "error": "OpenRouter API key not configured"}
+
+    scores = []
+
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        for post in request.posts:
+            try:
+                prompt = JOB_SCORING_PROMPT.format(
+                    author=post.get("author", "Unknown"),
+                    author_headline=post.get("author_headline", ""),
+                    posted_at=post.get("posted_at", ""),
+                    body=post.get("body", post.get("title", ""))[:2000],
+                )
+
+                # Try each API key until one works
+                response_data = None
+                for api_key in api_keys:
+                    try:
+                        response = await client.post(
+                            "https://openrouter.ai/api/v1/chat/completions",
+                            headers={
+                                "Authorization": f"Bearer {api_key}",
+                                "Content-Type": "application/json",
+                            },
+                            json={
+                                "model": "google/gemini-2.0-flash-001",
+                                "messages": [
+                                    {"role": "system", "content": "You are a job opportunity analyzer. Respond only with valid JSON."},
+                                    {"role": "user", "content": prompt},
+                                ],
+                                "temperature": 0.3,
+                                "max_tokens": 500,
+                            },
+                        )
+
+                        if response.status_code == 200:
+                            result = response.json()
+                            content = result["choices"][0]["message"]["content"].strip()
+
+                            # Parse JSON from response
+                            import json
+                            import re
+
+                            # Try to extract JSON from response
+                            json_match = re.search(r'\{[\s\S]*\}', content)
+                            if json_match:
+                                score_data = json.loads(json_match.group())
+                                score_data["source_id"] = post.get("source_id", "")
+                                scores.append(score_data)
+                                response_data = score_data
+                                break
+                        elif response.status_code == 402:
+                            continue  # Try next key
+                        else:
+                            logger.warning(f"OpenRouter error: {response.status_code}")
+                            continue
+
+                    except Exception as e:
+                        logger.warning(f"Error with API key: {e}")
+                        continue
+
+                if response_data is None:
+                    # Default score if AI fails
+                    scores.append({
+                        "source_id": post.get("source_id", ""),
+                        "fit_score": 50,
+                        "fit_reason": "Could not analyze - manual review needed",
+                        "remote_confidence": 50,
+                        "remote_reason": "Unknown",
+                        "project_type": "other",
+                        "budget_signal": "unknown",
+                        "urgency": "unknown",
+                        "tech_stack": [],
+                        "red_flags": ["AI analysis failed"],
+                        "key_opportunity": "Review manually",
+                        "skip": False,
+                        "skip_reason": None,
+                    })
+
+            except Exception as e:
+                logger.error(f"Error scoring post: {e}")
+                continue
+
+    return {"scores": scores, "count": len(scores)}

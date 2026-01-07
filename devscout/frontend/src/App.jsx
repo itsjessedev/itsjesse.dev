@@ -20,7 +20,7 @@ import { fetchPosts, fetchStats, fetchFromReddit, fetchNews, submitPosts, genera
   // Dismissals (cross-device persistence)
   dismissItem, getDismissedIds, clearDismissals,
   // Persistence API (cross-device)
-  saveLinkedInJobs, getLinkedInJobs, updateLinkedInJobStatus, clearLinkedInJobs,
+  saveLinkedInJobs, getLinkedInJobs, updateLinkedInJobStatus, clearLinkedInJobs, scoreLinkedInJobs,
   saveLinkedInEngagement, getLinkedInEngagement, updateLinkedInEngagementStatus, clearLinkedInEngagement,
   saveRedditJobs, getRedditJobs, updateRedditJobStatus, clearRedditJobs,
   saveRedditEngagement, getRedditEngagement, updateRedditEngagementStatus, clearRedditEngagement,
@@ -1215,6 +1215,9 @@ function App() {
   // LinkedIn Jobs - loaded from DATABASE on mount (cross-device)
   const [linkedInLeads, setLinkedInLeads] = useState([]);
   const [linkedInLeadsFetching, setLinkedInLeadsFetching] = useState(false);
+  // AI Job Scoring - scores keyed by source_id
+  const [linkedInJobScores, setLinkedInJobScores] = useState({}); // { source_id: { fit_score, remote_confidence, ... } }
+  const [scoringLinkedInJobs, setScoringLinkedInJobs] = useState(false);
 
   // LinkedIn Engagement - loaded from DATABASE on mount (cross-device)
   const [linkedInEngagement, setLinkedInEngagement] = useState([]);
@@ -4145,6 +4148,26 @@ function App() {
                       // Reload from DB
                       const jobs = await getLinkedInJobs('new');
                       setLinkedInLeads(jobs);
+
+                      // Auto-score with AI
+                      if (jobs.length > 0) {
+                        setScoringLinkedInJobs(true);
+                        try {
+                          const scoreResult = await scoreLinkedInJobs(jobs);
+                          if (scoreResult.scores && scoreResult.scores.length > 0) {
+                            const scoresMap = {};
+                            scoreResult.scores.forEach(score => {
+                              scoresMap[score.source_id] = score;
+                            });
+                            setLinkedInJobScores(scoresMap);
+                          }
+                        } catch (scoreErr) {
+                          console.error('[DevScout] Score error:', scoreErr);
+                          // Don't show error - scoring is optional enhancement
+                        } finally {
+                          setScoringLinkedInJobs(false);
+                        }
+                      }
                     } else {
                       showToast('No job posts found', 'info');
                     }
@@ -4155,14 +4178,19 @@ function App() {
                     setLinkedInLeadsFetching(false);
                   }
                 }}
-                disabled={linkedInLeadsFetching}
+                disabled={linkedInLeadsFetching || scoringLinkedInJobs}
               >
                 {linkedInLeadsFetching ? (
                   <>
                     <span className="spinner" style={{ marginRight: '6px' }}>⏳</span>
-                    Searching LinkedIn (this takes ~30s)...
+                    Fetching jobs...
                   </>
-                ) : '🔍 Fetch Jobs (30)'}
+                ) : scoringLinkedInJobs ? (
+                  <>
+                    <span className="spinner" style={{ marginRight: '6px' }}>🤖</span>
+                    Scoring with AI...
+                  </>
+                ) : '🔍 Fetch & Score Jobs'}
               </button>
               {linkedInLeads.length > 0 && (
                 <button
@@ -4172,6 +4200,7 @@ function App() {
                     await clearLinkedInJobs('dismissed');
                     const jobs = await getLinkedInJobs('new');
                     setLinkedInLeads(jobs);
+                    setLinkedInJobScores({});
                     showToast('Cleared', 'success');
                   }}
                 >
@@ -4190,16 +4219,93 @@ function App() {
             </div>
           ) : (
             <div style={styles.postList}>
-              {linkedInLeads.filter(job => job.status === 'new').map((job) => (
+              {linkedInLeads
+                .filter(job => job.status === 'new')
+                // Sort by AI score if available (highest first)
+                .sort((a, b) => {
+                  const scoreA = linkedInJobScores[a.source_id]?.fit_score || 0;
+                  const scoreB = linkedInJobScores[b.source_id]?.fit_score || 0;
+                  return scoreB - scoreA;
+                })
+                .map((job) => {
+                  const score = linkedInJobScores[job.source_id];
+                  return (
                 <div key={job.source_id || job.id} style={styles.post}>
                   <div style={styles.postHeader}>
                     <span style={{ ...styles.subreddit, background: '#0A66C220', color: '#0A66C2' }}>
                       LinkedIn
                     </span>
+                    {score && (
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <span style={{
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: '600',
+                          background: score.fit_score >= 70 ? '#22c55e20' : score.fit_score >= 40 ? '#f59e0b20' : '#ef444420',
+                          color: score.fit_score >= 70 ? '#22c55e' : score.fit_score >= 40 ? '#f59e0b' : '#ef4444',
+                        }}>
+                          {score.fit_score >= 70 ? '🔥 HOT' : score.fit_score >= 40 ? '⚡ WARM' : '❄️ COOL'} {score.fit_score}
+                        </span>
+                        <span style={{
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          fontSize: '11px',
+                          fontWeight: '500',
+                          background: score.remote_confidence >= 70 ? '#3b82f620' : '#64748b20',
+                          color: score.remote_confidence >= 70 ? '#3b82f6' : '#64748b',
+                        }}>
+                          🌐 Remote {score.remote_confidence}%
+                        </span>
+                        {score.project_type && score.project_type !== 'other' && (
+                          <span style={{
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '11px',
+                            background: '#8b5cf620',
+                            color: '#8b5cf6',
+                          }}>
+                            {score.project_type}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <span style={{ fontSize: '12px', color: '#888' }}>
                       {job.reactions || 0} reactions · {job.comments || 0} comments
                     </span>
                   </div>
+
+                  {/* AI Score Details */}
+                  {score && (
+                    <div style={{
+                      padding: '8px 12px',
+                      background: '#1a1a2e',
+                      borderRadius: '6px',
+                      marginTop: '8px',
+                      fontSize: '12px',
+                    }}>
+                      <div style={{ color: '#22c55e', fontWeight: '500', marginBottom: '4px' }}>
+                        💡 {score.key_opportunity}
+                      </div>
+                      <div style={{ display: 'flex', gap: '12px', color: '#888', flexWrap: 'wrap' }}>
+                        {score.budget_signal && score.budget_signal !== 'unknown' && (
+                          <span>💰 Budget: {score.budget_signal}</span>
+                        )}
+                        {score.urgency && score.urgency !== 'unknown' && (
+                          <span>⏰ {score.urgency.replace('_', ' ')}</span>
+                        )}
+                        {score.tech_stack && score.tech_stack.length > 0 && (
+                          <span>🛠️ {score.tech_stack.slice(0, 3).join(', ')}</span>
+                        )}
+                      </div>
+                      {score.red_flags && score.red_flags.length > 0 && (
+                        <div style={{ color: '#ef4444', marginTop: '4px' }}>
+                          ⚠️ {score.red_flags.join(' · ')}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div style={styles.postTitle}>
                     <a href={job.url} target="_blank" rel="noopener" style={styles.postLink}>
                       {job.author || 'LinkedIn Post'}
@@ -4256,7 +4362,8 @@ function App() {
                     </button>
                   </div>
                 </div>
-              ))}
+                  );
+                })}
             </div>
           )}
         </div>
